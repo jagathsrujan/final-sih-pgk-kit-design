@@ -1,0 +1,227 @@
+# SIH26098 — Idea Submission: draft built from the design register
+
+**What this file is.** A tailored draft assembled from `design/00-design-criteria-register.md`, written to be cut down and re-voiced. It is not the wording to submit — it is the argument, with every number carrying the criterion ID it came from. The existing `SIH26098-template-slides.md` and `SIH26098-form-content.md` give the *structure*; this file gives the *content*.
+
+**How to use the criterion IDs.** Every bracketed tag — `[G4]`, `[C12]` — points at a row in the register, where the value's basis, status and sensitivities are recorded. A reviewer who challenges any number can be taken straight to its derivation.
+
+**Status of the numbers.** Four kinds appear, and they must stay distinguishable in the final text:
+
+| Marking | Meaning |
+|---|---|
+| **Claimed** | A requirement or a design decision we own |
+| **Derived** | Computed from the givens; the arithmetic is in the register |
+| **PARAMETRIC** | Sized over a declared envelope because the customer's platform data is not yet released — **must be shown as such, never as the customer's data** |
+| **[ref]** | Carried from published work on the 155 mm class and still provisional |
+
+---
+
+## Basis and disclosure — read this before writing a single slide
+
+**No technical data from Yantra India Limited has been used.** YIL releases the shell drawing and firing tables after shortlisting, and that is the process. Every platform figure in this submission is therefore drawn from the **public 155 mm HE class** — the M795 and M549A1, their published dimensions and dispersion, the MIL-STD-333B fuze interface, and the fielded M1156 PGK as the kit benchmark. The design is specified **parametrically**: kit mass, CG shift and inertia change are stated as *limits the design satisfies across a declared envelope*, which is how a supplier defines a retrofit kit. Post-selection, every value re-baselines against YIL's actual shell.
+
+**Say this on the deck.** It is a strength, not a caveat: a kit specified as limits over an envelope is a *product*, and it is the only honest form a bid can take before the drawing is released.
+
+---
+
+## FIELD 1 — Technology bucket
+
+**Defence and Security** — with a manufacturing and low-cost-electronics character.
+
+## FIELD 2 — Idea title (max 100 characters)
+
+**DRISHTI-PGK — A Low-Cost De-Spun Canard Guidance Kit with an Integrated Multi-Mode Fuze**
+
+## FIELD 3 — Abstract
+
+Conventional 155 mm artillery is unguided: a conventional round at maximum range lands with a circular error probable of **267 m** [M6] — on a public citation, bracketed by independent values of 259 m and 139 m for the two rounds of the class. Neutralising a point target therefore demands volume fire, and volume fire costs time, logistics and collateral.
+
+DRISHTI-PGK is a retrofit kit that screws into the existing **MIL-STD-333B** fuze well [P6] and replaces only the fuze and the ogive forward of it. The shell body, charge system, driving band and gun interface are untouched [P13]. Four **fixed-incidence canards** sit on a ring that is de-spun from the spinning shell by two bearings [C1] — there are no moving control surfaces at all. A 0°/180° steering pair produces a net guidance force; a 90°/−90° control pair produces the roll torque that aims it [C1]. The alternator is simultaneously the actuator and the generator, so the kit carries **no in-flight battery** [C16, C20].
+
+Guidance is **continuous impact-point prediction** [G1], which the reference work for this airframe does not contain — our clearest novel contribution. Navigation rides on the de-spun ring, which removes 15 000–20 000 rpm of spin from the measurement and turns the hardest sensing problem in a spin-stabilised guided shell into a conventional one [S6, N6].
+
+The claim is **CEP ≤ 30 m at maximum-range, full-charge engagement** [M4, M5]. Our derived design point is **CEP 23.9 m** — a **1σ budget of 20.3 m**, a 20 % margin under the claim [G4]. The kit adds **≈0.42 kg net** over the fuze it replaces — **0.9 % of the projectile** [P9].
+
+---
+
+## FIELD 4 — Idea description
+
+### 1. The problem, stated as a number
+
+A conventional unguided 155 mm round at maximum range has a **circular error probable of 267 m** [M6]. Two independent public citations bracket this at **259 m** and **139 m** for the two rounds of the class, illustrating how strongly dispersion depends on range — which is why the claim is tied to a stated engagement condition rather than quoted bare [M6].
+
+The problem is not that artillery is inaccurate; it is that inaccuracy scales with range by the squared-cubed law of trajectory sensitivity, so the longest shots are the least useful and the most dangerous to use close to friendly forces.
+
+**The requirement, and what we claim against it.**
+
+| Element | Statement | ID |
+|---|---|---|
+| Claim | **CEP ≤ 30 m** | [M4] |
+| Condition | Maximum-range, full-charge (6M), ≈30 km class, 39-calibre tube | [M4] |
+| Definition | 2-D circular 50 % probability radius; measured against the **loaded aimpoint**, with target-location error **excluded and stated as excluded**; the end-to-end figure against the true target published as a sensitivity | [M5] |
+| Charge envelope | Full functionality across **3M–6M, 546–943 m/s**; the accuracy claim is bounded to the band above, outside which accuracy degrades but never below unguided | [M3] |
+| Derived design point | **CEP 23.9 m** — a 20 % margin | [G4] |
+
+### 2. What the kit is
+
+**It replaces the fuze, not the shell.** The kit occupies the standard fuze well and the ogive forward of it, and nothing else [P13]. Published interface anchors: the **MIL-STD-333B** standardised fuze thread and cavity [P6]; a **2″-12 UNS-2A** thread as used by in-service 155 mm fuzes [P6]; and the fielded **M1156 PGK**, qualified on both rounds of the class, at **≤124.7 mm intrusion and ≤95.25 mm above the seat** [P7, P12].
+
+**The canard architecture.** Four fixed-incidence canards in two pairs on a de-spun ring [C1]:
+
+- **Steering pair, 0°/180°, equal cant** — lateral force components add, roll torques cancel. This is the guidance force [C1].
+- **Control pair, 90°/−90°, opposite cant** — lateral components cancel, tangential components add. This is a pure roll torque, and it is the only source of ring torque **against** the body spin, because the alternator is a generator whose reaction torque acts in one sense only [C1].
+
+Rotating the ring aims the guidance force anywhere in the plane. **Two-dimensional steering from a single actuation axis, with no moving surfaces** [C1].
+
+**Canards are permanently exposed** — fixed in flight configuration from manufacture, with no deployment mechanism at all [C31]. Nothing can deploy, so nothing can deploy wrongly: in-bore safety is a static clearance question rather than a mechanism-safety argument [C31]. This also matches the fielded PGK's four fixed external canards.
+
+**The alternator is the actuator and the generator.** Magnets on the ring, coils on the body: drawing current produces control torque; the same machine generates the flight power. **No servos, no gearboxes, no in-flight battery, one moving assembly** [C14–C17, C20].
+
+**Multi-mode fuze.** Proximity, time and impact, all configurable before flight, with the full terminal-effect envelope of the fuze it replaces retained — superquick, short delay and graze selectable on impact [M2]. Configured over the class-standard **inductive gun-line setter** [F11].
+
+### 3. Guidance, navigation and control
+
+**Impact-point-prediction guidance law** [G1]. Each cycle, propagate the navigation state to impact, compare the predicted impact point with the loaded target coordinates, and command a ring angle that drives the predicted miss to zero. It spends authority in proportion to the miss it can actually remove rather than holding an uploaded path — which matters because the authority margin is **1.11:1**, not comfortable [M7]. The reference work for this airframe contains **no guidance law at all**; this is new work.
+
+**The ring angle is the only command channel** [G2]. Force magnitude cannot be commanded — steering comes from cant angle, so the force is set by cant and dynamic pressure and the ring merely aims it. Two consequences are built in: the propagation model **includes the always-on steering force**, or the error budget's largest term is wrong; and the aerodynamic model stays out of the control loop.
+
+**The authority window is state-dependent, not a fixed schedule** [G3]. Dynamic pressure collapses near apogee, so an onboard estimate of available force gates the command and the inhibited band is computed in flight. The reference work lost control between t = 30 s and 50 s using fixed limits; inheriting the state-dependent fix is a concrete, hardware-validated differentiator.
+
+**The de-spun ring is the inertial platform** [N6, S6]. With spin removed, the ring sees the projectile's coning motion rather than a **1107–1912 rad/s** rotation — the single hardest sensing problem in this class of projectile, converted into a conventional low-rate navigation problem [S6].
+
+**Ring-angle accuracy is the guidance-force direction** [G6, G5]: **≤ 1.0° (1σ) absolute, earth-referenced** from a magnetometer fused into the navigation solution, and **≤ 0.8° (1σ) body-relative** from the ring pickoff. Combined in RSS, 1.28° → **9.1 m** of residual miss — which is exactly the ring-angle line in the error budget [G4]. The crux is **disturbance rejection, not resolution**: the alternator's stray field scales with current and therefore with flight phase, so calibration must be in-flight.
+
+**Control.** A cascade of **PI inner velocity at 33.6 Hz and P outer position at 6.2 Hz**, both hardware-validated, running at **1 kHz** with the control loop in FPGA fabric and the guidance law on the processor [G9, G8, G13]. A **disturbance observer** estimates the unmeasurable aerodynamic and friction torques [G14]. **Every limit is state-dependent by construction** — `I_lim = min(2·Î_disturbance, I_avail(ω_rel))` — so authority loss is a designed constraint rather than a failure mode [G15]. Guidance updates at **≈6 Hz**, which is a *ceiling* set by the outer loop's 0.103 s settling time, not an arbitrary rate [G10, G2].
+
+### 4. Feasibility — the three things that decide it
+
+**(a) The accuracy budget closes with margin.**
+
+| Source | 1σ | Why |
+|---|---|---|
+| Navigation at impact | **5 m** | GNSS plus inertial residual [N1, G4] |
+| Guidance and control | **17 m** | propagation and model error 13 m, ring angle 9 m, actuation and loop lag 6 m [G4] |
+| Meteo residual over remaining flight | **5 m** | forecast error only, because the law re-solves continuously [G4] |
+| Ballistic and aerodynamic model | **8 m** | coefficient uncertainty, carried explicitly [G4] |
+| Fuze and detonation dispersion | **3 m** | small at this calibre [G4] |
+| **RSS** | **20.3 m** | **→ CEP 23.9 m**, 20 % under the 30 m claim [G4] |
+
+The muzzle-velocity residual is **absorbed into the navigation state** — under continuous impact-point prediction a velocity error already incurred is *measured*, not predicted [G4].
+
+**(b) Authority — the honest version.**
+
+The 80 % capture fraction needs **407 m** of correction [M7]. A 20 N force on the 45.0 kg design mass over the 45 s terminal window delivers **450 m** — a margin of **1.11:1** [M7]. That is thin, and it is stated as thin. Because the force is not commandable and collapses near apogee, the requirement is really on the **minimum force over the guided window**: **≥ 18.1 N** [C8]. That figure sits **above the floor of the reference's own band**, and 15 N would capture only 67 % of the unguided population — so the design cannot inherit the reference canard sizing [C8].
+
+**(c) The torque margins, which are thinner still.**
+
+Ring control is a torque balance, and both ends of the flight are constrained [C9, C12]:
+
+- **Near apogee** the aerodynamic torque collapses to **0.1706 N·m** against a friction budget of 0.1 N·m — a **1.7:1** margin [C12].
+- **On descent** the aerodynamic torque reaches **2.119 N·m** while the alternator's available current has fallen to ≈5 A, giving an **11 % shortfall in transient authority** at the end of flight [C9].
+
+Combining the two criteria **closes the control-pair sizing window entirely above `Tf = 0.1567 N·m`** — so the friction budget is a **feasibility gate on the architecture**, not a preference [C12, C13]. Inside the gate the design has ≈±20 % of freedom on control-pair size [C12]. This is why the friction budget is specified as **≤ 0.10 N·m flat across the full speed and temperature envelope**, with flatness — a load-dominated rather than viscous-dominated bearing — as the actual specification [C13].
+
+**(d) Structural and in-bore.**
+
+The ring sees **73.5 kN** of setback at 15 000 g [C26]. **That load cannot pass through the flight bearings** — thin-section instrument bearings of this class carry static ratings an order of magnitude lower — so the design routes it around them through a dedicated launch load path [C26]. Permanently exposed canards are held inside the bore by a **2 mm/side clearance budget**, capping the canard tips at **Ø151 mm** [C31].
+
+**(e) Stability.**
+
+First-order gyroscopic stability across the declared envelope runs **Sg = 1.37 to 3.55**, with the design point at **1.83** [S1]. The conservative corner clears the customary 1.3 floor by only 5 %, and **that 5 % is the canard allowance** — the derived requirement is that the canards may raise the pitching-moment derivative by no more than **5 % at that corner, 40 % at the design point** [S1, S2]. Two useful results fall out: the ring and canards add **+5.4 %** to axial inertia, which *raises* Sg by ≈11 % and partly offsets their own destabilising effect [P11]; and because spin is set by the rifling twist, **muzzle stability is charge-independent** — a 3M and a 6M round leave the tube equally stable [S6].
+
+**(f) Cost and the retrofit economics.**
+
+The fielded competitor in this product class is a **US$13,541** unit (FY2013, with a sub-$10,000 target and foreign-military-sales pricing of US$12.7–20k), and the 2026 production award for the class was **US$863 M** [K4 benchmark, reference model §7]. The architecture attacks that from three directions: **one moving assembly**, no actuators, gearboxes or in-flight battery; fuze and guidance sharing processor, power and housing; and **no re-qualification of the shell** — the body, charge system and driving band are untouched [P13].
+
+### 5. Validation methodology
+
+1. **7-DOF trajectory simulation with the guidance loop in the loop**, in the body-fixed-plane frame, driven by a Mach × α × β coefficient set — not the reference's five-point Mach table, which produced non-physical jumps.
+2. **Monte Carlo dispersion analysis that produces the CEP** — the claim is derived, not asserted — varying muzzle velocity, meteo, target-location error, launch perturbation and coefficient uncertainty [R5].
+3. **Hardware-in-the-loop**, closing ring angle back into flight parameters — the step the reference work never took.
+4. **A rotating dynamometer bench rig**: ring on its bearings, alternator, imposed relative spin, applied torque load, ring-angle sensing — demonstrating closed-loop ring-angle tracking under disturbance, the disturbance observer and the adaptive limits [R7]. **The rig will characterise ring friction at flight-representative relative speed**, which the reference rig did not.
+
+---
+
+## SLIDE-READY CONTENT
+
+### Slide 1 — Problem statement
+
+- A conventional 155 mm round at maximum range lands with **CEP 267 m** [M6] — bracketed by public values of 259 m and 139 m.
+- Neutralising a point target therefore needs volume fire: more rounds, longer engagements, more collateral.
+- The requirement is **CEP ≤ 30 m** at maximum-range full charge [M4], defined against the loaded aimpoint with target-location error stated separately [M5].
+- YIL manufactures the shell. **The missing capability is the guidance and fuze kit that bolts onto it.**
+
+**Visual:** two impact patterns side by side — the wide unguided ellipse against a tight cluster — with rounds-per-target under each.
+
+### Slide 2 — Proposed solution
+
+- **Fuze-well retrofit** — replaces only the fuze and the ogive forward of it [P13, P6].
+- **Four fixed canards on a de-spun ring**, permanently exposed, no deployment mechanism [C1, C31].
+- **Steering pair makes the force, control pair aims it** — 2-D steering from one axis, no moving surfaces [C1].
+- **The alternator is both actuator and generator** — no battery in flight [C14–C17, C20].
+- **Multi-mode fuze** — proximity, time, impact, set on the existing gun-line interface [M2, F11].
+- Weighs **1.4 kg**, a **0.42 kg** net penalty over the fuze it replaces [P9].
+
+**Visual:** exploded kit view plus the canard force/torque diagram.
+
+### Slide 3 — Technical approach
+
+- **Continuous impact-point prediction** — the reference work for this airframe has no guidance law; this is new [G1].
+- **The de-spun ring is the inertial platform** — 1107–1912 rad/s of spin removed from the measurement [N6, S6].
+- **Ring angle is the only command channel**; force magnitude is set by cant and dynamic pressure [G2].
+- **State-dependent authority gate** — the apogee blackout is computed in flight, not scheduled [G3].
+- **Every limit closes the loop on itself**: DOB + state-dependent current and velocity limits, 1 kHz, FPGA/processor split [G14, G15, G13].
+- **Derived, not asserted**: RSS 20.3 m → **CEP 23.9 m** [G4].
+
+**Visual:** control block diagram and system layout.
+
+### Slide 4 — Feasibility
+
+| Item | Value | ID |
+|---|---|---|
+| Error budget RSS | 20.3 m → **CEP 23.9 m** | [G4] |
+| Authority margin | **1.11:1** (450 m available vs 407 m required) | [M7] |
+| Minimum guidance force | **≥ 18.1 N** over the guided window | [C8] |
+| Friction budget | **≤ 0.10 N·m flat**; feasibility gate **0.1567 N·m** | [C13, C12] |
+| Stability | **Sg 1.37–3.55**, design point 1.83 | [S1] |
+| Net mass penalty | **0.42 kg = 0.9 %** of the projectile | [P9] |
+| Setback on the ring | **73.5 kN**, routed around the flight bearings | [C26] |
+
+**Visual:** error-budget waterfall; canard force vs time with the guided window shaded.
+
+### Slide 5 — Impact
+
+- **CEP ≤ 30 m** [M4] turns a point target from a volume-fire problem into a first-round one — **4 rounds against ≈264** for a 90 % defeat probability at 30 m effective radius, on our derived figures [M8].
+- **No adjustment fire** — shorter engagements, less exposure, smaller signature.
+- **Reduced collateral damage**, which matters operationally and politically.
+- **Indigenous, at volume cost**, measured against a **US$13,541** fielded competitor [K4 benchmark].
+- **No new shell, charge or gun** — the existing stockpile becomes precision-capable [P13].
+
+### Slide 6 — References
+
+Register-sourced: the METU actuation study for this airframe class; the impact-point-prediction guidance literature for dual-spin projectiles with fixed canards; the public M795/M549A1 platform and dispersion record; MIL-STD-333B; the DOT&E PGK report; the M1156 public specification; the SIH26098 problem statement.
+
+---
+
+## What is NOT in this draft — criteria still open
+
+**The submission-critical track holds 33 criteria. 20 are closed; 13 are open, and the open ones are not minor.** They are, in the order the argument needs them:
+
+| # | ID | Criterion | Why the argument needs it |
+|---:|---|---|---|
+| 19 | **F1** | Fuze modes and setting ranges | The PS names proximity, time and impact. The abstract claims the mode set but no setting ranges exist, so the fuze half of the project is currently a statement of intent |
+| 20 | **F2** | Proximity sensor technology and operating frequency | Without it the multi-mode fuze is a wish rather than a design — the single biggest gap in the deck |
+| 21 | **F6** | Safe-and-arm type | Safety is where a defence reviewer looks first; there is no S&A defined yet |
+| 22 | **F12** | Setter data package contents | Carries target coordinates and met data — the input the impact-point-prediction law cannot work without |
+| 23 | **F15** | EMI coexistence | Proximity sensor, alternator and magnetometer in one nose volume; an architecture-specific risk we currently name but do not answer |
+| 24 | **N1** | Navigation accuracy at impact | A 5 m allocation exists, but nothing yet establishes it is achievable — it is the error budget's second-largest term |
+| 25 | **N3** | GNSS antenna strategy under spin | The hardest sensing problem in the design; currently unaddressed |
+| 26 | **N6** | IMU on the de-spun ring | Claimed on slide 3 as an architectural advantage, but not yet defined as a criterion |
+| 27 | **W4** | Generation capability versus demand | "No in-flight battery" is our strongest SWaP-C sentence and has no budget behind it yet |
+| 28 | **W7** | Control energy dissipation path | Unaddressed in the reference work and a likely review question |
+| 29 | **K4** | Unit cost target at a stated production volume | "Low-cost" is the only lane open against the fielded competitor; the adjective needs a number and a volume |
+| 30 | **R5** | Monte Carlo definition | The mechanism that produces the CEP claim — the claim is currently derived on paper with no campaign defined behind it |
+| 31 | **R7** | Bench rig capability specification | Directly answers the PS's "prototype or proof-of-concept (preferred)" |
+
+**Read the pattern.** The closed criteria cover the **guidance, control, canard and stability** half of the design in real depth — that is the half this project has actually engineered, and slide 3 and slide 4 are its evidence. The open criteria are **the fuze, the navigation, the power and the verification** halves, plus cost. **Those four are claimed on the slides but not yet substantiated.** Until they close, slides 2 and 5 carry assertions where slides 3 and 4 carry numbers.
+
+**Suggested order to close them, unblocked-first and by submission impact:** **F1 → F2 → N1 → R5 → K4 → W4**, then F6, F12, N1's dependants (N3, N6), F15, W7, R7. F1 and F2 are the fastest wins and they unlock the fuze half of the deck; R5 is what converts the CEP figure from a paper derivation into a planned result.
