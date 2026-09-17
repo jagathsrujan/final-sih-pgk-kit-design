@@ -4,6 +4,19 @@ The phase plan from here to a complete design and a submitted entry, plus the pr
 
 ---
 
+## Ground rules (established 2026-09-17)
+
+These constrain everything below. Do not re-litigate them in a session.
+
+- **Submission deadline is 30 September 2026** — confirmed. Thirteen days from 2026-09-17.
+- **YIL will not release the shell drawing, firing tables or any technical document before the idea submission is shortlisted.** This is not a delay, it is the process. **Do not plan around receiving YIL data, and never treat unavailable data as a blocker or as a reason to stop.**
+- **Therefore the platform and stability domains are designed parametrically.** Values we cannot obtain become *bounded assumptions over a declared envelope*, supported by public data, with a sensitivity showing the design closes across that envelope. Criteria formerly marked `OPEN-BLOCKED` on YIL become `PARAMETRIC`.
+- **Public data is the substitute.** A **reference 155 mm HE model** is built from open sources — M795 / M549A1 mass and geometry class, the standardised fuze-well interface, published dispersion. It is the design's stand-in platform until selection and is re-baselined in P6.
+- **The kit is specified as a parametric product** — kit mass, CG shift and inertia change stated as *limits of the design* rather than values inherited from one shell. This is how a supplier defines a retrofit kit, and it converts a data gap into a specification.
+- **Nothing published in the submission may imply access to YIL technical data we do not have.** Where a number is an assumption, say so explicitly.
+
+---
+
 ## Phase dependency graph
 
 The phases are **not** strictly linear. The submission has its own short path so it is not held up by the design phases.
@@ -27,7 +40,8 @@ P1  Design criteria
                                                         P7  Proof of concept
                                                             (bench rig)
 
-P6  YIL data return → close P and S domains → re-pass affects P2, P3, P4
+P6  Post-selection re-baseline → replace the reference shell with YIL's actual
+    shell → re-confirm P and S → affects P2, P3, P4
 ```
 
 **Two consequences worth holding onto:**
@@ -44,13 +58,13 @@ P6  YIL data return → close P and S domains → re-pass affects P2, P3, P4
 | Phase | Name | Status | Last updated | Note |
 |---|---|---|---|---|
 | P0 | Context | ✅ Complete | 2026-09-17 | Thesis distilled, design brief written |
-| P1a | Submission-critical track | 🔄 Not started | | ~30 criteria; gates P5 |
-| P1b | Remaining criteria | 🔄 In progress | 2026-09-17 | 5 of 146 closed |
+| P1a | Submission-critical track | 🔄 In progress | 2026-09-17 | 33 criteria; 8 closed, 21 open, 4 parametric |
+| P1b | Remaining criteria | 🔄 In progress | 2026-09-17 | 9 of 146 closed |
 | P2 | Budget reconciliation | ⬜ Blocked on P1b | | |
 | P3 | Simulation & verification | ⬜ Blocked on P1b + aero data | | Long pole |
-| P4 | Hardware definition | ⬜ Blocked on P1b + YIL drawing | | |
-| P5 | Idea submission | ⬜ Blocked on P1a | | **Deadline 30 Sep 2026 — verify** |
-| P6 | YIL data return / re-pass | ⬜ Waiting on YIL | | |
+| P4 | Hardware definition | ⬜ Blocked on P1b + reference shell model | | Envelope now parametric, not YIL-gated |
+| P5 | Idea submission | ⬜ Blocked on P1a | | **Deadline 30 Sep 2026 — confirmed** |
+| P6 | Post-selection re-baseline | ⬜ After shortlisting | | YIL data arrives only post-selection |
 | P7 | Proof of concept | ⬜ Blocked on P4 | | For the finale |
 
 ---
@@ -64,7 +78,11 @@ Work that has been decided or identified but not yet executed. **Check this list
 | 1 | **Re-baseline M6 and re-derive M7.** M6 holds a bare `500 m class (range-direction 1σ)` assumption — roughly 2.2× pessimistic against the public anchor (unguided M549A1 CEP 267 m at max range → circular σ ≈ 227 m). Re-derive M7 as a capture-fraction problem, A = σ·sqrt(−2·ln(1−P)), and split range vs deflection. | P1b | M6 is the root of the sizing chain — canard area, `Taero`, alternator, bearing, mass and cost all inherit its error | ✅ Closed 2026-09-17 — M6 on the cited M549A1 anchor (267 m CEP → σ 227 m); M7 re-derived as a capture fraction (80% → 407 m, 19.5 m/s); Decision Log and risk 12 updated |
 | 2 | **Amend `START-HERE-session-prompt.md`** — replace strict dependency-order with unblocked-first (G, C, F, N, W, R on declared `[ref]` placeholders; leave P and S until YIL data arrives). Without this the session stalls on ~20 consecutive placeholders. | P1a | Ordering | ✅ Closed 2026-09-17 — unblocked-first protocol now in `START-HERE-session-prompt.md` |
 | 3 | **Build the "Submission-critical track" section** in the register — ~30 criteria that actually change what can be claimed in the idea submission. Becomes the priority order for P1a. | P1a | Gates P5 | ✅ Closed 2026-09-17 — 33-criterion track built in the register; P1a priority order set |
-| 4 | **Set git identity and commit** — repo has 0 commits; `notes/`, `submission/` and `design/` are untracked | — | Nothing is versioned yet | 🔄 In progress 2026-09-17 — identity + first commit |
+| 4 | **Set git identity and commit** — repo has 0 commits; `notes/`, `submission/` and `design/` are untracked | — | Nothing is versioned yet | ✅ Closed 2026-09-17 — repo-local identity (`jagath-srujan` + noreply); first commit `a0db1c8` (28 files) |
+| 5 | **Reclassify the YIL-dependent criteria from `OPEN-BLOCKED` to `PARAMETRIC`** — M3, M4, M6, P1–P14, S1–S7, F11. Each becomes a bounded assumption over a declared envelope, with a public-data basis and a sensitivity showing the design closes across it. Rewrite the register's "Requests outstanding from YIL" section as **"Data required post-selection"** — it is a statement of what to request after shortlisting, not a live request. | P1a | Unblocks ~25 criteria that would otherwise sit idle until after selection, and stops sessions from treating them as blockers | ⬜ Open |
+| 6 | **Build the reference 155 mm HE model** from public sources — mass, CG, Ixx and Iyy class, ogive contour, the standardised fuze-well interface, published dispersion. Then declare the envelope the design must close over. | P1a + P4 | Replaces the YIL shell drawing; on the critical path for stability (S1) and the kit envelope drawing | ⬜ Open |
+| 7 | **Update the risk register for the parametric design basis** — the design now rests on a reference shell, not YIL's. Record it as a named risk with the P6 re-baseline as its mitigation. | P1a | The largest single assumption in the project must be visible rather than implicit | ⬜ Open |
+| 8 | **Commit the 9 closed criteria** — register and roadmap modified since `a0db1c8` | — | Housekeeping | ⬜ Open |
 
 ---
 
@@ -106,12 +124,13 @@ Work that has been decided or identified but not yet executed. **Check this list
 **Purpose:** submit.
 **Work:** write the six-slide Idea Presentation Format and the form fields **from the register**, not from the generic drafts. The existing `submission/` files give the structure and the section coverage; every number must come from a criterion ID.
 **Exit criteria:** submitted before the deadline.
-**Deadline:** 30 September 2026 — **verify against the portal**, one mirror lists 20 September for this PS.
+**Deadline:** 30 September 2026 — confirmed 2026-09-17.
 
-### P6 — YIL data return / re-pass
-**Purpose:** replace placeholders with real data.
-**Work:** close the P (platform) and S (stability) domains; re-confirm or correct every number derived on a `[ref]` placeholder.
-**Exit criteria:** no criterion remains `OPEN-BLOCKED`.
+### P6 — Post-selection re-baseline
+**Purpose:** replace the reference shell with YIL's actual shell, once the entry is shortlisted and the documents are released.
+**Work:** re-baseline every parametric criterion (M3, M4, M6, P1–P14, S1–S7) against the real drawing and firing tables. Re-run the sizing chain and re-confirm every number derived on a public-data or `[ref]` basis. Expect the canard sizing, alternator sizing and the kit envelope to move.
+**Exit criteria:** no criterion remains `PARAMETRIC` — every value traces either to a YIL document or to analysis performed on one.
+**Note:** deliberately last. It is not a blocker and must never be used to justify pausing work.
 
 ### P7 — Proof of concept
 **Purpose:** demonstrate the concept in hardware for the finale.
