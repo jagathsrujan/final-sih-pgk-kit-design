@@ -1,0 +1,24 @@
+# Agent / local tooling state (machine-local, managed by Command Code)
+.commandcode/
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Python (simulation code)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Octave / MATLAB scratch
+octave-workspace
+*.asv
