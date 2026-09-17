@@ -1,0 +1,423 @@
+# DRISHTI-PGK — Design Criteria Register
+
+**Problem statement:** SIH26098 — *Development of a Low-Cost Precision Guidance and Smart Electronic Fuze System for a 155 mm Artillery Shell*
+**Organisation:** Ministry of Defence (MoD) / Yantra India Limited, Ambajhari, Nagpur
+**Purpose of this file:** the single working record of every criterion the design must satisfy or decide. It is the evidence base for the submission — every number that appears in the submission should trace back to a row here.
+
+---
+
+## How to use this file
+
+**Every criterion carries one of three types:**
+
+| Type | Meaning | What you do |
+|---|---|---|
+| **Given** | Imposed by the customer, the platform, or a defence standard | Extract it. Do not invent it. |
+| **Derived** | Falls out of physics once the givens are fixed | Compute it. Show the arithmetic and the assumptions. |
+| **Chosen** | A design decision of ours | Decide it, and justify it against the givens with a trade. |
+
+**Status values — keep them honest:**
+
+| Status | Meaning |
+|---|---|
+| `OPEN` | Not yet defined |
+| `OPEN-BLOCKED` | Cannot be fixed until external data arrives (e.g. YIL shell drawing). A placeholder value is in use. |
+| `PROPOSED` | A value is proposed but not yet confirmed by the team |
+| `DEFINED` | Confirmed by the team |
+| `DERIVED` | Computed from other defined criteria |
+| `VERIFIED` | Confirmed by analysis, simulation or test |
+
+**Governing criteria are marked ⚑.** These are where the margins are thinnest and where the design will be won or lost. Get these right before anything else.
+
+**Values marked *provisional* are derived on top of a placeholder, an unconfirmed anchor, or a [ref] value.** A provisional value names the input it depends on and never counts as closed, however solid the arithmetic looks.
+
+**Values marked **[ref]** are carried from the reference literature for the 155 mm class (`notes/00-PGK-thesis-working-notes.md`) and must be confirmed against YIL's actual shell.**
+
+---
+
+## The dependency chain
+
+Criteria cannot be defined out of order. This is the sequence:
+
+```
+M  Mission (target, range, charge)
+     └─ baseline unguided dispersion
+         └─ required correction capability
+             └─ G  guidance & control requirements
+                 └─ C  canard sizing → Taero → alternator sizing → friction budget
+                     └─ N  navigation & sensing requirements
+                         └─ W  power, thermal
+                             └─ S/P/E/F  structure, stability, environment, fuze
+                                 └─ K/R  cost, verification
+```
+
+S  (Stability) and P (Platform) run in parallel with the chain — they constrain it, and they are gated on the YIL shell data.
+
+---
+
+## Progress at a glance
+
+| Domain | Criteria | Defined | Blocked | Notes |
+|---|---|---|---|---|
+| M — Mission & effectiveness | 9 | 3 | 3 | M1, M2, M5 DEFINED; M3, M4, M6 OPEN-BLOCKED — M6 on the cited anchor (M549A1 CEP 267 m → circular 1σ 227 m); M7 and M8 DERIVED — provisional (M7: 80 % capture → 407 m, 19.5 m/s; M8: 4 rounds to 90 % at r_eff 30 m vs ≈264 unguided) |
+| P — Platform compatibility | 14 | 0 | 8 | Gated on YIL shell data |
+| S — Stability | 7 | 0 | 0 | Gated on YIL shell data |
+| G — Guidance & control | 15 | 6 | 0 | G1, G2, G4, G6, G14, G15 DEFINED; G3, G5 DERIVED. 7 G criteria remain (G7–G13), most carrying **[ref]** values to confirm |
+| C — Canard actuation assembly | 33 | 0 | 0 | |
+| F — Fuze | 15 | 0 | 1 | F11 blocked on the in-service setter interface |
+| N — Navigation & sensing | 15 | 0 | 0 | |
+| W — Power & thermal | 11 | 0 | 0 | |
+| E — Environment & qualification | 11 | 0 | 0 | |
+| K — SWaP-C & cost | 6 | 0 | 0 | |
+| R — Reliability, safety, verification | 10 | 0 | 0 | |
+| **Total** | **146** | **9** | **12** | |
+
+*Update this table as criteria are closed.*
+
+---
+
+## Submission-critical track
+
+These are the criteria whose answers actually change what we can claim in the SIH26098 idea submission — the ones that make the Technical Approach and Feasibility slides specific rather than generic. Everything else matters to the design but only in the later design phase, and is deliberately excluded here.
+
+**This shortlist is the priority order for the remaining interview.** Within each domain, work these criteria before the rest of the domain; the domains themselves still run unblocked-first (G → C → F → N → W → R).
+
+| # | ID | Criterion | Why it matters for the submission |
+|---:|---|---|---|
+| 1 | M3 | Range band and charge compatibility | "Works across charges 3M–6M without touching the ammunition" is the strongest feasibility sentence available; without it the whole retrofit premise collapses. |
+| 2 | M4 | Range at which CEP ≤ 30 m is claimed | A 30 m CEP with no range attached is the first thing a reviewer discounts; naming the max-range / 6M condition makes the headline number testable. |
+| 3 | M5 | CEP definition and treatment of target-location error | States the claim in a form we control and publishes the dependency instead of hiding it — pre-empts the standing "your CEP excludes what?" challenge. |
+| 4 | M6 | Baseline dispersion anchor (CEP 267 m → σ 227 m) | Quantifies the problem we exist to solve and turns "artillery is inaccurate" into a cited number that every performance slide can lean on. |
+| 5 | M7 | Required correction authority (407 m and 19.5 m/s at 80% capture) | The feasibility crux: it shows the required authority is achievable by the chosen architecture, states the margin, and is the head of the entire CAA sizing chain. |
+| 6 | M8 | Effectiveness metric (rounds per target / Pk) | Translates CEP into the operator-level payoff — rounds and time per mission — which is what the impact story is actually scored on. |
+| 7 | G1 | Guidance law type | The PS asks for a "guidance and control algorithm" and the reference work deliberately has none, so this is our clearest novel contribution. |
+| 8 | G3 | Guidance window | Shows authority is a window, not a constant — the most technically credible slide in the deck, and the honest basis for the apogee risk. |
+| 9 | G4 | Miss-distance allocation to the guidance loop | The error budget is what makes "CEP ≤ 30 m" an engineering claim rather than an aspiration, and this is its largest term. |
+| 10 | G6 | Absolute (earth-referenced) ring-angle accuracy | Direct, unattenuated error into the direction the guidance force points; naming the requirement shows the novel sensing problem has been recognised. |
+| 11 | G15 | Limit-scheduling law | The reference work lost control between 30 s and 50 s with fixed limits; inheriting the state-dependent fix is a concrete, hardware-validated differentiator. |
+| 12 | C1 | Canard count and arrangement | The architecture figure — steering pair plus control pair, no moving control surfaces — makes "canard actuation assembly" concrete in one slide. |
+| 13 | C8 | Net guidance force required | Closes M7 against the hardware: the force the canards must actually generate, steady and transient. |
+| 14 | C9 | Torque authority — symmetric criterion | The sizing equation tying canard size to alternator capability, and the equation a technical reviewer will test us on. |
+| 15 | C12 | Taero minimum near apogee | The thinnest margin in the design and the reason friction and bearing selection are first-order; stating it pre-empts the deepest technical objection. |
+| 16 | C13 | Friction budget | Sets what the bearings must achieve — the controllability criterion collapses entirely if this is not held. |
+| 17 | C26 | Ring setback load | The launch-survival number the CAD is checked against: evidence that 15 000 g has been turned into a structural case rather than merely quoted. |
+| 18 | C31 | In-bore stowage and safety | The safety question every judge asks of a canard kit — nothing protrudes, nothing fouls the bore or rammer — and it must be answered before a flyable concept can be claimed. |
+| 19 | F1 | Fuze modes and setting ranges | The PS names proximity, time and impact; the mode set and its setting ranges are the scope statement for the fuze half of the project. |
+| 20 | F2 | Proximity sensor technology | Proves the multi-mode fuze is a design and not a wish — a stated technology with a stated operating principle. |
+| 21 | F6 | Safe-and-arm type | Safety is where a defence reviewer looks first; an out-of-line rotor against MIL-STD-1316 is a claim that can be made on a slide. |
+| 22 | F12 | Setter data package contents | Carries target coordinates and met data, which is what lets the guidance law compute its own solution in flight — the difference between pre-fire programming and a mode word. |
+| 23 | F15 | EMI coexistence | An architecture-specific risk created by putting proximity sensor, alternator and magnetometer in one nose volume; showing we found it before a reviewer did is worth more than a clean answer. |
+| 24 | N1 | Navigation accuracy at impact | The error budget's second-largest term, and the one that decides whether the 30 m claim is credible. |
+| 25 | N3 | GNSS antenna strategy under spin | The hardest sensing problem in the design — a body-fixed antenna at ~260 Hz — and addressing it openly is a credibility marker. |
+| 26 | N6 | IMU on the de-spun ring | Converts the trickiest constraint into an architectural advantage by removing spin from the measurement; a genuine novelty claim. |
+| 27 | W4 | Generation capability versus demand | "No in-flight battery — the alternator is both actuator and generator" is our strongest SWaP-C sentence, and it needs a budget behind it. |
+| 28 | W7 | Control energy dissipation path | Unaddressed in the reference work and a coin-flip question at technical review; having an answer distinguishes us from a straight copy. |
+| 29 | K4 | Unit cost target at a stated production volume | "Low-cost" is the only lane open against an $863 M fielded competitor; a cost target attached to a volume turns that adjective into a claim. |
+| 30 | R5 | Monte Carlo definition | The mechanism that produces the CEP claim, and the evidence that the claim will be defensible rather than asserted. |
+| 31 | R7 | Bench rig capability specification | Directly answers "prototype or proof-of-concept (preferred)" with a rig whose methodology is already validated and which we can actually build. |
+| 32 | S1 | Gyroscopic stability factor with the kit installed | **Blocked on YIL.** The criterion that can veto the whole architecture — canards ahead of the CG reduce stability — so it must be named as a tracked risk with a plan even while the number is unavailable. |
+| 33 | P9 | Kit mass limit | **Blocked on YIL.** Every drop-in retrofit claim depends on the mass / CG / inertia budget staying inside the shell's stability margin; the limit itself is a submission fact even though its number is not yet available. |
+
+**Parked with stated reasons (2026-09-17):** M3, M4, M6 — decisions taken, numeric values pending YIL firing tables (request 3). S1, P9 — pending YIL shell data (requests 1 and 4); tracked under risk 3.
+
+**Excluded from this track** — criteria that only matter in the later design phase: the sub-system selections that follow once the governing numbers are fixed (C2, C3, C5–C7, C10, C14–C25, C27, C28, C30, C32, C33), the qualification detail behind the standards we simply cite (E2–E11), the component-level sensing and power choices (N2, N4, N5, N7–N11, N13–N15, W2, W3, W5, W6, W8–W11), and the drawing-dependent platform rows (P1–P8, P12–P14).
+
+---
+
+## M — Mission & effectiveness
+
+| ID | Criterion | Type | Value | Basis / source | Status |
+|---|---|---|---|---|---|
+| M1 | Target set (point / area, personnel, materiel, hardened) | Given | Mixed general-purpose: point / light materiel primary, personnel and soft targets secondary (proximity) | PS silent on target set — user requirement, confirmed 2026-09-17 | DEFINED |
+| M2 | Target hardness and required terminal effect | Given | Full effect envelope retained: proximity airburst, time airburst, impact with selectable superquick / short delay / graze — all modes configurable before flight; the fuze shall not reduce the terminal-effect envelope of the fuze it replaces | PS (three-mode fuze) + user requirement 2026-09-17. Envelope option B selected on the user's instruction ("decide on one which satisfies it") — the selection is the assistant's recommendation, not the user's instruction | DEFINED |
+| M3 | Range band (min / max) and charge(s) (3M–6M; MV 546–943 m/s **[ref]**) | Given | Full functional envelope across charges 3M–6M — safe, stable and functional at every charge; CEP ≤ 30 m claimed only over a bounded range band (set at M4); outside that band accuracy degrades but never below unguided. Charge-/velocity- and range-band numbers remain **[ref]** placeholders until YIL firing tables arrive | PS + user requirement 2026-09-17 (option C); charge table from the thesis **[ref]** — to be replaced by YIL firing tables | OPEN-BLOCKED |
+| M4 | Reference range at which "CEP ≤ 30 m" is claimed | Chosen | Maximum-range, full-charge (6M) engagement. Numeric range to be quoted from YIL firing tables. Mid-band accuracy reported as supporting data from the same Monte Carlo campaign, not as a formal second claim | PS states 30 m without a range; user choice 2026-09-17 (option A) | OPEN-BLOCKED — numeric range pending YIL firing tables |
+| M5 | CEP definition: 50% probability radius; is target-location error inside or outside the budget? | Chosen | CEP = 2-D circular 50% probability radius (CEP = 1.1774σ for a circular normal distribution). **Formal claim: weapon CEP against the loaded aimpoint, target-location error excluded and stated as excluded.** End-to-end CEP against the true target published as a sensitivity with the assumed target-location error named | PS states 30 m; user choice 2026-09-17 (option C) | DEFINED |
+| M6 | ⚑ Baseline unguided dispersion at M3/M4 | Given | **Cited anchor now in use: CEP = 267 m at maximum range for a conventional unguided M549A1 155 mm projectile → equivalent circular 1σ = CEP / 1.1774 = 227 m.** The 267 m applies at the M549A1's maximum range (30.1 km from the M198 howitzer) — the same order as the M4 condition, but it is **not** YIL's round and **not** YIL's range. **The range/deflection split is not yet known:** the source publishes only the circular CEP, so the ratio of range-direction to deflection dispersion must still come from YIL. The CEP form does remove the 1σ-versus-peak-to-peak ambiguity | Public record for the M549A1: **CEP 267 m at maximum range** (Army sources reported 2013; M549A1 max range 30.1 km from M198). σ = 267 / 1.1774 = 226.8 m. YIL firing tables (request 3) confirm or replace — **sizes everything downstream** | OPEN-BLOCKED — value in use is a cited anchor, not an assumption |
+| M7 | ⚑ Required correction capability (impact correction in m; equivalent Δv and burn time) | Derived | **Provisional — rests on the M6 anchor and on [ref] platform values.** Restated as a **capture-fraction** problem, not a percentile lookup. For a Rayleigh radial distribution with σ = 227 m, the authority needed to capture a fraction P of rounds is A = σ·√(−2·ln(1−P)): P = 50% → 267 m (the CEP-defining population — buys nothing better than unguided); P = 70% → 352 m; **P = 80% → 407 m — chosen**; P = 85% → 442 m; P = 90% → 487 m, beyond the authority available. With a = F/m = 20 N / 43 kg = 0.465 m/s²: **A = 407 m → full-force burn T = √(2A/a) = 41.8 s, equivalent Δv = aT = 19.5 m/s.** Authority available from a 20 N force across the ≈45 s terminal window (apogee t ≈ 41 s → impact t ≈ 86 s) is 471 m / 20.9 m/s → **margin ≈ 1.16:1**. **Split:** a single 2-D force vector serves both axes, so the components combine as A = √(A_range² + A_def²); the split is unknown pending M6. **Range correction costs more authority than deflection and the two are not interchangeable** — a range correction is trajectory-mediated, must be spent while the force is fighting the velocity vector, and changes time of flight; a deflection correction is a near-pure terminal displacement integral that can be spent late | Derivation: A = σ·√(−2·ln(1−P)) with σ = 227 m from M6; a = F/m with F = 20 N **[ref]** and m = 43 kg **[ref]**; T = √(2A/a), Δv = aT; terminal window ≈ 45 s from apogee t ≈ 41 s to impact t ≈ 86 s **[ref]**. From M6 − M5 | DERIVED — provisional (M6 anchor + [ref] values) |
+| M8 | Effectiveness metric (rounds per target, Pk) | Derived | **DERIVED — provisional (M6 anchor + r_eff assumption).** Metric: rounds for a **90 % probability of target defeat** against the primary target class (point / light materiel), effective radius **r_eff = 30 m**, independent rounds at one aimpoint. Guided — σ = 25.5 m (claimed CEP 30 m ÷ 1.1774): P₁ = 50 % → **4 rounds**; unguided — σ = 227 m (M6 anchor): P₁ = 0.87 % → **≈264 rounds** → **≈66× reduction**. Four-round mission: 94 % guided vs 3.4 % unguided. Published sensitivity: r_eff 20 m → 8 vs 592; 50 m → 2 vs 95; design point (CEP ≈ 24 m) → 3 rounds. r_eff is a lethality assumption — YIL terminal-effects data or standard lethality tables verify it | From M5 (circular-normal form) and M6 (anchor): P₁ = 1 − exp(−r²/2σ²), n = ln(0.1)/ln(1−P₁); Decision Log 2026-09-17 | DERIVED — provisional (M6 anchor + r_eff assumption) |
+| M9 | Gun platform(s) and calibre length (39 / 45 / 52 cal) | Given | | YIL / user | OPEN |
+
+---
+
+## P — Platform compatibility  *(all gated on YIL shell drawing)*
+
+| ID | Criterion | Type | Value | Basis / source | Status |
+|---|---|---|---|---|---|
+| P1 | Shell model(s) and drawing/datasheet reference | Given | | YIL | OPEN-BLOCKED |
+| P2 | Shell mass | Given | 43 kg **[ref]** | YIL datasheet | OPEN-BLOCKED |
+| P3 | Shell CG location | Given | | YIL datasheet | OPEN-BLOCKED |
+| P4 | Shell axial inertia Ixx | Given | 0.144 kg·m² **[ref]** | YIL datasheet | OPEN-BLOCKED |
+| P5 | Shell transverse inertia Iyy = Izz | Given | 1.216 kg·m² **[ref]** | YIL datasheet | OPEN-BLOCKED |
+| P6 | Fuze well thread form, depth, sealing, torque spec | Given | | YIL drawing | OPEN-BLOCKED |
+| P7 | Available axial envelope forward of fuze well | Given | | YIL drawing | OPEN-BLOCKED |
+| P8 | Ogive contour — maximum kit diameter at each station | Given | | YIL drawing | OPEN-BLOCKED |
+| P9 | ⚑ Kit mass limit | Given / Chosen | | Set by stability (S1) and YIL acceptance | OPEN |
+| P10 | ⚑ Kit CG shift limit | Given / Chosen | | Set by stability (S1) | OPEN |
+| P11 | ⚑ ΔIxx limit | Given / Chosen | | Set by stability (S1) | OPEN |
+| P12 | Kit overall envelope (length × diameter) | Derived | | From P7, P8 | OPEN |
+| P13 | Driving band / rifling interface (unchanged by design) | Given | | YIL | OPEN |
+| P14 | Ramming and in-bore envelope constraints | Given | | Drives stowage (C31) | OPEN |
+
+---
+
+## S — Stability
+
+| ID | Criterion | Type | Value | Basis / source | Status |
+|---|---|---|---|---|---|
+| S1 | ⚑ Gyroscopic stability factor Sg, minimum across the temperature / charge / altitude envelope, **with kit and canards installed** | Derived | ≥ 1.3–1.5 (typical) | 6-DOF analysis; canards ahead of CG are destabilising | OPEN |
+| S2 | ⚑ Destabilising moment contributed by the canards | Derived | | From C4, C5, C7 | OPEN |
+| S3 | Dynamic stability margin | Derived | | | OPEN |
+| S4 | Maximum permissible angle of attack / yaw | Derived | | | OPEN |
+| S5 | Trim angle and epicyclic behaviour limits | Derived | | | OPEN |
+| S6 | Spin rate at launch / apogee / impact; spin decay model | Given / Derived | 1600 → 1050 rad/s **[ref]** | YIL + 6-DOF | OPEN |
+| S7 | Yaw of repose | Derived | | | OPEN |
+
+---
+
+## G — Guidance & control
+
+| ID | Criterion | Type | Value | Basis / source | Status |
+|---|---|---|---|---|---|
+| G1 | Guidance law type (impact-point prediction / trajectory shaping) | Chosen | **Continuous impact-point prediction (IPP), with the apogee no-command blackout and a systematic-bias trim term folded in as provisions of the law itself.** Each cycle: propagate the nav state forward to impact, compare the predicted impact point with the target, and command a ring angle that drives the predicted miss to zero. Uses the whole usable window and spends authority in proportion to the removable miss. Hard dependencies: target coordinates plus met / muzzle-velocity data in the fire-control data package (F12), and an onboard trajectory model good enough to propagate to impact (risk 8). Its residual error is exactly the G4 allocation | User choice 2026-09-17 (option A with the provisions folded in). The reference work contains **no** guidance law at all — this is new work and the project's clearest novelty claim | DEFINED |
+| G2 | Guidance law output (ring-angle command) | Chosen | **A commanded earth-referenced ring angle θ_gk, emitted as a position reference to the outer position loop (option A). The magnitude is not commanded.** This matches what the hardware can accept: steering comes from cant angle, not deflection, so the guidance force magnitude is set by cant angle and dynamic pressure and rotating the ring only *aims* it — there are no moving surfaces and the cant is fixed at manufacture. **The ring angle is therefore the sole command channel.** Three consequences: (1) "not correcting" is impossible — the force is on from launch to impact, and the law can only null the *net* impulse by time-sharing the aim direction, so M7's authority budget is unaffected but the instantaneous perturbation never vanishes; (2) the IPP propagation model **must include the always-on steering force**, or G4's 13 m propagation term is wrong; (3) the aero model stays out of the control loop, so risk 8 does not reach the controller. Guidance update rate: **10 Hz proposed as a floor, provisional** until the loop model exists — the command is smooth and the outer loop bandwidth is 6.2 Hz | Method choice: user 2026-09-17 (option A). Keeps the retained cascade interface exactly as validated (P outer position loop at 6.2 Hz). Consistent with ref [10] (Zhang et al.) — impact-point prediction guidance for a dual-spin projectile with fixed canards, i.e. the established law for this airframe | DEFINED — carries the always-on-force obligation into G1 and G4 |
+| G3 | ⚑ Guidance window — the phase of flight where dynamic pressure gives usable authority | Derived | **State-dependent authority gate (option B): the law runs continuously and an onboard estimate of the currently available guidance force gates the command, so the inhibited band is computed in flight and moves with the actual trajectory rather than being pre-declared.** This is the *mechanism* that realises G1's apogee no-command blackout — a computed condition, not a hard-coded time band. Guided phase opens at max(fuze arming distance, GNSS/nav convergence) — **placeholder t ≈ 15 s, provisional on F8 and N2/N3** — and closes at impact, t ≈ 86 s. Inhibited band provisionally centred t ≈ 35–55 s from the **[ref]** force profile (the collapse moves between t ≈ 40 s and 55 s across the four elevations studied); its edges are set by the gate threshold and must be fixed once the aero set exists (risk 8). Effective guided time ≈ 51 s in **two** segments, versus the 45 s continuous terminal window assumed in M7 — longer in duration, but discontinuous | Derived from the **[ref]** control-force profile (±85 N launch transient, ±15–25 N mid-band, ≈0 at apogee, ≈20 N on descent) and the **[ref]** apogee torque collapse. Gate method: user choice 2026-09-17 (option B). Evidence rejecting option C: the reference work lost control between t = 30 s and 50 s under fixed saturation limits, and the failure mode was ring runaway into full rotation | DERIVED — provisional ([ref] force profile, F8, N2/N3, risk 8) |
+| G4 | Miss-distance allocation to the guidance loop (1σ, m) | Chosen / Derived | **Error budget re-cut for IPP at the ≈24 m headline (option C), adopted 2026-09-17.** 1σ allocations combined in RSS: navigation state at impact **5 m**; guidance & control **17 m**, decomposing as IPP propagation and model error — **including the always-on steering force, G2** — **13 m**, ring angle (G5 + G6 in RSS) **9 m**, actuation and loop lag **6 m**; meteo residual over the remaining flight **5 m**; remaining ballistic / aero model and coefficient uncertainty **8 m**; fuze and detonation dispersion **3 m**. The muzzle-velocity prediction residual is **absorbed into the navigation state** — under continuous IPP a velocity error already incurred is measured, not predicted. RSS = √(25 + 289 + 25 + 64 + 9) = 20.3 m → **CEP = 1.1774 × 20.3 = 23.9 m**, a ≈20 % margin under the 30 m claim. **Cross-check on the ring-angle line:** a force-direction error δθ rotates the applied correction, so the residual miss is ≈ c·δθ with c the correction the round actually needs; at the 80th-percentile correction c = 407 m, 9 m corresponds to **δθ ≈ 1.3°** (1σ). A systematic misdirection is **not** self-correcting under IPP, because the law's own propagation model assumes the commanded direction was realised | Built on M5 (circular-normal form) and M6 (anchor). Allocation choice: user 2026-09-17 (option C); arithmetic re-cut from the brief's §8 skeleton in light of G1. Feeds N1, G5, G6, R5 | DEFINED — allocation only; not closed until R5 runs with the loop in the loop |
+| G5 | ⚑ Ring angle accuracy, relative to body | Derived | **≤ 0.8° (1σ), body-relative.** Derived from the G4 9 m ring-angle allocation once G6 is fixed at 1.0° absolute: σ_G5 = √(9.1² − 7.10²) = 5.69 m of residual miss, and 5.69 m at c = 407 m is 0.0140 rad = **0.80°**. Any other split of the 9 m is available in principle, but this is the pairing carried in the option the user accepted at G6, so it is recorded rather than re-asked | Derived from G4 (9 m allocation) and G6 (≤ 1.0°, chosen 2026-09-17). Arithmetic: 1.0° = 0.01745 rad × 407 m = 7.10 m; √(7.10² + 5.69²) = 9.1 m closes the line. Realised by the ring pickoff (hall / inductive / optical, N10) | DERIVED — follows from the accepted G6 pairing |
+| G6 | ⚑ Ring angle accuracy, absolute (earth-referenced) | Derived | **≤ 1.0° (1σ) absolute, earth-referenced (option A).** The earth reference comes from a magnetometer **fused into the nav solution** (N14) — the magnetometer supplies heading observability and the filter smooths it against the IMU and GNSS; there is **no separate absolute sensor**. Paired with G5 ≤ 0.8° (1σ) the RSS is √(1.0² + 0.8²) = 1.28° = 0.0224 rad, giving **9.1 m of residual miss at the 80th-percentile correction c = 407 m** — which closes the 9 m ring-angle line in G4. The requirement is a **filter-dependent** spec, not a bare sensor spec: it holds only once the nav solution has converged, so it inherits G3's opening edge (t ≈ 15 s placeholder). The **crux is disturbance rejection, not resolution** — magnetometer resolution is not the limit; the alternator's stray field and hard/soft iron scale with current and therefore with flight phase, so calibration must be in-flight, not pre-flight | Derived top-down from G4 (9 m ring-angle allocation; residual miss ≈ c·δθ with c = 407 m from M7). Method choice: user 2026-09-17 (option A). Feeds N12 (magnetometer requirement), N14 (filter), N3. Risk 2 records the crux | DEFINED — allocated requirement adopted; achievable only if N12 holds 1° |
+| G7 | Ring angular rate limit | Derived | ±31.4 rad/s **[ref]** | Set by alternator back-EMF | OPEN |
+| G8 | Control bandwidth — outer position loop | Derived | ≈ 6 Hz **[ref]** | Inner ≥5× outer | OPEN |
+| G9 | Control bandwidth — inner velocity loop | Derived | ≈ 34 Hz **[ref]** | Set by electrical dynamics | OPEN |
+| G10 | Settling time target | Chosen | | | OPEN |
+| G11 | Overshoot limit | Chosen | | | OPEN |
+| G12 | Anti-windup method (clamping / back-calculation) | Chosen | Clamping **[ref]** | Saturation is unavoidable | OPEN |
+| G13 | Control loop rate | Chosen | 1 kHz **[ref]** | | OPEN |
+| G14 | Disturbance observer filter bandwidth | Derived | **Q(s) = 1/(0.5s + 1) — reference value adopted unchanged (option A).** Corner ≈ 0.32 Hz (ω = 2 rad/s), rise ≈ 1.1 s, deliberately slow to reject measurement noise and justified because Taero and Tf have no high-frequency content: the fastest credible excursion, the apogee collapse running out to the 2.12 N·m descent torque, develops over tens of seconds, which a 1.1 s filter tracks comfortably. **A slow estimate also keeps the G15 hard limit stable** — G12's clamping anti-windup plus a noisy hard clamp is a plausible route back into the limit-cycle behaviour the DOB exists to eliminate. Consequence accepted: the scheduled limit is a **filtered estimate**, so the 2× factor in `I_lim = 2·Î_disturbance` must be justified as a bound rather than read as a measurement | Reference value and justification from the thesis **[ref]** (frequency-domain DOB chosen because voltage and current at the DC load cannot be measured simultaneously). Method choice: user 2026-09-17 (option A). Rejected: faster filter (B) buys responsiveness with no evidence of need while injecting estimate noise into a hard clamp; lower-bound estimate with margin (C) trades away authority against an M7 margin that is already short | DERIVED — reference value adopted; the 2× bound still to be justified |
+| G15 | ⚑ Limit-scheduling law (state-dependent current and velocity limits) | Chosen / Derived | **Layered minimum of both independent limit routes (option A): I_lim = min(2·Î_disturbance, I_avail(ω_rel)), with V_lim = 26 rad/s per A × I_lim.** The DOB route (`I_lim = 2 × observed disturbance current`) sizes authority to twice the aerodynamic load actually present; the capability route saturates the command to what the alternator can supply at the measured relative speed (≈10 A at launch → ≈5 A at apogee → ≈6–7 A at 85 s). No regime survives in which a non-state-dependent limit applies. G3 gates the *outer* guidance command; G15 bounds the *inner* controller outputs — together with G14, every limit in the design is state-dependent by construction. **The capability route is measured, not modelled** (relative speed → available current), so it does not inherit the aero-data dependency carried by risks 8 and 15 | Method choice: user 2026-09-17 (option A). Reference evidence: fixed saturation limits lost control between t = 30 s and 50 s, ring overshoot to ≈5.5 rad against a 2.4–3.9 rad reference, failure mode runaway into full rotation. Alternatives refuted: capability-only (B) drops DOB protection against Taero excursions; DOB-only (C) ignores the current collapse and sits exactly in the Fig. 7.4 region where demand exceeded supply | DEFINED — delegates implementation to G14 (DOB filter), C18 (capability map) and N9/N10 (relative speed measurement) |
+
+---
+
+## C — Canard actuation assembly
+
+| ID | Criterion | Type | Value | Basis / source | Status |
+|---|---|---|---|---|---|
+| C1 | Canard count and arrangement (steering pair + control pair) | Chosen | 4 (0°/180°, 90°/−90°) **[ref]** | Architecture | OPEN |
+| C2 | Cant angle — steering pair | Chosen | | Sets F_steer | OPEN |
+| C3 | Cant angle — control pair | Chosen | | Sets Taero | OPEN |
+| C4 | ⚑ Canard planform and reference area | Derived | | From C8 and G3 | OPEN |
+| C5 | Canard span, root and tip chord | Derived | | Must stow (C31) | OPEN |
+| C6 | Canard section / aerofoil | Chosen | | Mach 0.5–2.5 operation | OPEN |
+| C7 | Ring radius / canard moment arm (r, R) | Chosen | | Sets torque per unit force | OPEN |
+| C8 | ⚑ Net guidance force required | Derived | ±15–25 N steady, ±85 N transient **[ref]** | From M7, G3 | OPEN |
+| C9 | ⚑ Torque authority — symmetric criterion: Taero ≤ (Talt_max + Tf) / 2 | Derived | 2.93 N·m **[ref]** | Sizing equation | OPEN |
+| C10 | ⚑ Torque authority — minimum controllability: Taero > Tf | Derived | | Sizing equation | OPEN |
+| C11 | Taero maximum over the envelope | Derived | ≈ 2.2 N·m **[ref]** | 6-DOF + aero | OPEN |
+| C12 | ⚑ Taero minimum (near apogee) | Derived | ≈ 0.17 N·m **[ref]** | The thinnest margin in the design | OPEN |
+| C13 | ⚑ Friction budget Tf (maximum allowable, all speeds and temperatures) | Derived | 0.1 N·m class **[ref]** | From C10, C12 | OPEN |
+| C14 | Alternator torque constant Kt | Chosen | 0.716 N·m/A **[ref]** | | OPEN |
+| C15 | Alternator voltage constant Kv | Chosen | 0.749 V/(rad/s) **[ref]** | | OPEN |
+| C16 | Alternator pole pairs | Chosen | 7 **[ref]** | | OPEN |
+| C17 | Alternator phase resistance and inductance | Chosen | 6.2 Ω / 8.8 mH ph-ph **[ref]** | | OPEN |
+| C18 | Maximum alternator current (and its variation with relative speed) | Derived | ≈ 10 A → 5 A near apogee **[ref]** | Thermal + electrical limit | OPEN |
+| C19 | Maximum alternator torque Talt_max | Derived | 5.76 N·m **[ref]** | C14 × C18 | OPEN |
+| C20 | Alternator continuous power rating | Chosen | ≈ 1.2 kW **[ref]** | Must cover W1 | OPEN |
+| C21 | Ring inertia Jgk | Derived | 1.197e-3 kg·m² **[ref]** | CAD mass properties | OPEN |
+| C22 | Bearing type and selection | Chosen | | From C13, C24, C26 | OPEN |
+| C23 | Bearing preload | Chosen | | Sets friction (C13) and stiffness | OPEN |
+| C24 | Bearing life (revolutions / operating duration) | Derived | | ≈90 s flight + storage | OPEN |
+| C25 | Bearing friction torque versus relative speed | Derived | | Must satisfy C13 | OPEN |
+| C26 | ⚑ Ring setback load (governing structural case for the CAD) | Derived | ≈74 kN for a 0.5 kg ring **[derived]** | E1 × ring mass | OPEN |
+| C27 | Canard steady aerodynamic load | Derived | | From C8 | OPEN |
+| C28 | Canard launch transient load | Derived | ≈85 N **[ref]** | Structural design case | OPEN |
+| C29 | Deployment release mechanism and energy source (setback / spin / spring) | Chosen | | Must be in-bore safe | OPEN |
+| C30 | Deployment lock design and retention force | Chosen | | Must resist C27 with margin | OPEN |
+| C31 | ⚑ In-bore stowage and safety — flush, locked, cannot foul bore or rammer | Chosen | | Safety-critical | OPEN |
+| C32 | Ring axial retention / restraint design | Chosen | | Must survive C26 | OPEN |
+| C33 | Damping torque Tad on the ring | Derived | ≈1.8 → 2.1 N·m **[ref]** | Ring aerodynamics | OPEN |
+
+---
+
+## F — Fuze
+
+| ID | Criterion | Type | Value | Basis / source | Status |
+|---|---|---|---|---|---|
+| F1 | Modes and setting ranges (proximity / time / impact) | Given | | PS | OPEN |
+| F2 | Proximity sensor technology and operating frequency | Chosen | | Must not interfere with alternator — see F15 | OPEN |
+| F3 | Burst height range and accuracy | Chosen | | | OPEN |
+| F4 | Time mode accuracy and resolution | Chosen | | Crystal reference | OPEN |
+| F5 | Impact delay options (superquick / delay / graze) | Chosen | | | OPEN |
+| F6 | Safe-and-arm type (out-of-line rotor) | Chosen | | MIL-STD-1316 | OPEN |
+| F7 | Arming interlock thresholds (setback and spin) | Derived | | Must not arm in bore | OPEN |
+| F8 | Arming distance after muzzle exit | Chosen | | | OPEN |
+| F9 | Explosive train, detonator type, output | Chosen | | YIL / standard components | OPEN |
+| F10 | ⚑ Dud rate target | Chosen | | Safety and effectiveness | OPEN |
+| F11 | Setter interface (inductive) and protocol | Given / Chosen | | Existing gun-line equipment | OPEN-BLOCKED |
+| F12 | Setter data package contents (mode, time of flight, target coordinates, met, muzzle velocity) | Chosen | | Guidance needs target data — see G1 | OPEN |
+| F13 | Safety standards compliance set | Given | MIL-STD-1316, STANAG 4369, AOP-39 | Cite rather than invent | OPEN |
+| F14 | Storage life / shelf life | Given / Chosen | | | OPEN |
+| F15 | ⚑ EMI coexistence: proximity sensor vs alternator switching vs magnetometer | Derived | | All in one nose volume | OPEN |
+
+---
+
+## N — Navigation & sensing
+
+| ID | Criterion | Type | Value | Basis / source | Status |
+|---|---|---|---|---|---|
+| N1 | ⚑ Navigation accuracy at impact (1σ, m) | Derived | 5 m budget **[derived]** | From G4, error budget | OPEN |
+| N2 | GNSS constellations and update rate | Chosen | | | OPEN |
+| N3 | ⚑ GNSS antenna strategy under spin (spin-tolerant pattern / array / ring-mounted) | Chosen | | Body spins at 260 Hz **[ref]** | OPEN |
+| N4 | GNSS outage tolerance | Chosen | | Graceful degradation | OPEN |
+| N5 | Anti-jam requirement | Chosen | | Possible future upgrade | OPEN |
+| N6 | IMU mounting location (de-spun ring) | Chosen | | Removes spin from the measurement | OPEN |
+| N7 | IMU rate range required | Derived | Low-rate once spin removed | From N6 | OPEN |
+| N8 | IMU bias stability / angular random walk | Derived | | From N1 and outage duration | OPEN |
+| N9 | Spin rate measurement range | Given | 1600 → 1050 rad/s **[ref]** | Flight envelope | OPEN |
+| N10 | Spin rate sensor type | Chosen | | Magnetic / optical pickoff | OPEN |
+| N11 | Barometric altitude accuracy | Derived | | Contributes to aero model density | OPEN |
+| N12 | Magnetometer accuracy, calibration and disturbance rejection | Derived | | Absolute ring angle (G6) | OPEN |
+| N13 | Sensor shock rating | Given | 15 000 g axial / 5 000 g radial **[ref]** | E1, E2 | OPEN |
+| N14 | Navigation filter type (EKF / UKF) and state vector | Chosen | | | OPEN |
+| N15 | Time synchronisation across sensors | Derived | | | OPEN |
+
+---
+
+## W — Power & thermal
+
+| ID | Criterion | Type | Value | Basis / source | Status |
+|---|---|---|---|---|---|
+| W1 | Energy budget by phase (safe state, boost, midcourse, terminal) | Derived | | Drives W5, W6 | OPEN |
+| W2 | Peak electrical power | Derived | | | OPEN |
+| W3 | Average electrical power | Derived | | | OPEN |
+| W4 | Generation capability versus demand | Derived | | From C20 vs W1 | OPEN |
+| W5 | Reserve battery chemistry, activation method, capacity | Chosen | | No power before launch = safety enabler | OPEN |
+| W6 | Reserve battery shelf life | Given | | | OPEN |
+| W7 | ⚑ Energy dissipation path for control power (no load bank in flight) | Chosen | | Unaddressed in reference work | OPEN |
+| W8 | Bus voltages and regulated rails | Chosen | | | OPEN |
+| W9 | Nose aerodynamic heating profile | Derived | | Mach 2+ flight | OPEN |
+| W10 | Component temperature limits versus thermal path | Derived | | From W9 | OPEN |
+| W11 | Potting compound and thermal conductivity | Chosen | | | OPEN |
+
+---
+
+## E — Environment & qualification
+
+| ID | Criterion | Type | Value | Basis / source | Status |
+|---|---|---|---|---|---|
+| E1 | ⚑ Axial acceleration: g-level, **pulse shape and duration** | Given | 15 000 g **[ref]** | YIL / gun data | OPEN |
+| E2 | Radial acceleration | Given | 5 000 g **[ref]** | YIL / gun data | OPEN |
+| E3 | Vibration: random and sinusoidal levels | Given | | MIL-STD-810 | OPEN |
+| E4 | Shock: setback, set-forward, handling, drop | Given | | MIL-STD-810 | OPEN |
+| E5 | Storage temperature range | Given | | MIL-STD-810 | OPEN |
+| E6 | Operating temperature range | Given | | MIL-STD-810 | OPEN |
+| E7 | Humidity, salt fog, sand and dust | Given | | MIL-STD-810 | OPEN |
+| E8 | EMC standard | Given | MIL-STD-461 | | OPEN |
+| E9 | Aerodynamic heating | Derived | | From W9 | OPEN |
+| E10 | Qualification standards list | Given | MIL-STD-810, MIL-STD-461, MIL-STD-1316 | | OPEN |
+| E11 | Insensitive munitions assessment | Given | AOP-39 / STANAG 4439 | | OPEN |
+
+---
+
+## K — SWaP-C & cost
+
+| ID | Criterion | Type | Value | Basis / source | Status |
+|---|---|---|---|---|---|
+| K1 | Kit mass target | Chosen | | From P9 | OPEN |
+| K2 | Kit envelope target | Chosen | | From P12 | OPEN |
+| K3 | Power target | Chosen | | From W2, W3 | OPEN |
+| K4 | Unit cost target and the production volume it assumes | Chosen | | At a **stated** volume | OPEN |
+| K5 | Ranked cost drivers | Derived | Bearings, magnets/windings, electronics | From C22, C14, R-architecture | OPEN |
+| K6 | Manufacturing process assumptions | Chosen | | YIL capabilities | OPEN |
+
+---
+
+## R — Reliability, safety, verification
+
+| ID | Criterion | Type | Value | Basis / source | Status |
+|---|---|---|---|---|---|
+| R1 | Reliability target (per round) | Chosen | | | OPEN |
+| R2 | Dud rate | Chosen | | From F10 | OPEN |
+| R3 | Built-in-test coverage | Chosen | | | OPEN |
+| R4 | Graceful degradation defined per failure mode | Chosen | | No mode may be worse than unguided | OPEN |
+| R5 | Monte Carlo: number of runs, input distributions, confidence level | Chosen | | Produces the CEP claim | OPEN |
+| R6 | CEP demonstration method (rounds, conditions, range) | Chosen | | For the trials plan | OPEN |
+| R7 | Bench rig capability specification | Chosen | | Torque motor, speed motor, load, angle sensing | OPEN |
+| R8 | Hardware-in-the-loop definition | Chosen | | Ring angle must feed back into flight | OPEN |
+| R9 | TRL target for the submission | Chosen | | PS prefers a prototype | OPEN |
+| R10 | Post-flight logging and evidence | Chosen | | Data for trials and for the submission | OPEN |
+
+---
+
+## Decision log
+
+Record every Chosen criterion here with its rationale. This is the traceability that makes the submission read as engineering rather than assertion.
+
+| Date | Criteria ID | Decision | Rationale | Trade-offs accepted |
+|---|---|---|---|---|
+| 2026-09-17 | M1 | Mixed general-purpose target set: point / light materiel primary, proximity-capable soft/area secondary (option D) | PS mandates a three-mode fuze, which only earns its place if soft and defilade targets are in scope; mirrors the M1156 role set; keeps CEP ≤ 30 m as the binding requirement | All three fuze modes stay live, so the setter data package (F12) and aimpoint definition (M5) carry more load; treatment of target-location error deferred to M5 |
+| 2026-09-17 | M2 | All three fuze modes — proximity, time, impact — configurable before flight; full terminal-effect envelope retained, impact selectable superquick / short delay / graze (option B) | User instruction: the kit must offer all three fuze modes configurable pre-flight. Option B is the only choice that satisfies it without reducing the round's terminal effect, which the mixed general-purpose target set (M1) requires | Delay bounds, burst-height range and graze-angle limits deferred to F3/F5; compatibility of the explosive-train output with the shell booster becomes a hard F9 item |
+| 2026-09-17 | M3 | Option C: full functional envelope across charges 3M–6M, with the CEP claim bounded to a range band set at M4; outside it accuracy degrades but never below unguided | The retrofit premise requires the charge system to be untouched, so full-envelope functionality is not optional; a CEP claim that cannot be verified across the whole band is a liability in trials; the binding loading case is low-q near apogee, so excluding charges buys almost nothing. Accepted by the user | Charge/velocity and range-band values remain **[ref]** placeholders; M3 stays OPEN-BLOCKED until YIL firing tables arrive |
+| 2026-09-17 | M4 | Claim CEP ≤ 30 m at the maximum-range, full-charge (6M) condition; mid-band results reported as supporting data only | The kit earns its keep where unguided dispersion is largest, which is max range; the guided window is also longest there; bounding the claim at M3 keeps anything outside the band from being overstated. Accepted by the user | The numeric range is pending YIL firing tables (M4 stays OPEN-BLOCKED); a single formal trial condition, with no second formal claim |
+| 2026-09-17 | M5 | CEP defined as the 2-D circular 50% radius; formal claim measured against the loaded aimpoint with target-location error excluded; end-to-end CEP against the true target published as a sensitivity with a named target-location error | Keeps the headline claim inside our control while never hiding the dependency — the bait-and-switch a defence reviewer probes for. Accepted by the user | One extra term in the Monte Carlo (R5) and an explicitly stated target-location assumption; the trials plan (R6) must instrument against a surveyed aimpoint |
+| 2026-09-17 | M6 | Re-baselined from a bare "500 m class" assumption to a cited external anchor: unguided M549A1 155 mm CEP = 267 m at maximum range → equivalent circular 1σ = 227 m. Criterion deliberately kept OPEN-BLOCKED pending YIL's firing tables | M6 is the root of the sizing chain, so a guessed value propagates its error into every downstream requirement — not defensible for a number the submission will be judged against. An externally published, citable figure gives a real bound to size against now, and the CEP form settles the 1σ-versus-peak-to-peak ambiguity the YIL request was written around | The anchor is a foreign round at a foreign range (30.1 km from the M198); if YIL's dispersion differs materially the whole chain moves. The range/deflection split is still unknown and YIL request 3 stays live. Logged as risk 12 |
+| 2026-09-17 | M7 | Re-derived as a capture-fraction problem rather than a percentile lookup: required authority A = σ·√(−2·ln(1−P)) with σ = 227 m, design capture fraction **P = 80%** → **A = 407 m**, equivalent Δv = 19.5 m/s over a 41.8 s full-force burn. Requirement split into range-direction and deflection components and stated as not interchangeable | A percentile lookup answers "how big is the 50% radius" — the wrong question. What the kit must buy is the fraction of the unguided population the loop can capture. Below 80% the uncorrected tail, not the guided cluster, sets the achievable CEP, so the 30 m claim stops describing our guidance. 80% is the largest capture fraction that stays inside the authority available: P = 85% (442 m) leaves only a 1.07:1 margin and P = 90% (487 m) exceeds what a 20 N force can deliver across the terminal window | Margin is 1.16:1 and assumes continuous full-force authority across the whole 45 s window that G3 says is not uniformly available. Range correction costs more authority than deflection, so the isotropic Rayleigh assumption may be optimistic. Logged as risks 10 and 11 |
+| 2026-09-17 | M8 | Effectiveness metric derived as rounds for a 90 % probability of defeat against the primary target class at effective radius r_eff = 30 m — 4 guided rounds vs ≈264 unguided (≈66×), with r_eff 20 m and 50 m published as sensitivity | The metric turns the CEP claim into the operator-level payoff the impact story is scored on; 30 m matches M1's primary target set (point / light materiel) and sits mid-band in the sensitivity, so the headline is neither the softest nor the harshest case. Accepted by the user | Unguided baseline assumes independent rounds and no aim correction — practical observed fire narrows the ratio, so it is an upper bound. r_eff is unverified pending lethality data, and the whole metric inherits the M6 anchor (risks 12, 14) |
+| 2026-09-17 | G1 | Continuous impact-point prediction (IPP), with the apogee no-command blackout and a systematic-bias trim term folded in as provisions of the law rather than as separate options (option A) | User choice. IPP is the only candidate that fits M7's 1.16:1 authority margin — it spends authority in proportion to the miss it can actually remove, rather than holding an uploaded path (B) or deferring every correction to a terminal phase with less time and no less demand (C). It closes on measured state instead of assumed state, so it absorbs muzzle-velocity spread, met error and launch perturbation rather than trusting the pre-flight model, and it drives the inherited ≈6 Hz ring-angle command channel with no new actuation. The reference work has no guidance law at all, so this is also the novelty claim | Continuous IPP makes two inputs the kit does not yet own into hard dependencies — target coordinates and met data through the gun-line setter (F11/F12, both blocked) and a credible Mach × α × β aero set (risk 8). Its residual error is the G4 allocation, and it must hold the 15 m the CEP budget assigns to guidance and control. Logged as risk 13 |
+| 2026-09-17 | G3 | State-dependent authority gate (option B): the law runs continuously and an onboard estimate of the available guidance force gates the command, so the inhibited band is computed in flight rather than pre-declared. Guided phase runs from max(arming distance, GNSS convergence) — placeholder t ≈ 15 s — to impact at t ≈ 86 s, with the band provisionally at t ≈ 35–55 s | A fixed band (A) is only correct at the elevation and charge it was drawn for, and the reference data shows the collapse moving between t = 40 s and 55 s across four elevations — so a static band is wrong at most conditions and can command into a dead zone. Option C is refuted outright: the same fixed-limit approach lost control between t = 30 s and 50 s on hardware. Option B is correct across the envelope and makes G3, G14 and G15 one state-dependent mechanism, which is the lesson the reference work paid for | The gate is only as good as the onboard force estimate, so it inherits risk 8 and gains a failure mode of its own — an optimistic estimate reintroduces the exact loss of control the gate exists to prevent. More verification depth, not more design risk. The t ≈ 15 s opening edge is the assistant's derived placeholder, **not** a user instruction, and stays provisional pending F8 and N2/N3. Logged as risk 15 |
+| 2026-09-17 | G4 | Adopted option C — the brief's error budget re-cut for IPP at the same ≈24 m headline: nav 5, guidance & control 17 (propagation 13, ring angle 9, actuation 6), meteo 5, ballistic/aero 8, fuze 3, with the muzzle-velocity residual absorbed into the navigation state. RSS 20.3 m → CEP 23.9 m, ≈20 % margin under the claim | G1 changed two lines of the original skeleton: continuous IPP measures the actual velocity, so a muzzle-velocity error already incurred sits inside the nav state rather than being a modelling residual, and met error shrinks from whole-trajectory to the forecast over the remaining flight. The released budget belongs to the guidance term, which now owns the dominant error. Option B would have kept the headline while under-budgeting the dominating term and hiding where the risk moved; option A would have spent the entire margin for nothing. Accepted by the user | The allocation is a top-down split and nothing in it is analysed yet — it closes only when R5 runs with the loop in the loop. The IPP propagation term and the ballistic/aero residual overlap (both are model and coefficient error) and are probably correlated, so the RSS may understate the total; they must be separated when R5's distributions are defined. Logged as risk 16 |
+| 2026-09-17 | G6 | Absolute ring-angle accuracy set at **≤ 1.0° (1σ)**, earth-referenced, with the earth reference taken from a magnetometer fused into the nav solution rather than from a separate absolute sensor (option A). Paired with G5 ≤ 0.8°, giving an RSS of 1.28° → 9.1 m and closing the G4 ring-angle line | Option A closes the G4 allocation exactly (1.28° → 9.1 m) rather than with slack nobody identified a need for, and needs no hardware beyond the nav filter already required for N1/N14. Its failure mode is graceful: if N12 cannot hold 1°, the design degrades to option B's numbers — ring angle 15.3 m, guidance term 21.0 m, CEP 27.9 m, ≈7 % margin — rather than needing a redesign. Option C would have bought margin by adding a second absolute sensor inside the alternator's field, i.e. more failure modes for accuracy we had not shown a need for. Accepted by the user | The spec is filter-dependent, so it holds only after nav convergence and inherits G3's t ≈ 15 s placeholder. The crux is disturbance rejection rather than sensor resolution, which turns in-flight calibration against the alternator's phase-dependent stray field into a hard N12 requirement. Logged under risk 2 |
+| 2026-09-17 | G15 | Layered state-dependent limit law (option A): `I_lim = min(2·Î_disturbance, I_avail(ω_rel))` and `V_lim = 26 rad/s per A × I_lim`, keeping both independent limit routes rather than either alone | The reference evidence shows two distinct causes and they need two distinct guards: the DOB route covers a Taero excursion the ring must arrest (the observed overshoot to ≈5.5 rad), the capability route covers the supply collapse as relative speed falls — the Fig. 7.4 region where demand exceeded available current and control was lost outright. Either alone leaves one of the two observed failure routes open. Critically, the capability half is measured from relative speed rather than modelled, so it is the one limit in the design that does not inherit the aero-data dependency of risks 8 and 15. Accepted by the user | More to verify than either single-route option: needs the DOB (G14), an alternator capability map (C18) and a relative-speed measurement (N9/N10). Also makes G3, G14 and G15 one coupled mechanism, so a defect in the DOB is now a defect in all three |
+| 2026-09-17 | G14 | Disturbance observer filter bandwidth kept at the reference value `Q(s) = 1/(0.5s + 1)` — ≈0.32 Hz corner, ≈1.1 s rise (option A) | Nothing in the disturbance spectrum justifies a faster filter: Taero and Tf have no high-frequency content, and the fastest real excursion (the apogee collapse out to the 2.12 N·m descent torque) develops over tens of seconds. The slow filter is also what keeps the G15 hard limit stable — mixing estimate noise into a hard clamp on a 1 kHz loop, in a system with clamping anti-windup and a known non-linear runaway mode, would be reintroducing the disease the DOB was prescribed for. Option B buys responsiveness with no evidence of need and forfeits the hardware validation; option C trades away authority against an M7 margin that is already short. Accepted by the user | The DOB output is accepted as a filtered estimate, not a measurement, so the 2× factor in the current limit must be justified as a bound — an open item and the knob to turn if the rig shows the limit lagging the collapse. Reopening the filter bandwidth would reopen the noise path instead. Coupling logged as risk 17 |
+| 2026-09-17 | G2 | Guidance law output is a commanded earth-referenced ring angle θ_gk, fed as a position reference to the outer position loop, with the guidance rate proposed at 10 Hz (provisional). Force magnitude is not commanded, because it cannot be | Checking the reference architecture settled that the ring angle is the *only* command channel: steering comes from cant angle rather than deflection, so the force magnitude is set by cant angle and dynamic pressure and the ring merely aims it. Option B would put a force → angle inversion inside the loop and have the controller reconstruct G3's gate and C18's capability map to produce a magnitude the guidance law cannot actually set; option C would command a magnitude that fixed-incidence canards cannot accept. Option A is the only one the hardware can act on, and it preserves the validated cascade interface unchanged. Accepted by the user | The always-on steering force becomes an explicit obligation on G1's propagation model and hence on G4's 13 m term — logged as risk 18. The 10 Hz guidance rate is the assistant's provisional placeholder, **not** a user instruction, and needs the loop model to confirm |
+
+---
+
+## Requests outstanding from YIL
+
+Track what is blocking `OPEN-BLOCKED` criteria. These gate the largest number of criteria and should be requested early.
+
+| # | Request | Blocks | Requested on | Received |
+|---|---|---|---|---|
+| 1 | Shell drawing / datasheet (mass, CG, inertia, ogive contour) | P1–P5, P8, P12, S1–S7 | | |
+| 2 | Fuze well thread specification | P6, P7, F9 | | |
+| 3 | Baseline unguided dispersion at range — **state the range, and give the range-direction and deflection components separately.** (Interim anchor in use: M549A1 CEP 267 m at max range → circular 1σ 227 m. YIL's own round, its range, and the range/deflection split are all still needed) | M6, M7, M8 | | |
+| 4 | Acceptable mass / CG / inertia change | P9, P10, P11 | | |
+| 5 | Gun and charge compatibility list | M3, M9, E1, E2 | | |
+| 6 | Inductive fuze setter — is one in service, and its interface | F11, F12 | | |
+
+---
+
+## Open risk register
+
+Design risks carried forward; each should be closed by a criterion or by analysis.
+
+| # | Risk | Related criteria | Status |
+|---|---|---|---|
+| 1 | Friction versus Taero margin near apogee is the thinnest in the design | C10, C12, C13, C22–C25 | Open |
+| 2 | Ring-angle error is a direct, unattenuated error in guidance-force direction and is not self-correcting under IPP. **Now specified by G4/G6**: total ≈1.3° (1σ), split G6 ≤ 1.0° absolute and G5 ≤ 0.8° relative, giving 9.1 m of residual miss at the 80th-percentile correction. The crux is **not magnetometer resolution but in-flight calibration** — the alternator's stray field and hard/soft iron scale with current and therefore with flight phase — and G6 is a filter-dependent spec that only holds after nav convergence | G4, G5, G6, N12, N14, F15 | Open |
+| 3 | Canards ahead of the CG reduce gyroscopic stability | S1, S2, P9–P11 | Open |
+| 4 | Ring bearing survival of the setback load | C26, C32, P12 | Open |
+| 5 | GNSS signal under high spin rate | N3, N4 | Open |
+| 6 | Proximity fuze EMI against the alternator in one nose volume | F15, E8 | Open |
+| 7 | Control energy has no dissipation path in flight | W7 | Open |
+| 8 | Aerodynamic coefficient set is unavailable and must be sourced or computed. **G1 promotes this from a general gap to a schedule-critical dependency** — continuous impact-point prediction needs a coefficient set good enough to propagate state to impact, not a 5-point Mach table with no α/β dependence | All C and G criteria, G1 | Open |
+| 9 | End-to-end CEP depends on target-location error, a term the kit does not own; if the sensitivity is published without a realistic assumption, the 30 m claim is judged against it | M5, G4, R5, R6 | Open |
+| 10 | Correction authority is of the same order as the unguided dispersion it must remove. At the chosen 80% capture fraction, M7 asks for 407 m and 19.5 m/s against ≈471 m and 20.9 m/s from a 20 N force over a 45 s continuous burn to impact. G3's gate buys more guided time (≈51 s in two segments) but destroys the continuous-burn form, so the available displacement can no longer be read off M7's ½aT² and the margin is **unquantified** until the loop is in the loop in R5 | M6, M7, C8, C11, G3, R5 | Open |
+| 11 | The range and deflection components of the baseline dispersion are not yet split, and range correction costs more authority than deflection — the two are not interchangeable. If YIL's firing tables show a range-dominated footprint, the 407 m budget is consumed faster than the isotropic Rayleigh assumption implies | M6, M7, C8, G1, G4 | Open |
+| 12 | The M6 anchor is a foreign round at a foreign maximum range (M549A1, 30.1 km from M198), not YIL's shell. Sizing the chain from it is defensible and citable, but the whole downstream chain must be re-run the moment YIL's firing tables land | M6, M7, M8 | Open |
+| 13 | Continuous impact-point prediction depends on two inputs the kit does not own: target coordinates and met / muzzle-velocity data arriving through the gun-line setter (F11, F12 — both blocked), and a credible onboard trajectory model. If the setter cannot carry the data package, or the model is not good enough to propagate to impact, IPP degrades toward a less accurate law and the G4 allocation becomes unachievable | G1, F11, F12, N1, R5, risk 8 | Open |
+| 14 | The effectiveness metric (M8) rests on an unverified lethal-radius assumption (r_eff = 30 m) and an idealised no-aim-correction unguided baseline. The ≈66× headline is robust across r_eff 20–50 m (≈48–74×), but the absolute rounds-per-target figures are not — they move with the lethality basis and with the M6 anchor | M8, M1, K4, R6 | Open |
+| 15 | The state-dependent gate (G3) is only as good as the onboard estimate of available guidance force. **Partially retired by G15** — the capability half of the limit law reads available current from *measured* relative speed, so it cannot be wrong about supply. The residual exposure is the DOB half and the G3 outer gate, both of which still rest on the aero set (risk 8). G14 confirmed the reference's deliberately slow filter, so the DOB output is a **filtered estimate and not a measurement**: the 2× factor in `I_lim = 2·Î_disturbance` must be justified as a bound. An optimistic estimate lets the law command into an authority dead zone and reintroduces the t = 30–50 s loss of control; a pessimistic one wastes authority and erodes the M7 margin | G3, G8, G14, G15, risk 8 | Open — reduced |
+| 16 | The G4 budget combines its terms in RSS, which assumes independence — but the IPP propagation error (13 m) and the remaining ballistic / aero uncertainty (8 m) are both model and coefficient error, so they are correlated and part of the same 21 m may be double-counted. The RSS may understate the true 1σ until the two are separated when R5's input distributions are defined | G4, R5, risk 8 | Open |
+| 17 | G3, G14 and G15 are now one mechanism driven by a single estimate — the DOB's disturbance current — so a defect in the observer is a defect in all three simultaneously: the outer authority gate, the dynamic current limit and the disturbance compensation would all be wrong in the same direction, and none of them would reveal it. Common-mode failure across three governing criteria | G3, G12, G14, G15, R7 | Open |
+| 18 | With fixed-incidence canards the guidance force magnitude cannot be commanded — the ring angle only aims it — so the force is on from launch to impact and "not correcting" is impossible. The IPP propagation model must therefore include the always-on steering force or G4's 13 m propagation term is wrong, and the trajectory is continuously perturbed whether or not a correction is wanted. Time-sharing the aim direction nulls the net impulse but never the instantaneous perturbation | G1, G2, G4, C2, C8, risk 8 | Open |
+
+---
+
+## Related files
+
+| File | Purpose |
+|---|---|
+| `notes/02-PGK-SIH-design-brief.md` | Problem statement mapping, coverage analysis, architecture decisions |
+| `notes/00-PGK-thesis-working-notes.md` | Reference design for the 155 mm class — all `[ref]` values come from here |
+| `notes/figures/` | Extracted reference figures |
+| `submission/` | Submission drafts — **reference only**, not to be edited during design work |
