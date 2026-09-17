@@ -59,7 +59,7 @@ P6  Post-selection re-baseline → replace the reference shell with YIL's actual
 |---|---|---|---|---|
 | P0 | Context | ✅ Complete | 2026-09-17 | Thesis distilled, design brief written |
 | P1a | Submission-critical track | 🔄 In progress | 2026-09-17 | 33 criteria; **20 closed, 13 open, none blocked**. Closed: M3, M4, M5, M6, M7, M8, G1, G3, G4, G6, G15, S1, P9, C1, C8, C9, C12, C13, C26, C31. **The C domain is done.** Remaining 13 are the fuze, navigation, power, cost and verification halves — F1, F2, F6, F12, F15, N1, N3, N6, W4, W7, K4, R5, R7 |
-| P1b | Remaining criteria | 🔄 In progress | 2026-09-17 | 16 DEFINED · 12 DERIVED · **25 PARAMETRIC** · 93 OPEN, of 146 |
+| P1b | Remaining criteria | 🔄 In progress | 2026-09-17 | 16 DEFINED · 13 DERIVED · **25 PARAMETRIC** · 92 OPEN, of 146 |
 | P2 | Budget reconciliation | ⬜ Blocked on P1b | | |
 | P3 | Simulation & verification | ⬜ Blocked on P1b + aero data | | Long pole |
 | P4 | Hardware definition | ⬜ Blocked on P1b *(reference shell model **now built**)* | | Envelope parametric and declared in `02-reference-155mm-model.md` — not YIL-gated |

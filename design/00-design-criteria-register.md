@@ -63,7 +63,7 @@ S  (Stability) and P (Platform) run in parallel with the chain — they constrai
 | M — Mission & effectiveness | 9 | 3 | 2 | 3 | M1, M2, M5 DEFINED; M7, M8 DERIVED — M7 re-cut on the 45.0 kg mass, margin **1.11:1**; M3, M4, M6 **PARAMETRIC** — M6 anchor bracketed by three citations (267 / 259 / 139 m CEP); M9 OPEN |
 | P — Platform compatibility | 14 | 0 | 0 | 14 | **All PARAMETRIC.** Not YIL-gated: sized over the envelope in `02-reference-155mm-model.md` §8 |
 | S — Stability | 7 | 0 | 0 | 7 | **All PARAMETRIC.** S1 first-order Sg = 1.37–3.55, design point 1.83; S2 bounded by S1's canard allowance; S6 confirmed by the 1:20 cal rifling check; S3–S5, S7 carry scheduled P2/P3 derivations |
-| G — Guidance & control | 15 | 10 | 5 | 0 | **Domain complete.** G1, G2, G4, G6, G10, G11, G12, G13, G14, G15 DEFINED; G3, G5, G7, G8, G9 DERIVED. Provisional items carried: G3 (gate edges on the aero set), G7 (bus voltage, W8), G11 (δ), G13 (processor deadline) |
+| G — Guidance & control | 15 | 9 | 6 | 0 | **Domain complete.** G1, G2, G4, G6, G10, G11, G12, G13, G15 DEFINED; G3, G5, G7, G8, G9, G14 DERIVED. *(G14 was miscounted as DEFINED in an earlier session; corrected 2026-09-17.)* Provisional items carried: G3 (gate edges on the aero set — now also bounded below by C31's q ≥ 23 kPa floor), G7 (bus voltage, W8), G11 (δ), G13 (processor deadline) |
 | C — Canard actuation assembly | 33 | 3 | 5 | 0 | C1 DEFINED; **C29, C30 closed by architecture** (no deployment mechanism); C8, C9, C12, C13, C26 DERIVED. **Governing results: friction is a feasibility gate (`Tf* = 0.1567 N·m`); the control-pair sizing freedom is only ≈±20 %; 74 kN setback cannot pass through the flight bearings; and the permanently-exposed canards are span-capped at Ø151 mm, giving a q floor ≈23 kPa for C8's 18 N — with cant angle, not area, as the lever.** Track complete |
 | F — Fuze | 15 | 0 | 0 | 1 | F11 PARAMETRIC on the standard gun-line setter interface |
 | N — Navigation & sensing | 15 | 0 | 0 | 0 | |
@@ -71,7 +71,7 @@ S  (Stability) and P (Platform) run in parallel with the chain — they constrai
 | E — Environment & qualification | 11 | 0 | 0 | 0 | |
 | K — SWaP-C & cost | 6 | 0 | 0 | 0 | |
 | R — Reliability, safety, verification | 10 | 0 | 0 | 0 | R7 inherits a friction-characterisation requirement from C13 |
-| **Total** | **146** | **16** | **12** | **25** | **93 OPEN** remain of 146 |
+| **Total** | **146** | **16** | **13** | **25** | **92 OPEN** remain of 146 |
 
 *Update this table as criteria are closed.*
 
