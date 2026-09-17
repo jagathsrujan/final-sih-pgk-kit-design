@@ -35,7 +35,7 @@
 
 Conventional 155 mm artillery is unguided: a conventional round at maximum range lands with a circular error probable of **267 m** [M6] — on a public citation, bracketed by independent values of 259 m and 139 m for the two rounds of the class. Neutralising a point target therefore demands volume fire, and volume fire costs time, logistics and collateral.
 
-DRISHTI-PGK is a retrofit kit that screws into the existing **MIL-STD-333B** fuze well [P6] and replaces only the fuze and the ogive forward of it. The shell body, charge system, driving band and gun interface are untouched [P13]. Four **fixed-incidence canards** sit on a ring that is de-spun from the spinning shell by two bearings [C1] — there are no moving control surfaces at all. A 0°/180° steering pair produces a net guidance force; a 90°/−90° control pair produces the roll torque that aims it [C1]. The alternator is simultaneously the actuator and the generator, so the kit carries **no in-flight battery** [C16, C20].
+DRISHTI-PGK is a retrofit kit that screws into the existing **MIL-STD-333B** fuze well [P6] and replaces only the fuze and the ogive forward of it. The shell body, charge system, driving band and gun interface are untouched [P13]. Four **fixed-incidence canards** sit on a ring that is de-spun from the spinning shell by two bearings [C1] — there are no moving control surfaces at all. A 0°/180° steering pair produces a net guidance force; a 90°/−90° control pair produces the roll torque that aims it [C1]. The alternator is simultaneously the actuator and the generator, so the kit carries **no in-flight battery** [C16, C20]. The **multi-mode fuze** shares that same nose volume: proximity, time and impact, set inductively on the gun line, with the time setting re-synchronised in flight so a guided round's airburst follows its actual trajectory [M2, F1, F11].
 
 Guidance is **continuous impact-point prediction** [G1], which the reference work for this airframe does not contain — our clearest novel contribution. Navigation rides on the de-spun ring, which removes 15 000–20 000 rpm of spin from the measurement and turns the hardest sensing problem in a spin-stabilised guided shell into a conventional one [S6, N6].
 
@@ -76,19 +76,25 @@ Rotating the ring aims the guidance force anywhere in the plane. **Two-dimension
 
 **The alternator is the actuator and the generator.** Magnets on the ring, coils on the body: drawing current produces control torque; the same machine generates the flight power. **No servos, no gearboxes, no in-flight battery, one moving assembly** [C14–C17, C20].
 
-**Multi-mode fuze.** Proximity, time and impact, all configurable before flight, with the full terminal-effect envelope of the fuze it replaces retained — superquick, short delay and graze selectable on impact [M2]. Configured over the class-standard **inductive gun-line setter** [F11].
+**Multi-mode fuze.** Proximity, time and impact, all configurable before flight, with the full terminal-effect envelope of the fuze it replaces retained — superquick, short delay and graze selectable on impact [M2]. The **setting envelope** is fixed, not aspirational [F1]: proximity burst height **2–15 m** about a 7 m default, time **0.1–199.9 s** at 0.1 s resolution, impact short delay ≈0.05 s — a **wider mode set than the fielded competitor**, whose fuze offers point-detonate and proximity only. Configured over the class-standard **inductive gun-line setter** [F11]. Sensing is **RF Doppler at 24 GHz class** through a nose radome — no optical window anywhere on the kit, so there is no line of sight to foul, obscure or heat [F2].
+
+**The time setting is re-synchronised in flight** from the navigation solution, so the airburst follows a guided round's *actual* time of flight rather than a firing-table prediction — a guided round's flight time is changed by the guidance itself, so a pre-set time would inherit the whole prediction error [F1]. The fuze stays **autonomous and safety-critical**: it arms and functions on its own, the correction interface is one-way and bounded, and with no correction it falls back to its pre-set time [F1].
+
+**Safety is mechanical before it is electronic.** The explosive train is interrupted by an **out-of-line rotor** to **MIL-STD-1316**, released only by two independent environment stimuli — **setback and spin** — with the electronics' arm command as a third, independent condition [F6]. The rotor cannot complete its travel while setback is sustained, so **no in-bore function is possible by construction rather than by timer**; a misfire leaves the fuze safe with no abort logic to get wrong; and dead electronics give a **dud, never a premature burst** [F6].
 
 ### 3. Guidance, navigation and control
 
 **Impact-point-prediction guidance law** [G1]. Each cycle, propagate the navigation state to impact, compare the predicted impact point with the loaded target coordinates, and command a ring angle that drives the predicted miss to zero. It spends authority in proportion to the miss it can actually remove rather than holding an uploaded path — which matters because the authority margin is **1.11:1**, not comfortable [M7]. The reference work for this airframe contains **no guidance law at all**; this is new work.
 
+**The mission data travels on the existing gun-line setter** [F12]. IPP needs the target *in the round* — the law propagates to impact and drives the predicted miss to zero, so a mode word is not enough. The inductive setter carries the fuze mode and its parameters [F1], **target coordinates**, met data, charge and muzzle-velocity state, a time reference, and **GNSS ephemeris and keys** — the last of which is also what allows a fast fix under spin [N3]. The setter **reads back what it wrote** and the crew gets a go/no-go before the round is loaded, and the uploaded target is **sanity-checked against the firing solution** [F12]. The target-location term itself stays **outside** the CEP claim and is published as a sensitivity [M5] — the design does not get to assume the crew's coordinates are right; it discloses that it cannot.
+
 **The ring angle is the only command channel** [G2]. Force magnitude cannot be commanded — steering comes from cant angle, so the force is set by cant and dynamic pressure and the ring merely aims it. Two consequences are built in: the propagation model **includes the always-on steering force**, or the error budget's largest term is wrong; and the aerodynamic model stays out of the control loop.
 
 **The authority window is state-dependent, not a fixed schedule** [G3]. Dynamic pressure collapses near apogee, so an onboard estimate of available force gates the command and the inhibited band is computed in flight. The reference work lost control between t = 30 s and 50 s using fixed limits; inheriting the state-dependent fix is a concrete, hardware-validated differentiator.
 
-**The de-spun ring is the inertial platform** [N6, S6]. With spin removed, the ring sees the projectile's coning motion rather than a **1107–1912 rad/s** rotation — the single hardest sensing problem in this class of projectile, converted into a conventional low-rate navigation problem [S6].
+**The de-spun ring is the inertial platform** [N6, S6]. With spin removed, the ring sees the projectile's coning motion rather than a **1107–1912 rad/s** rotation — the single hardest sensing problem in this class of projectile, converted into a conventional low-rate navigation problem [S6]. That claim now has a number behind it: the navigation line closes bottom-up at **RSS 3.7 m against the 5 m allocation**, and the **2 m** IMU term inside it is only available on the ring [N1].
 
-**Ring-angle accuracy is the guidance-force direction** [G6, G5]: **≤ 1.0° (1σ) absolute, earth-referenced** from a magnetometer fused into the navigation solution, and **≤ 0.8° (1σ) body-relative** from the ring pickoff. Combined in RSS, 1.28° → **9.1 m** of residual miss — which is exactly the ring-angle line in the error budget [G4]. The crux is **disturbance rejection, not resolution**: the alternator's stray field scales with current and therefore with flight phase, so calibration must be in-flight.
+**Ring-angle accuracy is the guidance-force direction** [G6, G5]: **≤ 1.0° (1σ) absolute, earth-referenced** from a magnetometer fused into the navigation solution, and **≤ 0.8° (1σ) body-relative** from the ring pickoff. Combined in RSS, 1.28° → **9.1 m** of residual miss — which is exactly the ring-angle line in the error budget [G4]. The crux is **disturbance rejection, not resolution**: the alternator's stray field scales with current and therefore with flight phase, so calibration must be in-flight. **F15 answers it** — the rotating field appears at **1 234–2 131 Hz** (7 pole pairs × the relative rotation, which the kit measures anyway) and is removed by a **coherent notch locked to that measured frequency**, while the current-proportional part is **compensated against measured coil current** in the calibration model. Both use signals the design already carries for the limit laws, so coexistence costs **no new hardware**. The honest negative is worth stating too: for the magnetometer, shielding cannot help at all, because the interference and the earth's field share the same band *and* the same space [F15].
 
 **Control.** A cascade of **PI inner velocity at 33.6 Hz and P outer position at 6.2 Hz**, both hardware-validated, running at **1 kHz** with the control loop in FPGA fabric and the guidance law on the processor [G9, G8, G13]. A **disturbance observer** estimates the unmeasurable aerodynamic and friction torques [G14]. **Every limit is state-dependent by construction** — `I_lim = min(2·Î_disturbance, I_avail(ω_rel))` — so authority loss is a designed constraint rather than a failure mode [G15]. Guidance updates at **≈6 Hz**, which is a *ceiling* set by the outer loop's 0.103 s settling time, not an arbitrary rate [G10, G2].
 
@@ -98,7 +104,7 @@ Rotating the ring aims the guidance force anywhere in the plane. **Two-dimension
 
 | Source | 1σ | Why |
 |---|---|---|
-| Navigation at impact | **5 m** | GNSS plus inertial residual [N1, G4] |
+| Navigation at impact | **5 m** allocation, **3.7 m derived** | GNSS 3.0 + IMU and filter residual 2.0 + time/lever-arm 1.0, **RSS 3.7 m — a ≈26 % margin**, and conditional on GNSS availability rather than on inertial grade [N1, G4] |
 | Guidance and control | **17 m** | propagation and model error 13 m, ring angle 9 m, actuation and loop lag 6 m [G4] |
 | Meteo residual over remaining flight | **5 m** | forecast error only, because the law re-solves continuously [G4] |
 | Ballistic and aerodynamic model | **8 m** | coefficient uncertainty, carried explicitly [G4] |
@@ -106,6 +112,8 @@ Rotating the ring aims the guidance force anywhere in the plane. **Two-dimension
 | **RSS** | **20.3 m** | **→ CEP 23.9 m**, 20 % under the 30 m claim [G4] |
 
 The muzzle-velocity residual is **absorbed into the navigation state** — under continuous impact-point prediction a velocity error already incurred is *measured*, not predicted [G4].
+
+**The navigation line closes from below.** The 5 m allocation was set top-down before anything existed to check it against; the bottom-up budget is **3.7 m — GNSS 3.0, IMU and filter residual 2.0, time and lever-arm 1.0 — a ≈26 % margin** [N1]. Two things are worth saying plainly about it. It is **conditional on GNSS availability, not on inertial grade**: with aiding the IMU supplies attitude and fills gaps, and unaided the same IMU is two orders of magnitude worse than the allocation — 0.1° of attitude error mis-resolving a 5 g drag deceleration is ≈110 m over 50 s — so the outage tolerance is a bounded requirement, not a graceful-degradation statement [N1, N4]. And the 2 m IMU term is only available because the IMU rides the **de-spun ring**; a body-fixed unit cannot separate 1600 rad/s of spin from attitude motion [N1, N6].
 
 **(b) Authority — the honest version.**
 
@@ -158,7 +166,8 @@ The fielded competitor in this product class is a **US$13,541** unit (FY2013, wi
 - **Four fixed canards on a de-spun ring**, permanently exposed, no deployment mechanism [C1, C31].
 - **Steering pair makes the force, control pair aims it** — 2-D steering from one axis, no moving surfaces [C1].
 - **The alternator is both actuator and generator** — no battery in flight [C14–C17, C20].
-- **Multi-mode fuze** — proximity, time, impact, set on the existing gun-line interface [M2, F11].
+- **Multi-mode fuze** — proximity **2–15 m** by **24 GHz RF Doppler**, time **0.1–199.9 s**, impact superquick / short delay / graze, set on the existing gun-line interface and re-synchronised in flight [M2, F1, F2, F11].
+- **Safety by construction** — out-of-line rotor on two independent launch stimuli; nothing can function in the bore [F6].
 - Weighs **1.4 kg**, a **0.42 kg** net penalty over the fuze it replaces [P9].
 
 **Visual:** exploded kit view plus the canard force/torque diagram.
@@ -166,8 +175,10 @@ The fielded competitor in this product class is a **US$13,541** unit (FY2013, wi
 ### Slide 3 — Technical approach
 
 - **Continuous impact-point prediction** — the reference work for this airframe has no guidance law; this is new [G1].
+- **Target, met, charge state and GNSS ephemeris ride the existing gun-line setter** — the round computes its own solution in flight, and the setter reads back what it wrote [F12].
 - **The de-spun ring is the inertial platform** — 1107–1912 rad/s of spin removed from the measurement [N6, S6].
 - **Ring angle is the only command channel**; force magnitude is set by cant and dynamic pressure [G2].
+- **Coexistence is designed, not shielded** — the alternator's field is notched at its measured frequency and compensated against measured current; no new hardware [F15].
 - **State-dependent authority gate** — the apogee blackout is computed in flight, not scheduled [G3].
 - **Every limit closes the loop on itself**: DOB + state-dependent current and velocity limits, 1 kHz, FPGA/processor split [G14, G15, G13].
 - **Derived, not asserted**: RSS 20.3 m → **CEP 23.9 m** [G4].
@@ -179,6 +190,7 @@ The fielded competitor in this product class is a **US$13,541** unit (FY2013, wi
 | Item | Value | ID |
 |---|---|---|
 | Error budget RSS | 20.3 m → **CEP 23.9 m** | [G4] |
+| Navigation at impact | **3.7 m derived** against a 5 m allocation (≈26 % margin), conditional on GNSS | [N1] |
 | Authority margin | **1.11:1** (450 m available vs 407 m required) | [M7] |
 | Minimum guidance force | **≥ 18.1 N** over the guided window | [C8] |
 | Friction budget | **≤ 0.10 N·m flat**; feasibility gate **0.1567 N·m** | [C13, C12] |
@@ -204,17 +216,11 @@ Register-sourced: the METU actuation study for this airframe class; the impact-p
 
 ## What is NOT in this draft — criteria still open
 
-**The submission-critical track holds 33 criteria. 20 are closed; 13 are open, and the open ones are not minor.** They are, in the order the argument needs them:
+**The submission-critical track holds 33 criteria. 26 are closed; 7 are open, and the open ones are not minor.** They are, in the order the argument needs them:
 
 | # | ID | Criterion | Why the argument needs it |
 |---:|---|---|---|
-| 19 | **F1** | Fuze modes and setting ranges | The PS names proximity, time and impact. The abstract claims the mode set but no setting ranges exist, so the fuze half of the project is currently a statement of intent |
-| 20 | **F2** | Proximity sensor technology and operating frequency | Without it the multi-mode fuze is a wish rather than a design — the single biggest gap in the deck |
-| 21 | **F6** | Safe-and-arm type | Safety is where a defence reviewer looks first; there is no S&A defined yet |
-| 22 | **F12** | Setter data package contents | Carries target coordinates and met data — the input the impact-point-prediction law cannot work without |
-| 23 | **F15** | EMI coexistence | Proximity sensor, alternator and magnetometer in one nose volume; an architecture-specific risk we currently name but do not answer |
-| 24 | **N1** | Navigation accuracy at impact | A 5 m allocation exists, but nothing yet establishes it is achievable — it is the error budget's second-largest term |
-| 25 | **N3** | GNSS antenna strategy under spin | The hardest sensing problem in the design; currently unaddressed |
+| 25 | **N3** | GNSS antenna strategy under spin | The hardest sensing problem in the design; currently unaddressed — and N1's 3.0 m GNSS term assumes it works |
 | 26 | **N6** | IMU on the de-spun ring | Claimed on slide 3 as an architectural advantage, but not yet defined as a criterion |
 | 27 | **W4** | Generation capability versus demand | "No in-flight battery" is our strongest SWaP-C sentence and has no budget behind it yet |
 | 28 | **W7** | Control energy dissipation path | Unaddressed in the reference work and a likely review question |
@@ -222,6 +228,6 @@ Register-sourced: the METU actuation study for this airframe class; the impact-p
 | 30 | **R5** | Monte Carlo definition | The mechanism that produces the CEP claim — the claim is currently derived on paper with no campaign defined behind it |
 | 31 | **R7** | Bench rig capability specification | Directly answers the PS's "prototype or proof-of-concept (preferred)" |
 
-**Read the pattern.** The closed criteria cover the **guidance, control, canard and stability** half of the design in real depth — that is the half this project has actually engineered, and slide 3 and slide 4 are its evidence. The open criteria are **the fuze, the navigation, the power and the verification** halves, plus cost. **Those four are claimed on the slides but not yet substantiated.** Until they close, slides 2 and 5 carry assertions where slides 3 and 4 carry numbers.
+**Read the pattern.** The closed criteria now cover the **guidance, control, canard, stability and fuze** halves of the design in real depth — that is the half this project has actually engineered, and slides 2, 3 and 4 are its evidence. The open criteria are **navigation, power, cost and verification**. **Those four are claimed on the slides but not yet substantiated.** Until they close, slides 2 and 5 carry assertions where slides 3 and 4 carry numbers.
 
-**Suggested order to close them, unblocked-first and by submission impact:** **F1 → F2 → N1 → R5 → K4 → W4**, then F6, F12, N1's dependants (N3, N6), F15, W7, R7. F1 and F2 are the fastest wins and they unlock the fuze half of the deck; R5 is what converts the CEP figure from a paper derivation into a planned result.
+**Suggested order to close them, unblocked-first and by submission impact:** **N3 → N6 → W4 → W7 → K4 → R5 → R7** — the two remaining sensing rows next, because **N1 has already named them as the legs its 3.7 m budget stands on**: N3 owns the 3.0 m GNSS term and N6 owns the 2.0 m IMU term. Then power and cost; then the two verification rows. **The whole fuze half of the track closed on 2026-09-17** — F1, F2, F6, F12 and F15: modes with a setting envelope, an in-flight airburst time correction, a chosen sensor, a MIL-STD-1316 safe-and-arm architecture, a mission data package that makes the guidance law executable, and a coexistence answer that cost no hardware. R5 is what converts the CEP figure from a paper derivation into a planned result.
