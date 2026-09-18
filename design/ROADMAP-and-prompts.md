@@ -58,7 +58,7 @@ P6  Post-selection re-baseline → replace the reference shell with YIL's actual
 | Phase | Name | Status | Last updated | Note |
 |---|---|---|---|---|
 | P0 | Context | ✅ Complete | 2026-09-17 | Thesis distilled, design brief written |
-| P1a | Submission-critical track | 🔄 In progress | 2026-09-17 | 33 criteria; **20 closed, 13 open, none blocked**. Closed: M3, M4, M5, M6, M7, M8, G1, G3, G4, G6, G15, S1, P9, C1, C8, C9, C12, C13, C26, C31. **The C domain is done.** Remaining 13 are the fuze, navigation, power, cost and verification halves — F1, F2, F6, F12, F15, N1, N3, N6, W4, W7, K4, R5, R7 |
+| P1a | Submission-critical track | 🔄 In progress | 2026-09-18 | **38 rows.** Rows 1–33 as before — 20 closed, of which F and N moved on since (F1, F2, F6, F12, F15, N1, N3 now closed). **Rows 34–38 added 2026-09-18 off the machine sizing:** C42 (the 2.92 kW / 121 kJ load), C43 (cant ↔ power), C40+C34/C36 (machine identity and mass), C35 (air gap → bearing stiffness), W12 (dump stage). Still open on the track: **N6, W4, W7, K4, R5, R7**, plus the five new machine rows |
 | P1b | Remaining criteria | 🔄 In progress | 2026-09-17 | 16 DEFINED · 13 DERIVED · **25 PARAMETRIC** · 92 OPEN, of 146 |
 | P2 | Budget reconciliation | ⬜ Blocked on P1b | | |
 | P3 | Simulation & verification | ⬜ Blocked on P1b + aero data | | Long pole |
@@ -194,6 +194,22 @@ Rules:
     what would verify it.
   - Any criterion derived on top of a placeholder must be marked
     provisional and must name the placeholder it depends on.
+  - **Resolve coupled criteria together.** If a criterion is coupled to one
+    in another domain, say so before asking and do not close either without
+    the other. The register now carries several, all created by the machine
+    sizing of 2026-09-18:
+      · **C43 ↔ C2/C3** — cant angle buys guidance force and costs
+        dissipated power in equal measure, so the cant decision cannot be
+        taken without C42.
+      · **C42 ↔ W7 / W12** — the generated power (2.92 kW peak, ≈121 kJ per
+        flight) is what the dump must shed, so W7 and W12 are downstream of
+        C42, not independent.
+      · **C35 ↔ C22 / C32** — the 0.40 mm air gap sets a 0.20 mm maximum
+        relative deflection at 15 000 g, which is a stiffness spec on the
+        bearing pair and the ring retention.
+      · **C9 / C12 ↔ C13** — the friction budget is the feasibility gate for
+        whether a control pair exists at all.
+    Ask the coupled questions as one question where they cannot be separated.
   - When the September deadline and a design-phase task compete, prioritise
     the submission path: P1a then P5.
   - At the end of the session, update the phase status table in
