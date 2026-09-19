@@ -1,0 +1,9 @@
+# FreeCAD leaves .FCBak backups and .FCStd1 autosaves beside every save
+out/*.FCBak
+out/*.FCStd1
+out/**/*.FCBak
+out/**/*.FCStd1
+
+# python
+__pycache__/
+*.pyc

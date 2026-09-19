@@ -1,0 +1,173 @@
+DRISHTI-PGK — CAD parameter audit
+==============================================================================
+
+[REFERENCE]
+  ShellBodyDia             154.8900 mm         P2     PARAMETRIC  
+  ShellMass                 45.0000 kg         P2     PARAMETRIC  
+  ShellIxx                   0.1550 kg*m^2     P4     PARAMETRIC  
+  ShellIyy                   1.7500 kg*m^2     P5     PARAMETRIC  
+  ShellCGFromNose          500.0000 mm         P3     PARAMETRIC  
+  ShellTotalLen            855.0000 mm         P2     PARAMETRIC  
+  OgiveLen                 449.4000 mm         P8     PARAMETRIC  
+  OgiveTruncDia             50.8000 mm         P6     PARAMETRIC  
+  SeatFromTip               79.3000 mm         P8     DERIVED     
+  WellDepthAvail           124.7000 mm         P7     PARAMETRIC  
+  WellThreadMajDia          50.8000 mm         P6     PARAMETRIC  
+  WellThreadTPI             12.0000 1/in       P6     DEFINED     
+  WellEngageTurns            9.0000            P6     PROVISIONAL 
+  WellFlankBand              0.8000 mm         P6     PROVISIONAL 
+  WellBoreDia               44.0000 mm         P6     PROVISIONAL 
+  KitIntrusionMax          124.7000 mm         P12    PARAMETRIC  
+  KitVisibleMax             95.2500 mm         P12    PARAMETRIC  
+  KitMassMax                 1.4000 kg         P9     PARAMETRIC  
+
+[CAA]
+  CanardCount                4.0000            C1     DEFINED     
+  AzSteering1                0.0000 deg        C1     DEFINED     
+  AzSteering2              180.0000 deg        C1     DEFINED     
+  AzControl1                90.0000 deg        C1     DEFINED     
+  AzControl2               270.0000 deg        C1     DEFINED     
+  RingOD                    98.0000 mm         C7     PROVISIONAL 
+  CanardTipDiaMax          151.0000 mm         C31    DEFINED     
+  CanardChordRoot           80.0000 mm         C4     PROVISIONAL 
+  CanardArea              2120.0000 mm^2       C4     PROVISIONAL 
+  CanardThick                4.0000 mm         C6     PROVISIONAL 
+  CantSteer                 10.0000 deg        C2     PROVISIONAL 
+  CantCtrl                  10.0000 deg        C3     PROVISIONAL 
+  CanardRootThick           12.0000 mm         C5     PROVISIONAL 
+
+[MACHINE]
+  PolePairs                  7.0000            C16    DEFINED     
+  Poles                     14.0000            C16    DEFINED     
+  Slots                     12.0000            C36    DEFINED     
+  WindingFactor              0.9330            C36    DEFINED     
+  GapDiaMid                 79.1000 mm         C34    DERIVED     
+  AirGap                     0.4000 mm         C35    DERIVED     
+  MagnetThick                1.5000 mm         C38    DERIVED     
+  BackironThick              4.7000 mm         C40    DERIVED     
+  StatorYokeThick            4.7000 mm         C40    DERIVED     
+  SlotDepth                 19.6000 mm         C40    DERIVED     
+  StatorBoreDia             30.0000 mm         F9     DEFINED     
+  MachineODMax              92.0000 mm         C34    DEFINED     
+  StackLen                  28.0000 mm         C40    PROVISIONAL 
+  Kt                         0.3620 N*m/A      C14    DEFINED     
+  Kv                         0.2090 V/(rad/s)  C15    DEFINED     
+  BusVoltage               180.0000 V          C41    DEFINED     
+  PeakCurrentRms            15.9000 A          C18    DERIVED     
+  HoldCurrentRms             6.5000 A          C18    DERIVED     
+  MachineMassLo              0.8100 kg         C40    DERIVED     
+  MachineMassHi              0.9700 kg         C40    DERIVED     
+
+[BEARING]
+  BrgBoreDia                46.0000 mm         C22    PROVISIONAL 
+  BrgInnerRaceOD            53.0000 mm         C22    PROVISIONAL 
+  BrgOuterRaceID            62.0000 mm         C22    PROVISIONAL 
+  BrgOuterRaceOD            69.0000 mm         C22    PROVISIONAL 
+  BrgBallDia                 4.0000 mm         C22    PROVISIONAL 
+  BrgBallsPerRow            24.0000            C22    PROVISIONAL 
+  BrgRow1Z                  14.0000 mm         C35    PROVISIONAL 
+  BrgRow2Z                  72.0000 mm         C35    PROVISIONAL 
+  BrgRowWidth                8.0000 mm         C22    PROVISIONAL 
+  BrgPreload                 0.0000 N          C23    PROVISIONAL 
+  BrgStiffnessReq          122.0000 N/um       C35    DERIVED     
+  FrictionBudget             0.1000 N*m        C13    DERIVED     
+
+[LOADS]
+  gAxial                 15000.0000 g          E1     PARAMETRIC  
+  gRadial                 5000.0000 g          E2     PARAMETRIC  
+  SetbackRing               73.5000 kN         C26    DERIVED     
+  SetbackRadial             24.5000 kN         C26    DERIVED     
+  CanardSteady              18.1000 N          C8     DERIVED     
+  CanardTransient           85.0000 N          C28    PROVISIONAL 
+  AirGapDeflMax              0.2000 mm         C35    DERIVED     
+  AxialPathStiff           367.0000 N/um       C35    DERIVED     
+
+[FRONT_END]
+  RadarFreq                 24.0000 GHz        F2     DEFINED     
+  GnssApertureDia           48.0000 mm         N3     PROVISIONAL 
+  NoseWallThick              2.0000 mm         CAD    PROVISIONAL 
+  NoseCapLen                18.0000 mm         CAD    PROVISIONAL 
+
+[STATIONS]
+  ZSeat                      0.0000 mm         CAD    DEFINED     
+  ZThreadRoot              -19.0500 mm         P6     DERIVED     
+  ZWellBottom             -124.7000 mm         P7     PARAMETRIC  
+  ShoulderLen                6.0000 mm         CAD    PROVISIONAL 
+  MachineInRingAft          20.0000 mm         CAD    PROVISIONAL 
+  BrgRow1Inset              10.0000 mm         CAD    PROVISIONAL 
+  BrgRow2Inset              10.0000 mm         CAD    PROVISIONAL 
+  HubAftInset               10.0000 mm         CAD    PROVISIONAL 
+
+[DERIVED]
+  BrgRowSeparation             60.00000
+  CanardAspectRatio             0.33125
+  CanardChordFitMax            69.25000
+  CanardMeanChord              80.00000
+  CanardSpanExposed            26.50000
+  CanardTipR                   75.50000
+  CantCosSteer                  0.98481
+  CantSinCtrl                   0.17365
+  ChordOverrun                 10.75000
+  KitVisibleOvershoot          10.75000
+  KitVisibleReq               106.00000
+  MachineODCheck               91.90000
+  MachineODMargin               0.10000
+  MachineSitsInRing             1.00000
+  MachineToRingAftGap          20.00000
+  MachineToRingForeGap         32.00000
+  NoseLenAvail                  9.25000
+  NoseLenReq                   20.00000
+  NoseShortfall                10.75000
+  OgiveRho                   1342.61791
+  RBackironOut                 45.95000
+  RGapIn                       39.35000
+  RGapMid                      39.55000
+  RGapOut                      39.75000
+  RMagnetOut                   41.25000
+  RStatorBore                  15.00000
+  RYokeIn                      19.75000
+  RYokeThickCheck               4.75000
+  RingLen                      80.00000
+  RingR                        49.00000
+  RingWallThick                 3.05000
+  WellBoreArea              17237.29057
+  WellBoreAreaP6            18800.00000
+  WellEngageLen                19.05000
+  WellFlankArea              1117.97134
+  WellFlankAreaP6            1120.00000
+  WellPitch                     2.11667
+  WellPitchDia                 49.42518
+  WellSeatArea                506.29907
+  WellSeatAreaP6              500.00000
+  WellSeatIDImpliedByP6        44.09104
+  ZBrgRow1                     16.00000
+  ZBrgRow2                     76.00000
+  ZFrontHubAft                 16.00000
+  ZFrontHubFore               106.00000
+  ZMachineAft                  26.00000
+  ZMachineFore                 54.00000
+  ZRingAft                      6.00000
+  ZRingFore                    86.00000
+  ZShoulderFore                 6.00000
+
+------------------------------------------------------------------------------
+CLOSURE CHECKS
+  machine OD          = 91.90 mm  vs limit 92.0 mm  -> margin 0.10 mm
+  yoke thickness      = 4.75 mm  vs sizing 4.70 mm
+  ring wall over rotor= 3.05 mm
+  exposed canard span = 26.50 mm  (register says 26.5)
+  canard chord/span   = 0.33  (AR)
+  thread pitch        = 2.1167 mm  (12 TPI)
+  thread flank area   = 1.1180 e-3 m^2  vs P6's 1.12 e-3 m^2
+
+  AXIAL AUDIT  (register P12 allows 95.25 mm visible)
+    shoulder          : Z +0.0 .. +6.0  (6.0 mm, dia 50.8 -> 98.0)
+    ring / canard bay : Z +6.0 .. +86.0  (80.0 mm, chord 80)
+    machine stack     : Z +26.0 .. +54.0  (28.0 mm)  inside ring: True
+    bearing rows      : Z +16.0  and  Z +76.0  (separation 60.0 mm)
+    front hub fore    : Z +106.0
+    nose length avail : 9.25 mm
+    nose length req'd : 20.00 mm
+    >>> SHORTFALL     : 10.75 mm
+    required visible  : 106.00 mm  (overshoot 10.75 mm)
+    chord that WOULD fit P12 : 69.25 mm  (we need 80, overrun 10.75)

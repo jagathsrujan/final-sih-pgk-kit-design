@@ -1,0 +1,154 @@
+# DRISHTI-PGK — CAD workspace
+
+The P4 hardware definition: the canard actuation assembly and the whole kit, built
+script-by-script in FreeCAD so that every dimension traces to a criterion in
+`design/00-design-criteria-register.md`, and so the model can be rebuilt from source
+whenever a criterion moves.
+
+**This directory is inside `design/`** because the project's standing rule is that only
+`design/` may be written to. `notes/` and `submission/` are never touched from here.
+
+---
+
+## What is being built
+
+A drop-in retrofit that replaces the fuze of a 155 mm HE shell. It screws into the
+MIL-STD-333B well on a 2″-12 UNS-2A thread and carries a **de-spun ring** that is
+roll-controlled by a frameless outrunner PMSM — the same machine that generates the
+kit's power. Four **fixed-incidence** canards on that ring steer the round. One moving
+part, no actuation mechanism.
+
+The engineering claim the model has to make visible:
+
+> **The bearing holds it, the motor steers it.**
+> Two parallel interfaces between the same two bodies: mechanical (bearing — 100 % of
+> structural load, no torque path) and electromagnetic (PMSM — 100 % of torque control,
+> no load path).
+
+---
+
+## How to rebuild
+
+```bash
+# 1. regenerate the evidence documents from the source of truth
+python3 design/cad/write_traceability.py
+
+# 2. audit the numbers without FreeCAD
+python3 design/cad/pgk_params.py
+
+# 3. build (from the FreeCAD MCP session, or freecadcmd)
+freecadcmd design/cad/macros/00_phase0_envelope.py
+```
+
+Every macro is re-runnable and idempotent: it closes any existing document of its own
+name and rebuilds from `pgk_params.py`. Nothing is hand-clicked, so the model is
+deterministic and reviewable in diff.
+
+---
+
+## Conventions — fixed before the first sketch
+
+| Item | Convention |
+|---|---|
+| **Datum origin** | **Z = 0 at the shell's fuze-well mouth plane** — where the ogive truncates. One datum, one meaning, for every part. |
+| **Spin axis** | **+Z**, forward toward the nose (out of the shell). The well is at negative Z. |
+| **Azimuth** | +X = 0° (steering canard 1), +Y = 90° (control canard 1). Roll measured about +Z, right-hand rule. |
+| **Sign conventions** | Cant (+) = the fin leans so that its normal force has a positive tangential component. |
+| **Units** | millimetres, degrees, kilograms, newtons, N·m. No unit-less numbers in a sketch. |
+| **Mapping to `04-caa-dual-spin-interface.html`** | `x_html → z_cad`. The HTML used +X as the axis; it is a visualisation, the register is authoritative. |
+| **Assembly state count** | **Two axial states** (LAUNCH, FLIGHT) × **four rotor phases** (0/45/90/135°). Eight combinations — see `TRACEABILITY.md`. |
+
+### The axial stack, and where the well's faces are
+
+The well is modelled as a real set of faces rather than an assumed area, because P6's
+thermal argument is an argument about *areas*:
+
+```
+z = 0        shell mouth plane; the ogive truncates here at Ø50.8
+z = 0 .. -19.05     threaded bore Ø50.8  (9 turns at 12 TPI = 19.05 mm)
+z = -19.05          SEAT ANNULUS, Ø44 -> Ø50.8, faces +Z  — the kit's shoulder lands here
+z = -19.05 .. -124.7   plain well bore Ø44
+below -124.7        booster cavity, tapering to Ø30 on the axis (F9)
+```
+
+The kit's own shoulder is the matching annulus, which is what makes P6's seat figure a
+real face rather than a radius picked to give the right area.
+
+---
+
+## Files
+
+```
+pgk_params.py          THE SOURCE OF TRUTH — every dimension + criterion + status
+write_traceability.py  regenerates TRACEABILITY.md and PARAMETERS.txt
+TRACEABILITY.md        generated: every dimension against its criterion
+PARAMETERS.txt         generated: the audit listing + closure checks
+VERIFICATION-LOG.md    hand-kept: what each gate proved, and when
+macros/
+  00_phase0_envelope.py      reference shell, well, bore, train-bore, ogive bound
+  10_phase1_kit_body.py      (Phase 1)
+  ...
+out/
+  PGK-Envelope.FCStd         the envelope document
+  screenshots/               visual evidence, one per gate
+```
+
+---
+
+## The rules this workspace follows
+
+Carried from the register, and not negotiable:
+
+1. **No literal numbers in geometry.** Every dimension is read from `pgk_params`. If a
+   number is needed and isn't there, it gets added to the SSOT with its criterion and
+   status first.
+2. **The CAD evidences; it never decides.** A criterion is not `DEFINED` because the
+   CAD agrees with it. Every value resting on an OPEN criterion is marked
+   **PROVISIONAL** and names that criterion.
+3. **Report the conflict, don't hide it.** Where the register's own numbers are in
+   tension, the model computes both sides and states the gap rather than quietly
+   choosing one. Two such tensions are already recorded below.
+4. **No mass is quoted from the envelope solids.** The reference shell is a *contour*
+   model; P2/P3/P4/P5 come from the calibrated model in
+   `02-reference-155mm-model.md`. Only kit masses computed from the kit's own solids
+   in Phases 1–6 are quoted, and they are labelled with the criterion they serve.
+
+---
+
+## Tensions the model has already found
+
+Recorded here because each is a real finding against the register, not a modelling
+inconvenience. They are carried to `design/07-cad-evidence.md`.
+
+**T1 — P6 quotes two well diameters that cannot both hold.** P6 sizes its thermal
+closing route on a well-bore contact area of 18.8 × 10⁻³ m², which is a **Ø48** bore;
+but it also quotes a seat annulus of 0.5 × 10⁻³ m² over a ring **Ø44–50.8**, which
+implies a Ø44 spigot. The model adopts **Ø44** — the self-consistent reading, and the
+one that makes the seat a real face — and reproduces P6's seat figure to 1.3 %
+(0.506 vs 0.500 × 10⁻³ m²). The cost is **8.3 %** of the bore area P6's ≥58 W/K
+argument leans on. Both areas are computed outputs; the register picks.
+
+**T2 — P12's visible length and C8's canard chord are in tension.** P12 caps the kit's
+exposed length at the fielded benchmark's 95.25 mm. C31 caps the canard span at Ø151,
+and C31(d) shows the span cap must be paid for in **chord** (area cannot buy the force
+back). The chord C8 needs is ~80 mm, which leaves 9.25 mm for the nose against the
+~20 mm a radome plus the spin-axis aperture needs. **Shortfall: 10.75 mm** — the kit
+needs ≈106 mm exposed, and the chord that *would* fit P12 is 69.25 mm. Since P12 is a
+PARAMETRIC benchmark rather than a hard requirement, and C31's permanent exposure
+removes the folding option that let the fielded kit hide its chord, the likely answer is
+that this kit is legitimately slightly longer. That is a register decision, not a CAD one.
+
+---
+
+## Gate discipline
+
+A phase does not advance on a failed gate. Every gate result is written to
+`VERIFICATION-LOG.md` with the numbers that produced it, and a screenshot is saved to
+`out/screenshots/`.
+
+**Step 0 environment** (recorded 2026-09-19): FreeCAD **1.1.3** (build 20260725), Python
+3.11.14. Workbenches present: PartDesign, Sketcher, Part, Spreadsheet, Assembly,
+TechDraw, Material, Import, Mesh. Assembly is available, but the build deliberately
+**does not depend on it** — parts are placed by scripted `Placement` from the SSOT and
+interference is checked with `Part::MultiCommon`, so the model survives any FreeCAD
+version and every placement is data rather than a drag.
