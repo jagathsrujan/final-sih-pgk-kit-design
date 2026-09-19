@@ -188,3 +188,104 @@ need a joint decision; the CAD now prices it.
 
 - `out/PGK-KitBody.FCStd`
 - `out/screenshots/p1-body-iso.png`, `p1-body-section.png`
+
+---
+
+## Phase 2 — the de-spun ring and the machine · **PASS (design) / FAIL (mass)** · 2026-09-19
+
+Document `PGK-CAA`. Macro `macros/20_phase2_ring_and_machine.py`.
+Screenshot `p2-machine-section.png`.
+
+`B1_Ring_Carrier`, `B2_Rotor_Backiron`, `B3_Magnets`, `A2_Stator_Core`, `A3_Windings`.
+
+### Gate 2 — the machine closes exactly
+
+| # | check | result |
+|---|---|---|
+| 1 | air gap | **0.400 mm exactly** → PASS |
+| 2 | machine OD | **91.90** against the Ø92 ceiling — **0.10 mm margin** → PASS |
+| 3 | stack length | 28.0 mm inside the 25–30 band → PASS |
+| 4 | poles / slots | 14 / 12 → PASS |
+| 5 | ring OD | 98.00 as specified → PASS |
+
+Two independent cross-checks fell out of the geometry, both exact:
+
+- **Tooth width computes to 8.45 mm** from Φ_pole/(B_tooth·L) — the same figure the
+  machine sizing states, arrived at from the model's own radii.
+- **Slotted stator core = 39.0 cm³**, and the mass at 7600 kg/m³ is 0.296 kg against
+  C40's 210–250 g band — the first time C40's stator-iron figure has been checked
+  against real geometry.
+
+### Machine mass rollup — the model vs C40
+
+| item | model | C40 states | |
+|---|---:|---:|---|
+| stator iron | 0.296 kg | 0.210–0.250 kg | +18 % over the top of the band |
+| copper | 0.365 kg | 0.280–0.340 kg | +7 % over |
+| rotor backiron | **0.283 kg** | 0.250–0.300 kg | ✓ inside |
+| magnets | **0.074 kg** | 0.072–0.086 kg | ✓ inside |
+| **machine total** | **1.018 kg** | 0.812–0.976 kg | **+4 % over the top of the band** |
+
+The machine is 1.018 kg against C40's declared **0.81–0.97 kg**. It is over, but only
+by 4 % — C40's sizing was sound. Note the T3 spine (1.5 mm of steel at Ø30–33, running
+the machine's length) is **not** counted here; it is part of A1.
+
+### Three placement/geometry bugs, all caught by gate numbers
+
+1. **Rotate-then-translate.** Building a block near the axis, rotating it, and only
+   then translating it puts its centre on a circle of the *wrong radius* — the box
+   has to be placed at its radius first. This put the magnets at **Ø96.2 on a Ø91.9
+   machine**, i.e. buried in the ring carrier. Fixed in `_ring_of_blocks`, which both
+   the magnets, the windings and the stator slots now go through.
+2. **The same bug in the stator slot cuts**, which is why the core first weighed
+   0.671 kg — the slots were being cut in the wrong place and removing a third of
+   the iron they should have.
+3. Both were found because the *numbers* disagreed with an independent figure (C40's
+   band, and the ring OD), not because anything looked wrong.
+
+### Findings
+
+**T5 — the ring carrier alone is heavier than the whole kit budget.** Measured off the
+solid:
+
+| | steel | titanium | aluminium |
+|---|---:|---:|---:|
+| **B1 ring carrier** | **1.445 kg** | 0.816 kg | 0.497 kg |
+| + backiron | 0.283 | 0.283 | 0.283 |
+| + magnets | 0.074 | 0.074 | 0.074 |
+| **rotating assembly** | **1.802 kg** | 1.173 kg | 0.854 kg |
+
+The carrier is 184.1 cm³, and most of it is unavoidable: the ring must span from the
+gap/backiron (Ø79.5) out to the canard bay skin (Ø98), which is **9.25 mm of wall over
+80 mm of length** before any bearing bore or web is added. The pure outer shell —
+Ø91.9 bore to Ø98 skin, the thinnest it can be — is 73 cm³ on its own.
+
+**T6 — C26's setback case is understated by ×2.9 to ×3.6, and C35 follows it.** C26 is
+built on a *0.5 kg* ring assumption ("0.5 kg × 15 000 g ≈ 73.5 kN"). The measured
+rotating assembly is **1.802 kg in steel**, which gives **212.6 kN** on the carrier alone
+and **265 kN** on the rotating assembly:
+
+| | C26 / the register | model |
+|---|---:|---:|
+| ring mass | 0.5 kg (assumed) | **1.445 kg** (carrier, steel) |
+| axial setback | **73.5 kN** | **212.6 kN** |
+| with backiron + magnets | — | **265.1 kN** |
+| C35 structural stiffness case | 367 N/µm | **1325 N/µm** |
+
+Of the two levers, **material moves it more than geometry**: aluminium puts the rotating
+assembly at 0.854 kg, i.e. 126 kN — still ×1.7 on the register's figure. C26's "every
+0.1 kg costs 14.7 kN of retention" now reads as 14.7 kN per 0.1 kg *at the assumption*
+and **≈11.8 kN per 0.1 kg at the measured value** — but the measured mass is 3.6× the
+assumption, so the absolute load triples.
+
+**This is the finding that matters most.** C26 is the governing structural case for the
+whole CAD, C32's retention design exists to route it, and C35's air-gap stiffness case is
+derived from it. All three now have a load that is roughly three times what they were
+sized on. T4 and T5 together say the same thing from two directions: **the kit's mass
+budget is short by roughly a factor of two, and it is structural material — not the
+machine, not the electronics — that is spending it.**
+
+### Phase 2 outputs
+
+- `out/PGK-CAA.FCStd`
+- `out/screenshots/p2-machine-section.png`
