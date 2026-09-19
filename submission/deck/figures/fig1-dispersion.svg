@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 276" width="1160" height="276" role="img" aria-label="The problem: unguided dispersion against the 30 m requirement" style="font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;display:block">
+<title>The problem: unguided dispersion against the 30 m requirement</title>
+<desc>Unguided CEP against range, and rounds per target guided against unguided.</desc>
+<text x="76" y="22" text-anchor="start" style="font-size:11.5px;fill:var(--f-ink, #10151b);font-weight:600">Unguided dispersion grows with range</text>
+<text x="70" y="40" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">CEP (m)</text>
+<text x="383" y="254" text-anchor="middle" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">engagement range (km)</text>
+<line x1="76" y1="224" x2="690" y2="224" style="stroke:var(--f-rule, #d9dee4);stroke-width:1.2"/>
+<text x="70" y="227" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">0</text>
+<line x1="76" y1="164" x2="690" y2="164" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+<text x="70" y="167" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">100</text>
+<line x1="76" y1="104" x2="690" y2="104" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+<text x="70" y="107" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">200</text>
+<line x1="76" y1="44" x2="690" y2="44" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+<text x="70" y="47" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">300</text>
+<line x1="76" y1="224" x2="76" y2="228" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+<text x="76" y="239" text-anchor="middle" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">20</text>
+<line x1="187.636" y1="224" x2="187.636" y2="228" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+<text x="187.636" y="239" text-anchor="middle" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">22</text>
+<line x1="299.273" y1="224" x2="299.273" y2="228" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+<text x="299.273" y="239" text-anchor="middle" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">24</text>
+<line x1="410.909" y1="224" x2="410.909" y2="228" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+<text x="410.909" y="239" text-anchor="middle" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">26</text>
+<line x1="522.545" y1="224" x2="522.545" y2="228" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+<text x="522.545" y="239" text-anchor="middle" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">28</text>
+<line x1="634.182" y1="224" x2="634.182" y2="228" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+<text x="634.182" y="239" text-anchor="middle" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">30</text>
+<line x1="76" y1="44" x2="76" y2="224" style="stroke:var(--f-rule, #d9dee4);stroke-width:1.2"/>
+<polygon points="215.545,140.6 639.764,63.8 639.764,206 215.545,206" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke-width:1"/>
+<line x1="215.545" y1="140.6" x2="639.764" y2="63.8" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.6;stroke-dasharray:5 4"/>
+<line x1="76" y1="206" x2="690" y2="206" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.6"/>
+<text x="686" y="200" text-anchor="end" style="font-size:9px;fill:var(--f-accent, #0b5cad);font-weight:600">requirement: CEP ≤ 30 m at full charge</text>
+<circle cx="215.545" cy="140.6" r="3.6" style="fill:var(--f-accent, #0b5cad);stroke-width:1"/>
+<text x="215.545" y="155.6" text-anchor="middle" style="font-size:9px;fill:var(--f-ink2, #46525f);font-weight:400">M795 · 139 m @ 22.5 km</text>
+<circle cx="639.764" cy="68.6" r="3.6" style="fill:var(--f-accent, #0b5cad);stroke-width:1"/>
+<text x="630.764" y="55.6" text-anchor="end" style="font-size:9px;fill:var(--f-ink2, #46525f);font-weight:400">M549 · 259 m @ 30.1 km</text>
+<circle cx="639.764" cy="63.8" r="3.6" style="fill:var(--f-accent, #0b5cad);stroke-width:1"/>
+<text x="630.764" y="74.8" text-anchor="end" style="font-size:9px;fill:var(--f-ink2, #46525f);font-weight:400">M549A1 · 267 m → σ 227 m</text>
+<text x="436" y="132" text-anchor="middle" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400;font-style:italic">dispersion the kit has to remove</text>
+<text x="790" y="22" text-anchor="start" style="font-size:11.5px;fill:var(--f-ink, #10151b);font-weight:600">Rounds to reach a 90 % probability of defeat</text>
+<text x="1120" y="40" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">rounds (log)</text>
+<line x1="790" y1="224" x2="1120" y2="224" style="stroke:var(--f-rule, #d9dee4);stroke-width:1.2"/>
+<text x="782" y="227" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">1</text>
+<line x1="790" y1="164" x2="1120" y2="164" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+<text x="782" y="167" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">10</text>
+<line x1="790" y1="104" x2="1120" y2="104" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+<text x="782" y="107" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">100</text>
+<line x1="790" y1="44" x2="1120" y2="44" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+<text x="782" y="47" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">1000</text>
+<rect x="850" y="187.876" width="60" height="36.1236" rx="0" style="fill:var(--f-accent, #0b5cad);stroke-width:1"/>
+<text x="880" y="180.876" text-anchor="middle" style="font-size:10.5px;fill:var(--f-accent, #0b5cad);font-weight:600">4</text>
+<text x="880" y="240" text-anchor="middle" style="font-size:9.5px;fill:var(--f-ink2, #46525f);font-weight:400">guided</text>
+<rect x="1000" y="78.7038" width="60" height="145.296" rx="0" style="fill:var(--f-ink3, #7b8794);stroke-width:1"/>
+<text x="1030" y="71.7038" text-anchor="middle" style="font-size:10.5px;fill:var(--f-ink3, #7b8794);font-weight:600">≈264</text>
+<text x="1030" y="240" text-anchor="middle" style="font-size:9.5px;fill:var(--f-ink2, #46525f);font-weight:400">unguided</text>
+<line x1="790" y1="224" x2="1120" y2="224" style="stroke:var(--f-rule, #d9dee4);stroke-width:1.2"/>
+<text x="955" y="108" text-anchor="middle" style="font-size:15px;fill:var(--f-accent, #0b5cad);font-weight:600">≈ 66×</text>
+<text x="76" y="268" text-anchor="start" style="font-size:8.5px;fill:var(--f-ink3, #7b8794);font-weight:400">Left: published unguided CEP for this class of shell — our own numbers replace these once we have the drawing.   Right: rounds for a 90 % chance against a point target.</text>
+</svg>

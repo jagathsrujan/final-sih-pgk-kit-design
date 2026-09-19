@@ -87,7 +87,7 @@ The kit replaces the shell's fuze and forward ogive and comprises four modules o
 The kit body is rigidly attached to the shell and spins with it. The canard ring is isolated by bearings and free to rotate about the roll axis, so the canard assembly is de-spun relative to the projectile body while remaining fully coupled to the airflow.
 
 ====================================================================
-3. CANARD ACTUATION ASSEMBLY — DEPLOYMENT AND ACTUATION
+3. CANARD ACTUATION ASSEMBLY — GEOMETRY AND ACTUATION
 ====================================================================
 
 3.1 Canard geometry and control concept
@@ -120,14 +120,14 @@ The design criterion is that control authority must be symmetric in both directi
 
 For a 155 mm shell the aerodynamic torque on the canard assembly rises to a few newton-metres over the flight while the bearing friction must be held to a fraction of a newton-metre. This makes bearing selection, preload and contamination control first-order design decisions, not details — the margin is thinnest near apogee where the aerodynamic torque collapses.
 
-3.4 Deployment mechanism
+3.4 Canard configuration — permanently exposed
 
-The canards must be stowed flush within the kit envelope for magazine storage, ramming and in-bore travel, then deployed and positively locked after muzzle exit. The deployment is a one-shot mechanism and is distinct from the continuous ring actuation:
+The canards are fixed in the flight configuration from manufacture, with no deployment mechanism at all. This is a deliberate simplification: nothing can deploy, so nothing can deploy wrongly. In-bore safety becomes a static clearance question rather than a mechanism-safety argument, and the fielded precision guidance kit in this product class makes the same choice, carrying four fixed external canards.
 
-- Stowed flush and mechanically locked for in-bore safety, so the assembly cannot foul the bore or the rammer.
-- Released by launch environment — setback and spin — with a spring-driven deployment.
-- Positively locked at the deployed position by a detent so aerodynamic load cannot fold the canard back.
-- A redundant lock ensures a canard cannot deploy partially, which would create an asymmetric force.
+- A 2 mm per side clearance budget caps the canard tips at Ø151 mm, so the assembly cannot foul the bore or the rammer.
+- There is no one-shot mechanism to release, lock or fail, and therefore no partial-deployment mode that could produce an asymmetric force.
+- Magazine and handling constraints apply to a known fixed envelope rather than to a mechanism's stowed state.
+- The single moving assembly in the kit remains the canard ring on its two bearings.
 
 3.5 Launch survival
 
@@ -238,7 +238,19 @@ The proximity sensor, the magnetometer used for ring-angle measurement and the a
 
 6.5 Dormancy and function
 
-The fuze has no single-point electronic failure that prevents the round from functioning: loss of guidance, loss of GNSS or loss of the setter write all degrade accuracy but leave a live, functioning fuze.
+Loss of guidance, loss of GNSS or loss of the setter write all degrade accuracy, and none of them removes the fuze's ability to function. That answers the accuracy question. There is a second question behind it, and it is about where the round lands rather than how accurately.
+
+Our position: the fuze withholds function on a predicted miss. The kit computes a predicted impact point continuously, so it always knows where it is going to land. If, at the point where the guidance can no longer change the outcome, that prediction is still more than 150 m from the loaded target, the fuze will not function. The inhibit latches and is irrevocable.
+
+150 m is the figure the fielded kit in this class publishes, adopted rather than invented. It does not conflict with our accuracy claim, because a round predicted to land beyond it has already left the effect envelope we are claiming.
+
+The mechanism adds nothing to the fuze. The safe-and-arm unit already requires an electrical arm command as a third, independent condition on top of setback and spin, and the failsafe is the withholding of that command. The rotor never goes in line, so the round is a dud rather than a burst: there is no new element in the explosive train and no new path by which the fuze could function. The failsafe can only ever make the round safer.
+
+The fuze also stays autonomous. The veto travels the same bounded, one-way, arming-gated path as the time correction, and it is absent by default: if the kit says nothing, the fuze arms and functions on its own pre-set terms.
+
+The cost is stated rather than hidden. Because the decision is a prediction rather than a measurement, a prediction error can withhold function on a round that would have landed acceptably. That exposure is bounded by the propagation error over the remaining flight, which is why the decision is taken as late as the authority allows rather than on a fixed clock.
+
+The mechanism is standard-supported: AOP-22 defines a command mode that programs the fuze to a safe condition, and lists safety-unacceptable bit patterns among the fuze's own message-rejection criteria.
 
 ====================================================================
 7. SENSOR SELECTION
@@ -317,7 +329,7 @@ The control torque on the ring is produced by dissipating electrical energy. In 
 - Thermal: aerodynamic heating at the nose is the driving case; thermal mass, a potting compound with a defined conductivity, and thermal compensation of sensor biases. Storage and operating temperature ranges are stated and verified.
 - Humidity, salt fog and corrosion: sealed assembly with a controlled internal environment.
 - Electromagnetic: designed to standard electromagnetic compatibility practice for a fuze and a switching power stage in one volume.
-- Qualification approach: environmental and shock testing against the applicable defence standards for artillery fuzes, with a shock-sled or air-gun test for launch-survival verification.
+- Qualification approach: environmental and shock testing against MIL-STD-331C for fuze environmental and performance testing and MIL-STD-810F for environmental conditions, with fuze safety design to MIL-STD-1316 and STANAG 4369 / AOP-39 guidance (insensitive-munitions assessment to STANAG 4439), electromagnetic compatibility to MIL-STD-461, and a shock-sled or air-gun test for launch-survival verification. The inductive setting interface is compliant with NATO **AOP-22** (Edition B Version 1), the standard for inductive setting of large-calibre projectile fuzes; the fuze mechanical interface follows **STANAG 9216 / MIL-STD-333B**. Ordnance electromagnetic-hazard and electrostatic-discharge qualification (HERO / EMR / ESD) is a stated requirement with the applicable standard set fixed at the hardware-definition phase.
 
 ====================================================================
 10. SIMULATION AND VALIDATION METHODOLOGY
@@ -384,7 +396,9 @@ The budget makes clear that the dominant term is guidance and control, not raw n
 
 11.4 Graceful degradation
 
-With GNSS degraded, the navigation solution coasts on inertial data and the correction accuracy degrades smoothly towards the inertial drift limit rather than failing. With guidance unavailable, the round remains a functioning ballistic shell with a working fuze. There is no failure mode in which the kit makes accuracy worse than the unguided baseline.
+With GNSS degraded, the navigation solution coasts on inertial data and the correction accuracy degrades smoothly towards the inertial drift limit rather than failing. With guidance unavailable, the round flies ballistically and the fuze functions on its set mode — subject to one condition. If the kit's own prediction says the round will arrive more than 150 m from the loaded target, the fuze withholds function rather than detonating where it was not aimed, as set out in §6.5.
+
+The rule that governs every fault class is that no degradation mode may be worse than unguided. That rule is an accuracy rule, and it is worth being precise about what it does and does not cover: a failed guidance system returns the round to the dispersion it would have had anyway, but it does not change where the round lands relative to the intended target, and no accuracy rule can. The predicted-miss position in §6.5 is the separate answer to that second question: it is the kit's own prediction, not an accuracy rule, that decides whether the round functions.
 
 ====================================================================
 12. MANUFACTURABILITY AND COST OPTIMISATION
@@ -392,14 +406,35 @@ With GNSS degraded, the navigation solution coasts on inertial data and the corr
 
 This architecture is deliberately chosen to be cheap to make, because cost is the competitive premise of the problem statement and because YIL's advantage is precision mechanical manufacturing at volume.
 
-- No control actuators, no gearboxes, no servo electronics and no control-surface linkages. The single moving assembly is the canard ring on two bearings.
-- The alternator is the only electromechanical machine, and it is built from standard magnet and winding fabrication.
+The part-count economy comes first:
+
+- No control actuators, no gearboxes, no servo electronics and no control-surface linkages. The single moving assembly is the canard ring on two bearings, and the alternator is the only electromechanical machine in the kit.
 - The fuze and guidance electronics share a processor, a power supply and a housing, so the part count is well below that of a conventional guided projectile.
 - No in-flight battery to qualify for a 90 s high-vibration flight, and no battery thermal management.
-- The kit occupies the fuze well and forward ogive only, so YIL's existing shell body, charge system, driving band and gun interface are untouched and no re-qualification of the shell is required.
-- The design is dimensionally parametric in kit mass and centre of gravity, so it can be matched to the full family of 155 mm shells YIL produces without redesigning the control concept.
+- The kit occupies the fuze well and forward ogive only, so YIL's existing shell body, charge system, driving band and gun interface are untouched and no re-qualification of the shell is required. The design is dimensionally parametric in kit mass and centre of gravity, so it can be matched across the 155 mm family without redesigning the control concept.
 
-The dominant cost drivers are therefore the bearings, the magnets and windings, and the electronics — all of which are conventional, sourced, and reducible by volume.
+Processes are then chosen against a stated production volume of 5,000 kits per year, and they divide into two tiers.
+
+The production tier uses processes that are mature and volume-capable:
+
+- The canard ring and canards are machined as one datum structure. Cant angle sets the guidance force, so it is held by a single machine setup rather than by an assembly tolerance stack, and the 74 kN setback load is carried through continuous metal in the retention path rather than through fasteners.
+- The stator core is selected between thin 0.1-0.2 mm laminations and a compacted soft-magnetic-composite core, on a published trade of loss against mechanical strength. The compaction route suits this volume because the tooling is a die rather than a bespoke lamination stack, and its published core loss (about 83 W/kg at 1 T and 1 kHz, with the material characterised to 5 kHz) covers the machine's electrical frequency range.
+- The winding is a conventional concentrated winding. At the machine's 2,130 Hz electrical frequency the copper skin depth is approximately 1.4 mm, so printed or litz conductors are not needed on loss grounds; the conductor subdivision actually required is set by the converter's switching spectrum, and the winding is specified against it.
+- Magnets are NdFeB of the required high-temperature grade, segmented with insulated interfaces and mechanically retained so that the 736 N shear on each magnet under launch acceleration is carried by metal and not by adhesive. The coercivity is bought through grain-boundary diffusion, which places heavy rare earth only at the grain boundaries instead of throughout the magnet - the same SH/UH class at materially lower critical-element cost.
+- The fuze-well thermal path is a manufactured interface rather than an inherited thread: a compliant contacting sleeve, indium foil specified against contact pressure, and cold-sprayed copper on the kit's own spigot (98% IACS and 368 W/mK as-sprayed) to provide a precision mating surface without touching the shell.
+- The control-energy dump uses an aluminium-nitride thick-film power resistor package, the standard high-power-density class, with graphite sheet spreading the heat into the kit structure.
+- Small fuze parts are specified for metal injection moulding where the part family justifies the tooling, with the tooling amortisation stated rather than assumed.
+- The spin-axis GNSS aperture is realised as laser-direct-structured conductive traces on a moulded nose part, so the aperture is part of the structure and consumes no separate antenna volume.
+
+The development tier is where the novel processes live, and they are declared rather than implied. Additively manufactured iron cores, printed copper windings and hybrid printed end-windings are development and first-article tools: they are bounded by published data (printed copper reaches 79% slot fill and 87% IACS after heat treatment; a printed hybrid end-winding has removed about a third of the winding-head height) and they carry their own qualification cost, which is not hidden inside the recurring unit cost.
+
+The dominant recurring cost drivers are the machine, the power electronics, the bearings, the fuze stack, the navigation set, the dump and buffer, and the housing - all conventional, sourced, and reducible by volume. At 5,000 kits per year the governing process question is tooling amortisation, which is why every production process above needs either no new tooling or a die shared across a part family.
+
+Within that plan, the complex low-volume parts are made in a digital cell rather than on a fixed line: robotic metal and polymer printing, the post-treatment chain that makes printed parts fit for gun launch - hot isostatic pressing for porosity, heat treatment for residual stress, machining of bearing seats and sealing faces, and surface finishing - and automated placement and assembly, with every part carrying its own build record. Each known weakness of printing has a named treatment, and qualification follows the established route of process control, coupons and testing.
+
+The cell is also why the design can keep improving: the printed parts carry no tooling, so when the shell drawing arrives after selection their geometry changes in days rather than in a die programme, and a variant - a different shell, a growth module - is a design change rather than a retooling programme. The same capability places components inside a structure while it is printed and prints the conductors between them, removing the connectors and wiring harness that are the classic failure point under launch acceleration. That is what makes a modular sensor stack with targeted redundancy affordable: a second inertial and magnetic channel and a second ring-angle pickoff of different physics add grams and milliwatts - about one per cent of the kit's mass - rather than boards and brackets.
+
+Three bounds: the cell prints structure and signals, not power, so the machine current stays on conventional copper; the fuze's explosive train stays in the licensed, segregated line, never inside the automated cell; and printing changes the shape of qualification, it does not remove it.
 
 ====================================================================
 13. CONSTRAINT COMPLIANCE
@@ -409,18 +444,21 @@ The dominant cost drivers are therefore the bearings, the magnets and windings, 
     The kit is a fuze-well and ogive replacement only. Kit mass, centre of
     gravity and axial inertia are treated as design variables and are held
     within the limits that preserve the shell's gyroscopic stability across
-    the charge and temperature envelope. The canards are stowed flush for
-    ramming and in-bore travel.
+    the charge and temperature envelope. The canards are permanently
+    exposed, held inside the bore by a 2 mm per side clearance budget that
+    caps the canard tips at Ø151 mm.
 
   High launch acceleration, vibration, spin and environment
     Structural load cases are taken from the launch environment. Bearings,
-    ring retention and the stowage locks are designed for the governing
-    setback and spin cases. Electronics are potted and the inertial module
-    is shock-isolated. Verification is by bench rig, shock sled and
-    environmental test.
+    ring retention and the launch load path are designed for the governing
+    setback and spin cases, with the setback load routed around the flight
+    bearings rather than through them. Electronics are potted and the
+    inertial module is shock-isolated. Verification is by bench rig, shock
+    sled and environmental test.
 
   Low Size, Weight, Power and Cost
-    Single moving assembly, no actuators, no in-flight battery, shared
+    Single moving assembly, no actuators, flight power self-generated
+    (reserve battery for pre-launch and safe state only), shared
     processor and power supply, and unchanged shell hardware.
 
   High reliability and safety
@@ -466,26 +504,86 @@ The preferred deliverable is a prototype or proof of concept. Our plan builds it
   estimation.
 
 ====================================================================
-15. SUMMARY OF NOVELTY
+15. NOVELTY — WHAT IS ADOPTED, AND WHAT THIS DESIGN CONTRIBUTES
 ====================================================================
 
-- Actuation and power generation by a single machine: the alternator
-  reacts against the ring to steer it and generates the kit's electrical
-  power, removing all control actuators and the in-flight battery from a
-  guided artillery projectile.
-- Full two-dimensional guidance from one actuation axis, using fixed
-  canards in a steering pair and a control pair, so no control surface
-  moves.
-- The de-spun ring used as the inertial sensing platform, converting the
-  spin-rate measurement problem into a conventional low-rate navigation
-  problem.
-- Impact-point-prediction guidance law synthesised for a control channel
-  whose authority varies by more than an order of magnitude over the
-  flight, with state-dependent saturation limits that make authority loss
-  a designed constraint rather than a failure mode.
-- A three-mode electronic fuze integrated into the same nose assembly as
-  the guidance kit and configured over the gun line's existing inductive
-  fuze setter, so no change to firing procedure is required.
+The two are separated rather than merged, because a claim that a
+specialist can dismantle costs more than it earns.
+
+Adopted from established work, and credited as such:
+
+- The de-spun canard assembly architecture itself. It is worth stating
+  plainly rather than being asked: the fielded **M1156 Precision Guidance
+  Kit** — the system the problem statement asks us to indigenise — is
+  publicly documented as a de-spun canard assembly with fixed canards, no
+  mechanical actuators, one moving part, self-generating power and no
+  battery, and full two-dimensional guidance to impact. Every one of those
+  properties is a design target for this kit, not an invention of it.
+  US Patent 6,981,672 covers fixed-canard two-dimensional guidance, and
+  the AIAA 2024 canard-guided-fuze work covers the two-pair rolling and
+  lifting arrangement we use.
+- Impact-point-prediction guidance for a dual-spin projectile with fixed
+  canards, which is established in the published literature.
+- Out-of-line safe-and-arm practice and the gun-line inductive fuze
+  setter, which are existing standards and existing procedure. The
+  transmit-and-repeat read-back is the standard's own error-detection
+  mechanism rather than a design feature of ours.
+- **In-flight correction of the time setting.** NATO AOP-22 registers a
+  course-correction fuze — the XM8, "course-correction electronic time
+  fuze" — which corrects its time in flight to improve accuracy, so this
+  is fielded practice in this airframe class and is credited as such.
+- Multi-mode fuzing as such: the fielded Israeli kit offers point
+  detonation, point detonation delay and airburst, so a three-mode set is
+  at parity in count rather than ahead of it.
+
+Contributions of this design — stated narrowly, because each of these is
+checkable:
+
+- The machine sized as a loaded generator in a flight-representative
+  envelope. Running the alternator at real body-spin speed rather than at
+  bench scale reveals a 2.92 kW peak and approximately 121 kJ per flight
+  that the reference work could not have seen, and that no published
+  treatment of this architecture reports.
+- The thermal interface that follows from it, stated as a requirement:
+  the control energy leaves through the fuze-well threads, the bare
+  2 in-12 UNS thread conducts approximately 3-16 W/K against a peak
+  requirement of 58 W/K or better, and the closing route — a contacting
+  radial path through the well bore, a conductance-specified joint and a
+  peak/average split — is designed rather than assumed.
+- The de-spun ring used as the inertial sensing platform, which removes
+  1107-1912 rad/s of spin from the measurement and converts the hardest
+  sensing problem in a spin-stabilised guided shell into a conventional
+  low-rate navigation problem. The published work on this airframe names
+  in-flight ring-angle feedback as its largest unresolved problem. This
+  is a deliberate departure from the fielded kit, which determines its
+  roll angle from GNSS and carries no inertial sensors; it is a cost and
+  complexity addition and is justified by the requirement to operate when
+  GNSS is contested.
+- A spin-invariant GNSS aperture on the spin axis, with elements combined
+  rather than switched, so there is no spin-frequency modulation to track
+  out and a standard receiver remains usable.
+- A state-dependent authority gate on the guidance channel, which turns
+  the apogee authority collapse from a failure mode into a designed
+  constraint and makes a 1.11:1 authority margin usable.
+- A three-mode electronic fuze — proximity, time and impact — in one unit
+  sharing the nose with the guidance electronics, matching the three
+  categories the Indian Army's electronic-fuze RFI lists separately, and
+  configured over the existing gun-line setter. What distinguishes it is
+  not the count of modes but that the **time** mode exists at all and is
+  corrected in flight by our own navigation solution rather than by a
+  ballistic firing-table prediction.
+- Range retention as a stated requirement rather than an unexamined
+  consequence: the kit is specified to retain better than 90% of the
+  conventional all-up round's maximum range, which is the figure the
+  fielded kit publishes and which puts a price on the canards' drag and
+  the kit's own mass.
+- Mass stated both ways. The kit lands in the 1.4-1.7 kg class, and the
+  net penalty over the fuze it replaces is +0.7-1.0 kg. Stated against
+  the fielded kit those are two different ratios and both are given:
+  total mass is 1.0-1.21 times the fielded kit, while the net penalty is
+  1.55-2.2 times its +0.45 kg. The second is the honest one to lead with,
+  and the axial-flux trade and make-versus-buy remain the open levers on
+  it.
 
 ====================================================================
 16. REFERENCES
@@ -513,9 +611,42 @@ The preferred deliverable is a prototype or proof of concept. Our plan builds it
    155 mm spin-stabilized projectile with reciprocating canards," AIAA
    Guidance, Navigation and Control Conference.
 9. US Army DOT&E, "Precision Guidance Kit (PGK)", FY2015 Annual Report.
-10. NATO STANAG 4369 / AOP-39 guidance for fuze design, safety and
-    insensitive munitions assessment.
+10. Orbital ATK, "Precision Guidance Kit (PGK) Program Update," NDIA
+    Armament Systems Forum, 2015.
+11. "M1156 Precision Guidance Kit," public programme record (US Army
+    Project Manager Combat Ammunition Systems; open reference entry).
+12. Elbit Systems, "Silver Bullet II" product brochure, 2026.
+13. R. Jaiswal, M. Kothari and A. Abhishek, "Design and aerodynamic
+    characterization of canard guided fuze for dual-spin artillery
+    projectiles," AIAA 2024-1105.
+14. J. Norris, A. Hameed, J. Economou et al., "A review of dual-spin
+    projectile stability," Defence Technology, vol. 16, no. 1, 2020.
+15. "Investigation of flight stability for fixed canard dual-spin
+    projectile," Defence Technology, 2025.
+16. H. Guo, Z. Peng, W. Liu et al., "Resonance mechanism and aerodynamic
+    optimization of a canard-type two-dimensional trajectory correction
+    projectile in the uncontrolled flight phase," Acta Armamentarii, 2026.
+17. NATO AOP-22, "Design Criteria and Test Methods for Inductive Setting of
+    Large Calibre Projectile Fuzes," Edition B Version 1, May 2018
+    (supporting STANAG 4369 / AOP-4369).
+18. NATO STANAG 4369 / AOP-39 guidance for fuze design, safety and
+    insensitive munitions assessment; MIL-STD-1316; MIL-STD-331C;
+    MIL-STD-810F; MIL-STD-461; STANAG 4439; STANAG 9216 / MIL-STD-333B.
+19. A. K. J. Hasselstrom and U. E. Nilsson, "Thermal Contact Conductance in
+    Bolted Joints," Diploma work 85/2012, Chalmers University of Technology
+    (with RUAG Space), 2012.
+20. Naval Surface Warfare Center Indian Head Division, "High Shock Modeling
+    of Fuze Components," 64th Annual NDIA Fuze Conference, 2021.
+21. "Establishment of the damage tolerance criterion of projectile-borne
+    electronics under in-bore launch," Defence Technology, 2026.
+22. Problem statement SIH26098, Ministry of Defence / Yantra India Limited,
+    Smart India Hackathon 2026.
 ```
+
+**Note on the reference list.** It is built from `design/05-source-register.md` — entries at **Cite ≥ 3** only — and the full rated set (55 sources, two axes, with a read-depth tag) is in that file. Two consequences worth carrying into the deck:
+
+- **Entries 1–8 are the design's lineage and are credited, not claimed.** Items 2, 5, 13, 14, 15 and 16 cover work this register once treated as ours: impact-point-prediction guidance for this airframe, fixed-canard two-dimensional guidance, the two-pair canard arrangement, and the resonance mode. They belong on the reference slide *because* they are the work being built on.
+- **The list names the fielded systems explicitly** (10, 11, 12). The submission should name them in the body too, not only in the reference slide.
 
 ---
 
@@ -527,9 +658,17 @@ The preferred deliverable is a prototype or proof of concept. Our plan builds it
 | Idea Title (B) | 100 | 81 | 19 | OK |
 | Idea Title (C) | 100 | 80 | 20 | OK |
 | Abstract / Summary | 10,000 | 3,491 | 6,509 | OK |
-| Idea Description | 50,000 | 34,769 | 15,231 | OK |
+| Idea Description | 50,000 | 48,956 | 1,044 | ⚠️ **TIGHT — 2.1 % of the limit** |
 
 Counts are measured from the text inside the code fences above, not estimated.
+
+**Re-measured 2026-09-20 after the advanced-manufacturing pass.** The description is now **48,956** and the abstract **3,491**. The addition was §12's second half: the digital cell (robotic printing, the post-treatment chain, automated placement), the tooling-free-iteration argument, the printed structural electronics that make a modular, targeted-redundant sensor stack affordable (~1 % of mass), and the three bounds (signals not power; energetics stay out of the cell; qualification changes shape, it is not removed). **Headroom is now 1,044 characters, or 2.1 % of the limit — the description can absorb no further material without a deletion, and a future edit session should not assume slack.** The trim candidate remains **§16 (the reference list, ≈3,200 characters)**, because the deck's slide 6 carries a curated reference list of its own.
+
+**Re-measured 2026-09-20 after the manufacturing pass.** *(Superseded by the re-measure above; description was then 47,305.)* The change was §12 (*Manufacturability and cost optimisation*), rewritten around the two-tier process strategy of `design/06-manufacturing-and-process.md`: production-mature processes named per subsystem — integrally machined ring and canards, lamination-or-SMC stator core, conventional concentrated winding, grain-boundary-diffusion magnets, the manufactured fuze-well thermal joint, an AlN thick-film dump package, MIM fuze parts, a laser-direct-structured spin-axis aperture — and novel processes confined to a **declared development tier** whose qualification cost is explicitly excluded from the recurring unit cost. **Headroom is now 2,695 characters, or 5.4 % of the limit.** Two consequences: any further addition must be paired with a deletion, and **§16 (the reference list, ≈3,200 characters) is the trim candidate** if the portal treats the description and the reference slide as duplicative.
+
+**Re-measured 2026-09-20 after the F16 decision.** *(Description figure superseded by the re-measure above.)* The description was then **44,008** characters and the abstract **3,491**. That change replaced the predicted-miss placeholder  (which contained a literal ⟨DECISION REQUIRED⟩ note and must never have been uploaded as it stood) with the decided position, and corrected the graceful-degradation wording in §11.4 that the decision made inconsistent.
+
+**Re-measured 2026-09-19 after the source-register pass.** The abstract is unchanged at 3,491. The description grew from 37,357 to **43,542** — the additions are the named standards (§9), the predicted-miss position (§6.5) and the corrected graceful-degradation wording (§11.4), the rewritten novelty section (§15) and the expanded reference list (§16). **Headroom is now 6,458 characters, or 13 % of the limit.** Two consequences for the deck: the description is no longer comfortably short, so any further addition should be paired with a deletion; and the reference list (§16, ~3,200 characters) is the largest single block that could be trimmed if the portal treats the description and the reference slide as duplicative.
 
 ---
 

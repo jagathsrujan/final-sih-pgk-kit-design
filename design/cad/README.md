@@ -118,7 +118,8 @@ Carried from the register, and not negotiable:
 ## Tensions the model has already found
 
 Recorded here because each is a real finding against the register, not a modelling
-inconvenience. They are carried to `design/07-cad-evidence.md`.
+inconvenience. They are recorded in `design/07-cad-evidence.md`, with the criterion each
+is addressed to and the ruling still owed.
 
 **T1 — P6 quotes two well diameters that cannot both hold.** P6 sizes its thermal
 closing route on a well-bore contact area of 18.8 × 10⁻³ m², which is a **Ø48** bore;

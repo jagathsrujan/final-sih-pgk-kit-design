@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SIH26098 — Idea Presentation — DRISHTI-PGK</title>
+
+<!--
+  ===========================================================================
+  DRISHTI-PGK  ·  SIH26098 Idea Submission  ·  six slides
+  ===========================================================================
+
+  WHAT THIS FILE IS
+  One self-contained HTML file.  Six slides, each a fixed 1280 x 720 px block
+  = 13.333 x 7.5 in at 96 dpi, so the browser's own Print -> Save as PDF
+  produces the submission file with no external assets.
+
+  HOW TO PRODUCE THE PDF
+  Open in a browser -> Print (Ctrl/Cmd + P) -> Destination: Save as PDF
+    * Paper size  : the @page rule below forces 13.333in x 7.5in, zero margin
+    * Margins     : None
+    * Scale       : 100 % (do NOT use "Fit to page")
+    * Background graphics: ON  (the figures and rules are CSS backgrounds)
+  Six pages come out, one slide per page.  Nothing else needs doing.
+
+  HOW TO RESTYLE
+  Every colour, type size, spacing value and the page geometry live in the
+  single :root token block below.  Change a token there and the whole deck -
+  including every generated figure, which references the same --f-* names -
+  follows.  The two exceptions are noted on --flag: it is the only second
+  colour, used exclusively for the fields and decisions the team must fill in.
+
+  WHERE THE FIGURES COME FROM
+    figures 1-3  generated SVG, inlined below between FIG:...:start/end markers
+                 -> submission/deck/figures/*.py  (regenerate with make_figures.py)
+    figures 4-5  hand-authored schematics, inline only (no computed data)
+
+  TONE RULES FOR THIS DECK  (follow these when you edit the copy)
+    * The slides carry the argument and the headline numbers. The derivation,
+      the sensitivities and the criterion-by-criterion proof belong in the
+      idea description, the abstract and the video script - not here.
+    * No criterion IDs on the slide. SIH's own rule is points and diagrams;
+      a bracketed tag reads as machine output and costs more than it earns.
+      Every number's ID is in the two comment blocks in this file instead.
+    * One number per sentence where possible. If a bullet needs three numbers
+      to make sense, it is two bullets or it is description material.
+    * No em dashes chained into lists, no "it should be noted that", no
+      three-clause semicolon sentences. Write it the way you would say it.
+
+  DETAIL MOVED OFF THE SLIDES - FOR THE IDEA DESCRIPTION, ABSTRACT AND VIDEO
+  Everything below is register-sourced and was on an earlier draft of these
+  slides. It is kept here so the other submission artefacts can carry it.
+
+  SLIDE 2 (Proposed solution)
+    Thread 2"-12 UNS-2A; MIL-STD-333B well; kit diameter in the well D50.8 mm          P6, P12
+    Canard split in detail: steering pair at 0/180 deg equal cant (net force,
+      roll torques cancel); control pair at 90/-90 deg opposite cant (net roll
+      torque, no net force); no moving control surface                          C1
+    Canard span maths: bore 155.0 mm against a 154.89 mm body leaves 0.055 mm
+      radial clearance, so tips cap at D151 mm / 26.5 mm exposed span           C31
+    Why chord does not buy the force back: 3 cm to 8 cm chord is 2.7x area for
+      23 % more force (AR 0.88 to 0.33), which is why cant is the lever         C31, C43
+    Arming stimuli in numbers: 15 000 g setback and 176.3-304.4 Hz spin         F6, E1, S6
+    Fuze time resolution 0.1 s; impact superquick / short delay / graze         F1
+    Machine identity: radial-flux frameless outrunner, 12 slots / 14 poles,
+      D79 mm mid-gap, 0.40 mm air gap, 0.81-0.97 kg, Kt 0.362 N.m/A rms,
+      Kv 0.209 V/(rad/s) line-to-line                                       C34, C36, C40, C14, C15
+    Supercapacitor buffer 150-200 J, 50-150 g, three duties (fireset reservoir
+      at least 1 J under the arming interlock, 2 s hold-up, motoring bursts)    W4
+    What the same machine costs us: 2.92 kW peak and about 121 kJ per flight,
+      against a servo-actuated canard kit that carries no such load             C42
+
+  SLIDE 3 (Technical approach)
+    Loop bandwidths: outer position 6.2 Hz, inner velocity 33.6 Hz, settling
+      0.103 s; guidance rate 10 Hz ceiling with about 6 Hz as the design point  G8, G9, G10
+    Observer: Q(s) = 1/(0.5s + 1), about 0.32 Hz corner, chosen slow            G14
+    Limit law: I_lim = min(2 x disturbance estimate, I_available(relative
+      speed)); V_lim = 26 rad/s per A x I_lim; clamping anti-windup evaluated
+      against the live limit every 1 ms cycle                                   G15, G12
+    The reference failure in detail: with fixed limits, control was lost
+      between t = 30 s and 50 s, ring overshoot to about 5.5 rad against a
+      2.4-3.9 rad reference, escalating to full rotation                       G15
+    Guidance window: opens at max(arming distance, nav convergence) - the
+      t about 15 s opening edge is a placeholder - inhibited band provisionally
+      t about 35-55 s; effective guided time about 51 s in two segments         G3
+    Command realisation: a dwell-fraction phasor, holding the aim azimuth for
+      the fraction of the cycle the authority allows, parked at +/-90 deg for
+      the rest; about +/-1.3 m/s of commanded lateral velocity at a 3 s cycle,
+      which the propagation model must subtract rather than fight              G2, G4
+    IMU grade: ARW <= 1 deg/sqrt(h), bias <= 5 deg/h, bandwidth >= 100 Hz;
+      without the ring mount a body-fixed part would need about 92 880 deg/s,
+      which no COTS part reaches                                                N7, N8, N6
+    Timing: one hardware counter, samples stamped at conversion, mission-side
+      uncertainty <= 100 us (1 sigma); GNSS is an epoch label and never
+      steers the clock                                                        H6, N15
+    Coexistence in numbers: the rotating magnetic term is 7 pole pairs x the
+      measured rotation = 1 234-2 131 Hz, rejected by a coherent notch locked
+      to the same measurement; the current-proportional term is compensated
+      against measured coil current; converter switching >= 100 kHz with
+      controlled edge rate; the magnetometer case cannot be solved spatially   F15
+    Board stack: usable area about 11 cm2 per annular layer, so 6-10 layers
+      cover the 60-100 cm2 the electronics need; segmented flat boards on a
+      spine preferred to custom ring outlines                                   H5
+    Link duty: rotary transformer carries 0.5-1.5 W to the ring; the optical
+      data path returns the IMU's own timestamps, so no ring-side clock        H7
+    Compute margins: loop WCET <= 100 us against a 1 000 us period; one
+      impact-point propagation <= 100 ms against a 0.17 s interval; about
+      300 propagations per flight; nav filter about 1 % of the core             H4, H10
+
+  SLIDE 4 (Feasibility)
+    Budget in full: nav 3.7 m (GNSS 3.0 + IMU/filter 2.0 + time and lever-arm
+      1.0) against a 5 m allocation; guidance and control 17 m, made of
+      propagation and model 13 m, ring angle 9 m, actuation and loop lag 6 m;
+      meteo 5 m; aero and ballistic model 8 m; fuze 3 m; RSS 20.3 m           G4, N1
+    Ring angle requirement: absolute <= 1.0 deg (1 sigma) earth-referenced and
+      relative <= 0.8 deg, RSS 1.28 deg, which is 9.1 m of residual miss at
+      the 80th-percentile correction                                              G5, G6
+    Canard force requirement: >= 18.1 N at the design point over the 45 s
+      window, relaxing to 14.1 N on the 51 s gated phase; 15 N would capture
+      only 67 % of the unguided population                                          C8
+    Friction: Tf <= 0.10 N.m flat across the envelope; combining the apogee
+      and descent criteria closes the control-pair sizing window entirely at
+      Tf* = 0.1567 N.m, leaving k in (0.586, 0.892) at the measured 0.1 N.m  C12, C13
+    Descent shortfall: Taero 2.119 N.m demands 5.64 A against about 5 A
+      available - an 11 % shortfall in transient authority late in flight        C9
+    Thermal in full: 2.92 kW peak, 121 kJ total, 1.34 kW average over 90 s;
+      interface needs >= 58 W/K at the peak and >= 20-27 W/K on the average;
+      the bare thread + seat gives about 3-16 W/K; the closing route is the
+      well bore as a contacting path (about 17x the flank area) plus a
+      conductance-specified joint; the shell absorbs it as a 5.8 K rise      W7, W12, P6
+    Structure: 73.5 kN axial and 24.5 kN radial setback; air gap 0.40 mm sets
+      a 0.20 mm relative deflection allowance, which splits into 367 N/um on
+      the axial structural path and 122 N/um on the bearing pair - and one
+      preload value has to satisfy that and the friction budget together     C26, C35, C23
+    Stability: Sg 1.37-3.55 across the envelope with 1.83 at the design point;
+      the canard allowance is <= 5 % dC_Malpha at the conservative corner and
+      40 % at the design point; muzzle stability is charge-independent because
+      spin is set by the rifling twist                                                 S1, S2, S6
+    Why the thermal load is not avoidable: 18.1 N of guidance force sets cant
+      at 10 deg or more, and 10 deg is what produces the 2.92 kW                 C8, C43
+    Power: demand about 12 W against 2.92 kW generated, about 20:1 at the
+      apogee floor, so the design question is routing rather than adequacy       W4, W1
+    Open item detail: friction measured at 83.8 rad/s, a 19.4x scaling to
+      flight; rig capability list; Monte Carlo 5 000 design-condition runs
+      plus 1 000 at each of five corners, worst corner 95 % upper bound      C13, R7, R5
+    Reconciliation carried: the register's duty table implies about 3.8 kW at
+      launch spin against C42's published 2.92 kW; the reference speed is
+      stated at P2                                                             risk 46
+
+  SLIDE 4 (Feasibility) - the predicted-miss failsafe, decided 2026-09-20
+    The decision: adopt a threshold (F16, option A of the three priced forms).
+    Radius: 150 m, the class datum the fielded kit publishes, adopted rather
+      than invented - and not in tension with our own claim, because a round
+      predicted to land beyond it has already left the effect envelope we claim.
+    Decision time: not a clock. The inhibit latches on the first cycle where
+      the predicted miss exceeds the threshold AND the correction authority
+      remaining (from current dynamic pressure and time to go) can no longer
+      bring it inside. That is the latest point the authority allows, and the
+      point at which the propagation error is smallest.
+    Irrevocable once latched.
+    The mechanism - the reason this is a strong sentence rather than a feature
+      list: F6 already requires an electrical arm command as a third,
+      independent condition on top of setback and spin. The failsafe IS the
+      withholding of that command. No new element in the explosive train, no
+      new path by which function could occur, and the failure direction is a
+      dud. It can only ever make the round safer.
+    Autonomy preserved: the veto rides the same bounded, one-way, arming-gated
+      path the F1 time correction uses, so the fuze still arms and functions on
+      its own, and the veto is absent by default.
+    Cost, stated: a prediction error can dud a round that would have landed
+      acceptably. Exposure is bounded by the propagation error over the
+      remaining flight - which is why we decide late.
+    Mechanism is standard-supported: AOP-22 section 3.6's safe-condition
+      command mode, with safety-unacceptable bit patterns among the fuze's own
+      message-rejection criteria.
+    New obligation carried: the dud-rate target (F10) must now carry this
+      deliberate contribution rather than assume a function rate of one.
+
+  SLIDE 5 (Impact)
+    Rounds sensitivity: at a 20 m effective radius, 8 guided against 592
+      unguided; at 50 m, 2 against 95; from the same campaign                     M8
+    Target-location error is switched separately at 0 / 10 / 25 m and never
+      enters the headline claim                                                  M5, R5
+    Mass ratios: total mass 1.0-1.21x the fielded kit; net penalty over the
+      fuze replaced 1.55-2.2x                                                   P9, C40
+    Cost drivers ranked at volume: machine, power electronics, bearings, fuze
+      stack, navigation, dump and buffer, housing; make-versus-buy and the
+      axial-flux trade are the levers                                            K5, C44, C45
+    Production process plan, two tiers at 5 000 a year.  Production processes
+      are mature and volume-capable: ring and canards from one machining
+      setup (cant angle is the guidance force, so the tooling holds it); a
+      stator core traded between 0.1-0.2 mm laminations and a compacted soft
+      magnetic core on published loss and strength data; a conventional
+      concentrated winding - at 2 130 Hz the copper skin depth is about
+      1.4 mm, so printed copper is not needed on loss grounds; grain
+      boundary diffusion magnets; a manufactured fuze-well thermal joint
+      (compliant contact, indium foil, cold-sprayed copper at 98 % IACS);
+      an aluminium-nitride thick-film dump package; MIM fuze parts; a
+      laser-direct-structured spin-axis aperture that is structure rather
+      than an added antenna.  Novel processes - printed copper windings,
+      printed iron cores - are development items and their qualification
+      cost is outside the recurring price.  Full detail and sources:
+      design/06-manufacturing-and-process.md
+                                             K5, C39, C45, section J (offscreen)
+    Digital cell (design/06 section 7).  Print - post-treat - assemble, one
+      cell, per-part build record.  Print: metal LPBF, robotic WAAM for
+      larger preforms, polymer SLS/MJF, direct-write conductors.  Post-treat:
+      HIP for porosity (with its strength cost, partly recovered by heat
+      treatment), heat treatment for residual stress, machining of bearing
+      seats / magnet pockets / sealing faces ("print near-net, machine
+      critical"), surface finishing (abrasive flow, electrolytic/chemical
+      polishing, laser polishing), SLS vapour smoothing.  Evidence:
+      in-process melt-pool/optical monitoring + CT + per-build coupons -
+      monitoring is NOT yet a substitute for testing.  Qualification shape:
+      NASA-STD-6030 (process control, coupons, testing, traceability).
+      Programme value: tooling-free first articles de-risk the P6
+      re-baseline (risks 20/21); variants are files, not dies.
+      Printed structural electronics: components placed mid-build,
+      conductors printed to them, thermal cure; embedded FBG sensing
+      demonstrated in LPBF Inconel and UAM aluminium - used as a
+      qualification/ground-test instrument, in-flight health a growth option.
+      MODULAR sensor stack + TARGETED redundancy: one module standard for
+      every sensing channel; dual inertial+magnetic channel; second ring-angle
+      pickoff of different physics; approx 5-15 g and under 0.5 W (about 1 %
+      of the 1.4 kg budget).  Deliberately NOT redundant: bearings (breaks
+      C13), detonation path (safety case), GNSS receivers (power/volume).
+      HONEST BOUNDS: energetics stay outside the cell (licensed line,
+      MIL-STD-1316 discipline); printed traces carry signals/RF/logic, not
+      power (C18's 15.9 A stays on copper); throughput arithmetic - at
+      0.3-0.5 kg printed metal per kit, 5 000 kits/yr is 1.5-2.5 t/yr,
+      about 2-5 mid-size multi-laser LPBF machines plus post-treatment -
+      capex that K5 must price; AM does not repeal qualification.
+                                   K8, C47, H14, H15 (proposed); J24-J34
+
+    VALIDATION (2026-09-20, judge dossier section 4.8).  The manufacturing
+      claims were stress-tested against the seven judge lenses and a
+      precedent search.  Findings, and what the deck now carries:
+      * AM for munitions is funded policy, not a novelty play: US Army ARL's
+        SAMM programme prints custom munitions; the Army states AM can
+        improve "munitions, electronic sensors and fuzes"; Picatinny has a
+        standing AM facility; DoDI 5000.93 governs AM use in the DoD; ASTM
+        with the UK MoD (Project TAMPA) published a CRITICALITY-BASED
+        certification guide for AM parts in defence - this is the
+        qualification framework the deck leads with, not the spaceflight
+        standard alone.
+      * One claim upgraded from proposal to demonstrated principle: printed
+        conformal structural supports for circuit boards have been shown
+        viable for high-G survivability in GUN-LAUNCH applications (DTIC
+        AD1023960).  The deck says so; the residual owed is project-specific
+        qualification (risk 50).
+      * Two wordings corrected by the validation: "tooling-free" now reads
+        "for those parts a design change is a file, not a new die" - the
+        conventional tier keeps its dies and suppliers; and the boundary
+        "printed parts are non-primary structure, the launch path stays
+        conventional" is stated with the qualification route.
+      * Framing rule: automation is priced as repeatability and small-batch
+        economics, never as headcount - a public-sector works reads this as
+        a labour question before a technology one.
+      * No machine price is quoted anywhere; the capex is a K5 line item
+        with the machine class named and the throughput chain shown.
+      * Rehearsed answers live in the judge dossier: Q39 (what comes off the
+        existing line), Q40 (is a printed part legal in a fuze), Q41 (why
+        does 5 000/yr need a cell).
+                                         J35-J40; judge dossier section 4.8
+
+  EVERY NUMBER ON THESE SLIDES, WITH ITS CRITERION ID
+  The register is design/00-design-criteria-register.md; it is the only source
+  of numbers used here.
+
+  SLIDE 1  Title
+    SIH26098, PS title, theme, category          problem statement / portal
+    Fielded record and the 30 m requirement      A1, A6 (rated source register)
+    Team ID and Team Name                        PLACEHOLDER - team to fill
+
+  SLIDE 2  Proposed Solution
+    267 m CEP at 30.1 km -> sigma 227 m          M6   (bracket 259 / 139 m, M6)
+    139 m at 22.5 km (M795)                      M6   basis
+    30 m requirement at full charge              M4
+    4 guided vs ~264 unguided rounds, ~66x       M8   (PROVISIONAL: M6 anchor + r_eff)
+    124.7 mm intrusion, 95.25 mm visible         P7, P12
+    2"-12 UNS-2A thread, MIL-STD-333B well       P6
+    Four fixed canards, two pairs                C1
+    D151 mm canard cap                           C31
+    Alternator as actuator and generator         C34, W4, W5
+    Fuze modes 2-15 m, 0.1-199.9 s, impact       F1
+    15 000 g and spin as the two arming stimuli  F6, E1, S6
+    Cost Rs 6.5 lakh at 5 000/year               K4
+    M1156 PGK credited by name                   A1
+
+  SLIDE 3  Technical Approach
+    Guidance ~6 Hz, loop 1 kHz                   G2, G10, G13
+    IMU +-2 000 deg/s on the de-spun ring        N6, N7
+    Spin-axis symmetric GNSS aperture            N3
+    14 poles / 12 slots, ~0.9 kg                 C34, C36, C40
+    180 V nominal bus                            H8, H12
+    Boards annular about the detonation path     H5, F9
+    Transformer power, optical data              H7
+    Fuze on its own processor and supply         H10
+    Fault ladder: hold, derate, fuze-autonomous  H13, R3, R4
+    Dump derates authority before tripping       H9
+    Authenticated GNSS conditional; fallback
+      setter authentication only                 H11, risk 39
+
+  SLIDE 4  Feasibility and Viability
+    RSS 20.3 m -> CEP 23.9 m, ~20 % under claim  G4
+    nav 3.7 m against a 5 m allocation           G4, N1
+    guidance line is the largest                 G4
+    worst corner 95 % bound, breach fraction     R5, M5
+    authority 407 m vs 450 m = 1.11:1            M7
+    friction decides whether the pair exists     C12, C13
+    2.92 kW peak / ~121 kJ per flight at launch  C42, risk 46
+    bare thread will not carry it                W7, P6
+    75 kN setback routed around the bearings     C26
+    resonance named and dispositioned            S8
+    five open items, rig-owned                   R7
+    friction datum ~20x below flight speed       C13, risk 24
+    aero data is the long pole                   risk 8, risk 38
+    platform data public; re-run on the drawing  risk 20, P6
+    failsafe: withholds function beyond 150 m    F16  (DECIDED 2026-09-20, option A)
+    volume assumption still open                 K4
+    CAD verified: 124.70 mm intrusion, zero
+      interference with the reference shell      design/07-cad-evidence.md section 1
+    seat annulus matches P6 to 1.3 %             same
+    CAD findings stated as open items on this
+      slide: mass vs the 1.4 kg limit (body
+      alone = 1.407 kg in steel; titanium 0.794,
+      aluminium 0.484) -- T4; and the reserved
+      centreline bore costing ~7 % of slot depth
+      -- T3                                       P9, C40, C19, C42; 07-cad-evidence.md
+
+  SLIDE 5  Impact and Benefits
+    fielded unit cost US$13,541 (FY2013)         K4
+    2026 class production award US$863 M         K4
+    target Rs 6.5 lakh, 5 000 kits/yr            K4
+    rounds for 90 % defeat at r_eff 30 m         M8
+    CEP <= 30 m at full charge                   M4
+    range retention > 90 %                       M10
+    mass +0.7-0.9 kg, nose ~7 mm forward         C40, P9, risk 33
+    no re-qualification of the round             P13
+    growth module out of the baseline            X1, X17
+    ring and canards from one machining setup    C31, C46 (proposed), J22
+    stator core pressed or stamped, on loss
+      and strength data                          C39, J1, J2, J3
+    winding conventional: skin depth 1.4 mm
+      at 2 130 Hz, so printed copper is not
+      required on loss grounds                    C18, C46 (proposed), J4, J5
+    magnets: coercivity via grain-boundary
+      diffusion, less heavy rare earth           C38, K4, J13
+    thermal joint manufactured: cold-sprayed
+      copper 98 % IACS, indium foil, compliant
+      contact                                    P6, W7, J9, J10
+    novel processes declared development-only,
+      qualification cost outside the price       K5, risk 47 (proposed), J6, J7
+    digital cell - print, post-treat, assemble;
+      HIP / heat treatment / machining / finishing
+      each named against a specific weakness    K8, C47 (proposed), J24-J28
+    qualification shape = process control +
+      coupons + testing (NASA-STD-6030)         J28, risk 49 (proposed)
+    tooling-free first articles de-risk the
+      P6 re-baseline; variants are files        K8 (proposed), risks 20/21, J29
+    printed structural electronics removes the
+      connectors/harness; components placed
+      mid-build, conductors printed to them     H5, J31, risk 50 (proposed)
+    modular sensor stack, targeted redundancy:
+      dual inertial+magnetic, second ring-angle
+      pickoff; ~5-15 g, under 0.5 W, ~1 % mass  H14, H15 (proposed), P9, J31-J32
+    bounds: signals not power; energetics stay
+      outside the cell; qualification not repealed  C18, F6, risk 50 (proposed)
+    throughput: ~1.5-2.5 t/yr printed metal =
+      about 2-5 LPBF machines (capex in K5)     K5, K8 (proposed) [derived]
+
+  SLIDE 6  Research and References
+    Every entry is a real, citable source drawn from the register and from
+    notes/00-PGK-thesis-working-notes.md section 12, at Cite >= 3 in
+    design/05-source-register.md.  The predecessor study in
+    ~/Documents/smart india hackathon/ is in-house analysis, not a public
+    source: no value from it appears anywhere in this deck.
+
+    Entry 34, the manufacturing set, in full (source register section J):
+      Hoganas (Ye, Jonsson et al.), A new generation of sustainable SMC
+        materials with low core loss - Somaloy 700 7P, 83 W/kg at 1 T/1 kHz,
+        TRS 60-100 MPa, thermal ageing 0/1/5 % at 150/200/260 C        J1
+      Waelzholz, thin electrical steel strip NO grades from 0.1 mm; and
+        multi-layer shear cutting of thin NO-grade sheet, ScienceDirect 2026
+        (handling below 0.23 mm is a named manufacturing challenge)    J2, J3
+      On the Fabrication of High-Performance Additively Manufactured Copper
+        Winding, Materials 16(13):4694, 2023 - 79 %/63 % slot fill, 87 % IACS
+        after heat treatment                                            J4
+      RWTH Aachen, printed copper winding heads on conventional conductors,
+        BHM 2023 - end-winding height cut 12.5 mm of 37 mm, 0.564 kg copper
+        saved                                                           J5
+      Oel et al., Additive Manufacturing Letters 2023 - printed cooling
+        channels not fully depowdered, short-circuit currents in test
+        (the stated non-inheritance)                                    J6
+      Advanced cooling of power electronics with copper cold sprayed, IEEE
+        2024 - 98 % IACS and 368 W/mK as-sprayed                        J9
+      Selection of high-performance thermal interface materials for space,
+        ScienceDirect 2025 - smooth and embossed indium foil against
+        contact pressure and roughness; NASA SmallSat SOA 7.0 thermal   J10, J10c
+      Progress on grain boundary diffused Nd-Fe-B magnets, ScienceDirect
+        2021, with the DyF3 dip-coating route, Springer 2025            J13
+      The additive / post-treatment set (added with design/06 section 7):
+        HIP of LPBF AlSi10Mg, Springer J Mater Sci 2022 and MDPI JMMP
+          3(1):16, 2019 - porosity-driven fatigue initiation; the classic
+          ~500 C / 100 MPa cycle's strength cost, partly recovered by heat
+          treatment                                                    J24, J25
+        LPBF surface roughness and post-processing methods (ScienceDirect
+          2020; Frontiers in Materials 2023); thin-wall build limits
+          (Springer IJAMT 2020); geometric tolerance reproducibility
+          (ScienceDirect 2021; MDPI 2026)                              J26, J26b, J26c
+        Predictive qualification with multi-modal in-situ monitoring (UT
+          Austin 2025; NIST AMS 100-35) - monitoring is not yet a testing
+          substitute                                                   J27
+        NASA-STD-6030, Additive Manufacturing Requirements for Spaceflight
+          Systems, 2021                                                J28
+        Part consolidation / on-demand aerospace AM review, AJEAS 2024  J29
+        Robot-based hybrid WAAM + machining platform, Springer IJAMT 2023;
+          scalable multi-robot WAAM, ScienceDirect 2023; MX3D practice   J30
+        3D printed structural electronics (Plastics, Rubber and Composites
+          2017, print-pause-pick-and-place); Nano Dimension DragonFly IV;
+          Optomec Aerosol Jet                                        J31, J31b
+        Fibre Bragg gratings embedded in LPBF Inconel 718 (MDPI Sensors
+          2024); UAM-embedded FBGs, IEEE 2023                          J32
+        3D printed graded-index dielectric lenses (IEEE 2019; MDPI
+          Electronics 2026)                                            J33
+        SLS vapour smoothing (Formlabs / AMT white papers)             J34
+  ===========================================================================
+-->
+
+<style>
+/* ===========================================================================
+   DESIGN TOKENS — restyle the whole deck from this block.
+   ---------------------------------------------------------------------------
+   COLOUR ROLES
+     --ink      primary text, headings, figure strokes
+     --ink-2    body text
+     --ink-3    captions, axis labels, meta
+     --rule     hairlines, dividers, gridlines
+     --band     panel and figure background tint
+     --paper    slide background
+     --accent   THE accent colour: section labels, rules, emphasis, data
+     --tint     accent at 13 %    --tint-2  accent at 30 %
+     --flag     the only second colour.  It marks the fields and the open
+                decision the TEAM must fill in — nothing else.  Set
+                --flag equal to --accent for a strictly monochrome deck.
+   FIGURE TOKENS
+     The generated SVGs (figures 1-3) read --f-*.  They alias the roles above,
+     so changing --accent recolours the data in every figure at once.
+   TYPE SCALE
+     --fs-1  slide title        --fs-2  panel lead
+     --fs-3  body               --fs-4  small / bullet
+     --fs-5  meta               --fs-6  figure caption
+     --fs-eye  section eyebrow
+   SPACING
+     --pad-x  --pad-y  slide padding    --gap  baseline gap  --gap-2  wider
+   PAGE GEOMETRY
+     --slide-w 1280px = 13.333 in      --slide-h 720px = 7.5 in
+     both at 96 dpi, matching the @page rule.
+   =========================================================================== */
+:root{
+  --ink:#10151b; --ink-2:#46525f; --ink-3:#7b8794;
+  --rule:#d9dee4; --band:#f2f5f8; --paper:#ffffff;
+  --accent:#0b5cad; --tint:rgba(11,92,173,.13); --tint-2:rgba(11,92,173,.30);
+  --flag:#a4551a; --flag-tint:rgba(164,85,26,.13);
+
+  --f-ink:var(--ink); --f-ink2:var(--ink-2); --f-ink3:var(--ink-3);
+  --f-rule:var(--rule); --f-band:var(--band); --f-paper:var(--paper);
+  --f-accent:var(--accent); --f-tint:var(--tint); --f-tint2:var(--tint-2);
+  --f-flag:var(--flag); --f-flagt:var(--flag-tint);
+
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --fs-1:29px; --fs-2:15px; --fs-3:13px; --fs-4:11.5px; --fs-5:9.5px;
+  --fs-6:8.5px; --fs-eye:10px;
+  --lh:1.34;
+
+  --pad-x:54px; --pad-y:34px; --gap:14px; --gap-2:22px;
+  --slide-w:1280px; --slide-h:720px;
+}
+
+/* ---------------------------------------------------------------- print --- */
+@page{ size:13.333in 7.5in; margin:0; }
+*{ box-sizing:border-box; }
+html,body{ margin:0; padding:0; background:#606a75; }
+body{ font-family:var(--font); color:var(--ink); -webkit-font-smoothing:antialiased; }
+
+.slide{
+  position:relative; width:var(--slide-w); height:var(--slide-h);
+  background:var(--paper); overflow:hidden;
+  margin:0 auto; page-break-inside:avoid; break-inside:avoid-page;
+}
+.slide + .slide{ page-break-before:always; break-before:page; }
+@media screen{ .slide{ margin:16px auto; box-shadow:0 2px 14px rgba(0,0,0,.35); } }
+
+@media print{
+  html,body{ background:var(--paper); }
+  .slide{ margin:0; box-shadow:none; }
+  .screen-only{ display:none !important; }
+  *{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+}
+.screen-only{
+  position:fixed; left:50%; transform:translateX(-50%); top:6px; z-index:9;
+  font-size:11px; padding:5px 12px; border-radius:999px; color:#e9eef4;
+  background:rgba(16,21,27,.72); border:1px solid rgba(255,255,255,.16);
+}
+
+/* ------------------------------------------------------------- chrome ----- */
+.s-head{ padding:var(--pad-y) var(--pad-x) 0; }
+.eyebrow{
+  font-size:var(--fs-eye); letter-spacing:.16em; text-transform:uppercase;
+  color:var(--accent); font-weight:600;
+}
+.s-title{
+  margin:6px 0 0; font-size:var(--fs-1); line-height:1.12; font-weight:650;
+  letter-spacing:-.01em; max-width:1120px;
+}
+.title-rule{ height:3px; background:var(--accent); margin:12px var(--pad-x) 0; width:78px; }
+.s-body{ padding:var(--gap-2) var(--pad-x) 0; }
+.s-foot{
+  position:absolute; left:var(--pad-x); right:var(--pad-x); bottom:16px;
+  display:flex; justify-content:space-between; align-items:flex-end;
+  border-top:1px solid var(--rule); padding-top:7px;
+  font-size:var(--fs-5); color:var(--ink-3);
+}
+.s-foot b{ color:var(--ink-2); font-weight:600; }
+
+/* -------------------------------------------------------------- layout ---- */
+.cols{ display:grid; gap:var(--gap-2); }
+.c2{ grid-template-columns:1fr 1fr; }
+.c3{ grid-template-columns:1fr 1fr 1fr; }
+.c-500-1{ grid-template-columns:492px 1fr; }
+figure{ margin:0; }
+figure svg{ display:block; width:100%; height:auto; }
+figure.fit svg{ height:236px; }
+figure.fit3 svg{ height:268px; }
+figcaption{ font-size:var(--fs-6); color:var(--ink-3); margin-top:5px; }
+
+/* ------------------------------------------------------------ text bits --- */
+ul.b{ list-style:none; margin:0; padding:0; }
+ul.b li{
+  position:relative; padding-left:13px; margin-bottom:8px;
+  font-size:var(--fs-4); line-height:var(--lh); color:var(--ink-2);
+}
+ul.b li::before{
+  content:""; position:absolute; left:0; top:6.5px; width:4.5px; height:4.5px;
+  background:var(--accent);
+}
+ul.b li b, ul.b li strong{ color:var(--ink); font-weight:600; }
+ul.b.tight li{ margin-bottom:5px; font-size:var(--fs-4); }
+.h{ font-size:var(--fs-2); font-weight:650; color:var(--ink); margin:0 0 7px; }
+.h .tag{ font-weight:400; color:var(--ink-3); font-size:var(--fs-5); }
+
+.note{
+  border-left:3px solid var(--accent); background:var(--band);
+  padding:9px 12px; font-size:var(--fs-4); line-height:var(--lh);
+  color:var(--ink-2); margin-top:2px;
+}
+.note b{ color:var(--ink); }
+
+.ph{
+  color:var(--flag); background:var(--flag-tint); border:1px dashed var(--flag);
+  border-radius:3px; padding:1px 6px; font-weight:600; font-size:.94em;
+  white-space:nowrap;
+}
+
+/* ---------------------------------------------------------------- title --- */
+.title-wrap{ padding:52px var(--pad-x) 0; }
+.title-kicker{ font-size:var(--fs-eye); letter-spacing:.18em; text-transform:uppercase; color:var(--accent); font-weight:600; }
+.title-idea{ font-size:44px; font-weight:680; letter-spacing:-.02em; margin:10px 0 0; line-height:1.06; }
+.title-sub{ font-size:var(--fs-2); color:var(--ink-2); margin:10px 0 0; max-width:1090px; line-height:1.4; }
+.fields{ display:grid; grid-template-columns:1fr 1fr; gap:0 34px; margin-top:20px; }
+.field{ display:flex; gap:10px; padding:6px 0; border-bottom:1px solid var(--rule); font-size:var(--fs-4); }
+.field dt{ flex:0 0 176px; color:var(--ink-3); }
+.field dd{ margin:0; color:var(--ink); font-weight:600; }
+.field dd .ph{ font-weight:600; }
+
+/* ----------------------------------------------------------- mini table --- */
+table.kv{ width:100%; border-collapse:collapse; font-size:var(--fs-4); }
+table.kv th{
+  text-align:left; font-size:var(--fs-6); letter-spacing:.09em; text-transform:uppercase;
+  color:var(--ink-3); font-weight:600; padding:0 6px 5px 0; border-bottom:1px solid var(--rule);
+}
+table.kv td{ padding:5px 6px 5px 0; border-bottom:1px solid var(--rule); color:var(--ink-2); vertical-align:top; }
+table.kv td:first-child{ color:var(--ink); font-weight:600; white-space:nowrap; }
+table.kv tr:last-child td{ border-bottom:0; }
+
+/* -------------------------------------------------------------- refs ------ */
+ol.refs{ margin:0; padding:0; list-style:none; counter-reset:r; }
+ol.refs li{
+  counter-increment:r; position:relative; padding-left:19px; margin-bottom:5.5px;
+  font-size:10px; line-height:1.3; color:var(--ink-2);
+}
+ol.refs li::before{
+  content:counter(r) "."; position:absolute; left:0; color:var(--ink-3);
+  font-weight:600;
+}
+.ref-h{ font-size:var(--fs-6); letter-spacing:.1em; text-transform:uppercase;
+  color:var(--accent); font-weight:600; margin:0 0 6px; }
+</style>
+</head>
+
+<body>
+<div class="screen-only">Print: A4/Letter &rarr; Save as PDF &middot; margins None &middot; scale 100 % &middot; background graphics ON</div>
+
+<!-- ===================================================================== -->
+<!-- SLIDE 1 — TITLE (SIH pointer: TITLE PAGE)                             -->
+<!-- ===================================================================== -->
+<section class="slide">
+  <div class="title-wrap">
+    <div class="title-kicker">Smart India Hackathon 2026 &middot; Idea Presentation</div>
+    <h1 class="title-idea">DRISHTI-PGK</h1>
+    <p class="title-sub">A guidance kit and a multi-mode fuze that screw into the fuze well of a standard 155&nbsp;mm shell.</p>
+
+    <dl class="fields">
+      <div class="field"><dt>Problem Statement ID</dt><dd>SIH26098</dd></div>
+      <div class="field"><dt>Theme</dt><dd>Smart Vehicles</dd></div>
+      <div class="field"><dt>Problem Statement Title</dt>
+        <dd>Development of a Low-Cost Precision Guidance and Smart Electronic Fuze System for a 155&nbsp;mm Artillery Shell</dd></div>
+      <div class="field"><dt>PS Category</dt><dd>Hardware</dd></div>
+      <div class="field"><dt>Team ID</dt><dd><span class="ph">to be filled from the portal</span></dd></div>
+      <div class="field"><dt>Team Name (registered on portal)</dt><dd><span class="ph">to be filled from the portal</span></dd></div>
+    </dl>
+  </div>
+
+  <div class="s-body" style="padding-top:16px">
+    <figure>
+      <!-- FIG:fig1-dispersion:start -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 276" width="1160" height="276" role="img" aria-label="The problem: unguided dispersion against the 30 m requirement" style="font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;display:block">
+        <title>The problem: unguided dispersion against the 30 m requirement</title>
+        <desc>Unguided CEP against range, and rounds per target guided against unguided.</desc>
+        <text x="76" y="22" text-anchor="start" style="font-size:11.5px;fill:var(--f-ink, #10151b);font-weight:600">Unguided dispersion grows with range</text>
+        <text x="70" y="40" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">CEP (m)</text>
+        <text x="383" y="254" text-anchor="middle" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">engagement range (km)</text>
+        <line x1="76" y1="224" x2="690" y2="224" style="stroke:var(--f-rule, #d9dee4);stroke-width:1.2"/>
+        <text x="70" y="227" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">0</text>
+        <line x1="76" y1="164" x2="690" y2="164" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+        <text x="70" y="167" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">100</text>
+        <line x1="76" y1="104" x2="690" y2="104" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+        <text x="70" y="107" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">200</text>
+        <line x1="76" y1="44" x2="690" y2="44" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+        <text x="70" y="47" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">300</text>
+        <line x1="76" y1="224" x2="76" y2="228" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+        <text x="76" y="239" text-anchor="middle" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">20</text>
+        <line x1="187.636" y1="224" x2="187.636" y2="228" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+        <text x="187.636" y="239" text-anchor="middle" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">22</text>
+        <line x1="299.273" y1="224" x2="299.273" y2="228" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+        <text x="299.273" y="239" text-anchor="middle" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">24</text>
+        <line x1="410.909" y1="224" x2="410.909" y2="228" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+        <text x="410.909" y="239" text-anchor="middle" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">26</text>
+        <line x1="522.545" y1="224" x2="522.545" y2="228" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+        <text x="522.545" y="239" text-anchor="middle" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">28</text>
+        <line x1="634.182" y1="224" x2="634.182" y2="228" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+        <text x="634.182" y="239" text-anchor="middle" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">30</text>
+        <line x1="76" y1="44" x2="76" y2="224" style="stroke:var(--f-rule, #d9dee4);stroke-width:1.2"/>
+        <polygon points="215.545,140.6 639.764,63.8 639.764,206 215.545,206" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke-width:1"/>
+        <line x1="215.545" y1="140.6" x2="639.764" y2="63.8" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.6;stroke-dasharray:5 4"/>
+        <line x1="76" y1="206" x2="690" y2="206" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.6"/>
+        <text x="686" y="200" text-anchor="end" style="font-size:9px;fill:var(--f-accent, #0b5cad);font-weight:600">requirement: CEP ≤ 30 m at full charge</text>
+        <circle cx="215.545" cy="140.6" r="3.6" style="fill:var(--f-accent, #0b5cad);stroke-width:1"/>
+        <text x="215.545" y="155.6" text-anchor="middle" style="font-size:9px;fill:var(--f-ink2, #46525f);font-weight:400">M795 · 139 m @ 22.5 km</text>
+        <circle cx="639.764" cy="68.6" r="3.6" style="fill:var(--f-accent, #0b5cad);stroke-width:1"/>
+        <text x="630.764" y="55.6" text-anchor="end" style="font-size:9px;fill:var(--f-ink2, #46525f);font-weight:400">M549 · 259 m @ 30.1 km</text>
+        <circle cx="639.764" cy="63.8" r="3.6" style="fill:var(--f-accent, #0b5cad);stroke-width:1"/>
+        <text x="630.764" y="74.8" text-anchor="end" style="font-size:9px;fill:var(--f-ink2, #46525f);font-weight:400">M549A1 · 267 m → σ 227 m</text>
+        <text x="436" y="132" text-anchor="middle" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400;font-style:italic">dispersion the kit has to remove</text>
+        <text x="790" y="22" text-anchor="start" style="font-size:11.5px;fill:var(--f-ink, #10151b);font-weight:600">Rounds to reach a 90 % probability of defeat</text>
+        <text x="1120" y="40" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">rounds (log)</text>
+        <line x1="790" y1="224" x2="1120" y2="224" style="stroke:var(--f-rule, #d9dee4);stroke-width:1.2"/>
+        <text x="782" y="227" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">1</text>
+        <line x1="790" y1="164" x2="1120" y2="164" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+        <text x="782" y="167" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">10</text>
+        <line x1="790" y1="104" x2="1120" y2="104" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+        <text x="782" y="107" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">100</text>
+        <line x1="790" y1="44" x2="1120" y2="44" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+        <text x="782" y="47" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">1000</text>
+        <rect x="850" y="187.876" width="60" height="36.1236" rx="0" style="fill:var(--f-accent, #0b5cad);stroke-width:1"/>
+        <text x="880" y="180.876" text-anchor="middle" style="font-size:10.5px;fill:var(--f-accent, #0b5cad);font-weight:600">4</text>
+        <text x="880" y="240" text-anchor="middle" style="font-size:9.5px;fill:var(--f-ink2, #46525f);font-weight:400">guided</text>
+        <rect x="1000" y="78.7038" width="60" height="145.296" rx="0" style="fill:var(--f-ink3, #7b8794);stroke-width:1"/>
+        <text x="1030" y="71.7038" text-anchor="middle" style="font-size:10.5px;fill:var(--f-ink3, #7b8794);font-weight:600">≈264</text>
+        <text x="1030" y="240" text-anchor="middle" style="font-size:9.5px;fill:var(--f-ink2, #46525f);font-weight:400">unguided</text>
+        <line x1="790" y1="224" x2="1120" y2="224" style="stroke:var(--f-rule, #d9dee4);stroke-width:1.2"/>
+        <text x="955" y="108" text-anchor="middle" style="font-size:15px;fill:var(--f-accent, #0b5cad);font-weight:600">≈ 66×</text>
+        <text x="76" y="268" text-anchor="start" style="font-size:8.5px;fill:var(--f-ink3, #7b8794);font-weight:400">Left: published unguided CEP for this class of shell — our own numbers replace these once we have the drawing.   Right: rounds for a 90 % chance against a point target.</text>
+        </svg>
+    <!-- FIG:fig1-dispersion:end -->
+    </figure>
+  </div>
+
+  <div class="s-foot">
+    <span><b>DRISHTI-PGK</b> &middot; SIH26098</span>
+    <span class="ph">Your Team Name &mdash; registered on portal</span>
+    <span>1 / 6</span>
+  </div>
+</section>
+
+<!-- ===================================================================== -->
+<!-- SLIDE 2 — PROPOSED SOLUTION                                           -->
+<!-- ===================================================================== -->
+<section class="slide">
+  <div class="s-head">
+    <div class="eyebrow">Proposed Solution</div>
+    <h2 class="s-title">The kit replaces the fuze, not the shell</h2>
+  </div>
+  <div class="title-rule"></div>
+  <div class="s-body">
+    <div class="cols c-500-1">
+      <div>
+        <ul class="b tight">
+          <li>It screws into the standard fuze well. The shell body, the charge system, the driving band and the gun interface never change.</li>
+          <li>Of the kit, <b>124.7&nbsp;mm sits inside the well and 95.25&nbsp;mm stands proud of it</b>, on the same 2&Prime;-12 thread an in-service fuze uses.</li>
+          <li>Four small canards sit on a ring that is free to turn. <b>Two of them steer. Two of them hold the ring against the shell&rsquo;s spin</b>, and holding it is what makes the machine generate.</li>
+          <li>Nothing moves except that ring &mdash; no servos, no gearboxes, no linkages. The ring&rsquo;s angle is the only thing we command.</li>
+          <li>The canards stay out. Nothing deploys, so <b>nothing can deploy at the wrong moment</b>, and a 151&nbsp;mm span keeps them clear of the bore.</li>
+          <li>Flight power comes from the same machine, so there is <b>no flight battery</b>. A reserve cell covers the safe state on the gun line; a capacitor bank covers the surges.</li>
+          <li>The fuze does all three modes: proximity from 2 to 15&nbsp;m, time from 0.1 to 199.9&nbsp;s, and impact.</li>
+          <li>It cannot arm in the bore. <b>Two launch conditions must happen first</b> &mdash; setback and spin &mdash; before the electronics get any say.</li>
+          <li>Target cost <b>&#8377;6.5&nbsp;lakh a unit at 5&nbsp;000 a year</b>, which is where we want to sit against an imported kit.</li>
+        </ul>
+        <div class="note">
+          <b>Most of this architecture is not ours</b>
+          <ul class="b tight" style="font-size:10.5px;margin-top:5px">
+            <li>De-spun ring, fixed canards, no actuators, no flight battery &mdash; that is the published specification of the M1156 kit that the problem statement asks us to indigenise.</li>
+            <li>What we are adding is the sizing, the thermal path and the sensing. We would rather say that first than have a panel say it for us.</li>
+          </ul>
+        </div>
+      </div>
+
+      <figure>
+        <!-- Hand-authored schematic. Radial build to scale at 1.6 px/mm; axial
+             scale exaggerated so the ring and machine stations read; dimensions
+             are given as dimensions, not measured off the drawing.  Sources:
+             C1, C22, C31, C34-C36, C40, C42, F2, F6, F9, H5, H7, H10, N3, P6-P12, W12. -->
+        <svg viewBox="0 0 620 470" role="img" aria-label="Annotated axial section of the guidance kit in the fuze well" style="display:block;font-family:var(--font)">
+          <title>Kit architecture &mdash; axial section, annotated</title>
+
+          <text x="0" y="14" style="font-size:11.5px;font-weight:600;fill:var(--ink)">Kit architecture &mdash; axial section</text>
+          <text x="620" y="14" text-anchor="end" style="font-size:8.5px;fill:var(--ink-3)">schematic &middot; axial scale exaggerated</text>
+
+          <!-- spin axis -->
+          <line x1="24" y1="160" x2="452" y2="160" style="stroke:var(--ink-3);stroke-width:1;stroke-dasharray:6 4"/>
+          <text x="24" y="156" style="font-size:8.5px;fill:var(--ink-3)">spin axis</text>
+
+          <!-- shell body (truncated) -->
+          <rect x="20" y="36" width="60" height="248" style="fill:var(--band);stroke:var(--ink-2);stroke-width:1.2"/>
+          <line x1="44" y1="36" x2="52" y2="284" style="stroke:var(--paper);stroke-width:3"/>
+          <line x1="56" y1="36" x2="64" y2="284" style="stroke:var(--paper);stroke-width:3"/>
+          <text x="50" y="300" text-anchor="middle" style="font-size:8.5px;fill:var(--ink-3)">shell body</text>
+          <text x="50" y="311" text-anchor="middle" style="font-size:8.5px;fill:var(--ink-3)">&Oslash;154.89</text>
+
+          <!-- shell ogive, kit sits inside this station -->
+          <path d="M80,36 C160,74 232,102 280,119 L280,201 C232,218 160,246 80,284 Z"
+                style="fill:var(--band);stroke:var(--ink-2);stroke-width:1.2"/>
+
+          <!-- reserved centreline train bore -->
+          <rect x="80" y="136" width="352" height="48" style="fill:var(--paper);stroke:var(--ink-3);stroke-width:.9;stroke-dasharray:4 3"/>
+          <text x="92" y="163" style="font-size:8.5px;fill:var(--ink-3)">&Oslash;30 mm train bore reserved</text>
+
+          <!-- guidance board annulus, inside the well (intrusion 124.7 mm) -->
+          <rect x="80" y="121.6" width="199" height="14.4" style="fill:var(--tint2);stroke:var(--accent);stroke-width:.8"/>
+          <rect x="80" y="184" width="199" height="14.4" style="fill:var(--tint2);stroke:var(--accent);stroke-width:.8"/>
+          <circle cx="132" cy="129" r="2.6" style="fill:var(--accent)"/>
+
+          <!-- thread at the seat plane -->
+          <rect x="270" y="114" width="10" height="5.4" style="fill:var(--ink-3)"/>
+          <rect x="270" y="200.6" width="10" height="5.4" style="fill:var(--ink-3)"/>
+          <circle cx="275" cy="112" r="2.6" style="fill:var(--accent)"/>
+
+          <!-- kit outer envelope, forward of the seat -->
+          <path d="M280,119.4 L282,112 L308,112 L310,76.2 L368,76.2 L432,129.6 L432,176 L432,190.4 L368,243.8 L310,243.8 L308,208 L282,208 L280,200.6 Z"
+                style="fill:none;stroke:var(--ink-2);stroke-width:1.4"/>
+
+          <!-- body-side structure and stator -->
+          <rect x="280" y="104" width="88" height="32" style="fill:var(--tint);stroke:var(--accent);stroke-width:.8"/>
+          <rect x="280" y="184" width="88" height="32" style="fill:var(--tint);stroke:var(--accent);stroke-width:.8"/>
+          <!-- bearing rows -->
+          <circle cx="294" cy="120" r="4" style="fill:var(--paper);stroke:var(--ink-2);stroke-width:1"/>
+          <circle cx="294" cy="200" r="4" style="fill:var(--paper);stroke:var(--ink-2);stroke-width:1"/>
+          <circle cx="302" cy="120" r="4" style="fill:var(--paper);stroke:var(--ink-2);stroke-width:1"/>
+          <circle cx="302" cy="200" r="4" style="fill:var(--paper);stroke:var(--ink-2);stroke-width:1"/>
+          <!-- air gap, 0.40 mm -->
+          <rect x="310" y="97.1" width="58" height="6.6" style="fill:var(--paper);stroke:var(--accent);stroke-width:.9;stroke-dasharray:3 2"/>
+          <rect x="310" y="216.3" width="58" height="6.6" style="fill:var(--paper);stroke:var(--accent);stroke-width:.9;stroke-dasharray:3 2"/>
+          <!-- rotor: magnets, backiron, ring skin -->
+          <rect x="310" y="76.2" width="58" height="20.9" style="fill:var(--tint2);stroke:var(--accent);stroke-width:.8"/>
+          <rect x="310" y="222.9" width="58" height="20.9" style="fill:var(--tint2);stroke:var(--accent);stroke-width:.8"/>
+          <circle cx="352" cy="86" r="2.6" style="fill:var(--accent)"/>
+          <circle cx="352" cy="112" r="2.6" style="fill:var(--accent)"/>
+          <!-- canards, tips at D151 mm -->
+          <polygon points="322,76.2 330,46 360,39 366,76.2" style="fill:var(--tint);stroke:var(--accent);stroke-width:1.1"/>
+          <polygon points="322,243.8 330,274 360,281 366,243.8" style="fill:var(--tint);stroke:var(--accent);stroke-width:1.1"/>
+          <circle cx="345" cy="56" r="2.6" style="fill:var(--accent)"/>
+          <!-- dump stage, body side inboard of the coils -->
+          <rect x="314" y="140" width="26" height="9" style="fill:var(--accent)"/>
+          <circle cx="300" cy="226" r="2.6" style="fill:var(--accent)"/>
+          <!-- ring-body link -->
+          <circle cx="286" cy="232" r="2.6" style="fill:var(--accent)"/>
+          <!-- fuze stack in the nose -->
+          <rect x="400" y="140" width="32" height="40" style="fill:var(--tint);stroke:var(--accent);stroke-width:.8"/>
+          <polygon points="432,129.6 452,152 452,168 432,190.4" style="fill:var(--band);stroke:var(--ink-2);stroke-width:1.2"/>
+          <circle cx="424" cy="140" r="2.6" style="fill:var(--accent)"/>
+
+          <!-- dimensions -->
+          <line x1="80" y1="302" x2="280" y2="302" style="stroke:var(--ink-3);stroke-width:.9"/>
+          <line x1="80" y1="298" x2="80" y2="306" style="stroke:var(--ink-3);stroke-width:.9"/>
+          <line x1="280" y1="298" x2="280" y2="306" style="stroke:var(--ink-3);stroke-width:.9"/>
+          <text x="180" y="297" text-anchor="middle" style="font-size:8.5px;font-weight:600;fill:var(--ink-2)">&le; 124.7 mm intrusion into the well</text>
+          <line x1="280" y1="318" x2="432" y2="318" style="stroke:var(--ink-3);stroke-width:.9"/>
+          <line x1="432" y1="314" x2="432" y2="322" style="stroke:var(--ink-3);stroke-width:.9"/>
+          <text x="356" y="313" text-anchor="middle" style="font-size:8.5px;font-weight:600;fill:var(--ink-2)">&le; 95.25 mm above the seat</text>
+
+          <line x1="474" y1="39" x2="474" y2="281" style="stroke:var(--accent);stroke-width:.9"/>
+          <line x1="470" y1="39" x2="478" y2="39" style="stroke:var(--accent);stroke-width:.9"/>
+          <line x1="470" y1="281" x2="478" y2="281" style="stroke:var(--accent);stroke-width:.9"/>
+          <text x="484" y="152" style="font-size:8.5px;font-weight:600;fill:var(--accent)">canard tips</text>
+          <text x="484" y="163" style="font-size:8.5px;font-weight:600;fill:var(--accent)">&Oslash;151 mm cap</text>
+          <text x="484" y="180" style="font-size:8.5px;fill:var(--ink-3)">bore 155.0 mm</text>
+          <text x="484" y="191" style="font-size:8.5px;fill:var(--ink-3)">body 154.89 mm</text>
+
+          <!-- numbered legend -->
+          <line x1="0" y1="336" x2="620" y2="336" style="stroke:var(--rule);stroke-width:1"/>
+          <g style="font-size:8px;fill:var(--ink-2)">
+            <circle cx="6" cy="352" r="5.6" style="fill:var(--accent)"/><text x="6" y="355" text-anchor="middle" style="font-size:7.5px;fill:var(--paper)">1</text>
+            <text x="16" y="355">Guidance boards, stacked as rings; train bore through the middle</text>
+            <circle cx="6" cy="371" r="5.6" style="fill:var(--accent)"/><text x="6" y="374" text-anchor="middle" style="font-size:7.5px;fill:var(--paper)">2</text>
+            <text x="16" y="374">Standard fuze well, 2&Prime;-12 thread</text>
+            <circle cx="6" cy="390" r="5.6" style="fill:var(--accent)"/><text x="6" y="393" text-anchor="middle" style="font-size:7.5px;fill:var(--paper)">3</text>
+            <text x="16" y="393">Two thin-section bearings; one preload value has to hold both jobs</text>
+            <circle cx="6" cy="409" r="5.6" style="fill:var(--accent)"/><text x="6" y="412" text-anchor="middle" style="font-size:7.5px;fill:var(--paper)">4</text>
+            <text x="16" y="412">Frameless outrunner: 12 slots, 14 poles, &Oslash;79 mm gap</text>
+            <circle cx="6" cy="428" r="5.6" style="fill:var(--accent)"/><text x="6" y="431" text-anchor="middle" style="font-size:7.5px;fill:var(--paper)">5</text>
+            <text x="16" y="431">0.40 mm air gap, so under 0.20 mm of movement at launch</text>
+            <circle cx="6" cy="447" r="5.6" style="fill:var(--accent)"/><text x="6" y="450" text-anchor="middle" style="font-size:7.5px;fill:var(--paper)">6</text>
+            <text x="16" y="450">Four fixed canards, tips capped at &Oslash;151 mm</text>
+            <circle cx="326" cy="352" r="5.6" style="fill:var(--accent)"/><text x="326" y="355" text-anchor="middle" style="font-size:7.5px;fill:var(--paper)">7</text>
+            <text x="336" y="355">Dump stage, body side &mdash; 2.92 kW peak, &asymp;121 kJ per flight</text>
+            <circle cx="326" cy="371" r="5.6" style="fill:var(--accent)"/><text x="326" y="374" text-anchor="middle" style="font-size:7.5px;fill:var(--paper)">8</text>
+            <text x="336" y="374">Ring link: transformer for power, light for data</text>
+            <circle cx="326" cy="390" r="5.6" style="fill:var(--accent)"/><text x="326" y="393" text-anchor="middle" style="font-size:7.5px;fill:var(--paper)">9</text>
+            <text x="336" y="393">24 GHz fuze and GNSS antenna share one axis</text>
+            <circle cx="326" cy="409" r="5.6" style="fill:var(--accent)"/><text x="326" y="412" text-anchor="middle" style="font-size:7.5px;fill:var(--paper)">10</text>
+            <text x="336" y="412">The fuze keeps its own processor, board and power</text>
+            <circle cx="326" cy="428" r="5.6" style="fill:var(--accent)"/><text x="326" y="431" text-anchor="middle" style="font-size:7.5px;fill:var(--paper)">11</text>
+            <text x="336" y="431">180 V bus, low enough that the converter never switches mode</text>
+            <circle cx="326" cy="447" r="5.6" style="fill:var(--accent)"/><text x="326" y="450" text-anchor="middle" style="font-size:7.5px;fill:var(--paper)">12</text>
+            <text x="336" y="450">Arming rotor on the centreline; nothing can function in the bore</text>
+          </g>
+        </svg>
+        <figcaption>The criterion behind each item is listed in the file rather than on the slide. Sections not shown:
+          the canard pair arrangement, and the inside of the fuze stack.</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div class="s-foot">
+    <span><b>DRISHTI-PGK</b> &middot; SIH26098</span>
+    <span class="ph">Your Team Name &mdash; registered on portal</span>
+    <span>2 / 6</span>
+  </div>
+</section>
+
+<!-- ===================================================================== -->
+<!-- SLIDE 3 — TECHNICAL APPROACH                                          -->
+<!-- ===================================================================== -->
+<section class="slide">
+  <div class="s-head">
+    <div class="eyebrow">Technical Approach</div>
+    <h2 class="s-title">How it aims, and how it holds the ring</h2>
+  </div>
+  <div class="title-rule"></div>
+  <div class="s-body" style="padding-top:16px">
+    <figure class="fit3">
+      <!-- Hand-authored block diagram.  Sources: G1-G3, G8-G15, H1, H4, H7, H9,
+           H11, N3, N6-N8, N10, N12, C14, C15.  Signal path left to right;
+           annotations above carry the sensing and observer inputs, below carry
+           power and the thermal limit. -->
+      <svg viewBox="0 0 1160 286" role="img" aria-label="Control block diagram: guidance, control loop, sensing, power and thermal limits" style="display:block;font-family:var(--font)">
+        <title>Electronics block diagram &mdash; guidance, control, sensing, power</title>
+        <defs>
+          <marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,1 L7,4 L0,7 z" style="fill:var(--ink-2)"/>
+          </marker>
+          <marker id="arf" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,1 L7,4 L0,7 z" style="fill:var(--accent)"/>
+          </marker>
+        </defs>
+
+        <!-- theta_gk feedback, routed above the annotation row -->
+        <polyline points="1072,106 1072,20 76,20 76,102" style="fill:none;stroke:var(--accent);stroke-width:1.1;stroke-dasharray:4 3"/>
+        <line x1="76" y1="20" x2="76" y2="102" marker-end="url(#arf)" style="stroke:var(--accent);stroke-width:1.1"/>
+        <text x="574" y="15" text-anchor="middle" style="font-size:8.5px;fill:var(--accent)">ring angle &mdash; the only thing we command</text>
+
+        <!-- upper annotation: the observer feeding the limit law -->
+        <rect x="400" y="38" width="360" height="44" rx="4" style="fill:var(--band);stroke:var(--ink-3);stroke-width:1"/>
+        <text x="412" y="54" style="font-size:9.5px;font-weight:600;fill:var(--ink)">Disturbance observer</text>
+        <text x="412" y="68" style="font-size:8px;fill:var(--ink-2)">Q(s) = 1/(0.5s + 1), about a 0.32 Hz corner &mdash;</text>
+        <text x="412" y="78" style="font-size:8px;fill:var(--ink-2)">deliberately slow, from the measured u and y</text>
+        <line x1="574" y1="82" x2="574" y2="102" marker-end="url(#ar)" style="stroke:var(--ink-2);stroke-width:1.2"/>
+
+        <!-- main signal path -->
+        <g>
+          <rect x="0"   y="106" width="152" height="52" rx="4" style="fill:var(--paper);stroke:var(--ink-2);stroke-width:1.2"/>
+          <rect x="166" y="106" width="152" height="52" rx="4" style="fill:var(--paper);stroke:var(--ink-2);stroke-width:1.2"/>
+          <rect x="332" y="106" width="152" height="52" rx="4" style="fill:var(--paper);stroke:var(--ink-2);stroke-width:1.2"/>
+          <rect x="498" y="106" width="152" height="52" rx="4" style="fill:var(--paper);stroke:var(--ink-2);stroke-width:1.2"/>
+          <rect x="664" y="106" width="152" height="52" rx="4" style="fill:var(--paper);stroke:var(--accent);stroke-width:1.4"/>
+          <rect x="830" y="106" width="152" height="52" rx="4" style="fill:var(--paper);stroke:var(--ink-2);stroke-width:1.2"/>
+          <rect x="996" y="106" width="152" height="52" rx="4" style="fill:var(--paper);stroke:var(--accent);stroke-width:1.6"/>
+        </g>
+        <g style="font-size:9px;font-weight:600;fill:var(--ink);text-anchor:middle">
+          <text x="76" y="130">Nav filter</text>
+          <text x="76" y="144" style="font-weight:400;font-size:8px;fill:var(--ink-2)">EKF, 16&ndash;20 states</text>
+          <text x="242" y="130">Impact-point prediction</text>
+          <text x="242" y="144" style="font-weight:400;font-size:8px;fill:var(--ink-2)">~6 Hz; under 100 ms an interval</text>
+          <text x="408" y="130">P position</text>
+          <text x="408" y="144" style="font-weight:400;font-size:8px;fill:var(--ink-2)">6.2 Hz; 0.103 s to settle</text>
+          <text x="574" y="130">PI velocity</text>
+          <text x="574" y="144" style="font-weight:400;font-size:8px;fill:var(--ink-2)">33.6 Hz; clamping</text>
+          <text x="740" y="124">Limits that move</text>
+          <text x="740" y="136" style="font-weight:400;font-size:8px;fill:var(--ink-2)">current capped by what the</text>
+          <text x="740" y="147" style="font-weight:400;font-size:8px;fill:var(--ink-2)">machine can give, right then</text>
+          <text x="906" y="130">Machine</text>
+          <text x="906" y="144" style="font-weight:400;font-size:8px;fill:var(--ink-2)">5.8 N&middot;m at peak</text>
+          <text x="1072" y="130">Ring</text>
+          <text x="1072" y="144" style="font-weight:400;font-size:8px;fill:var(--ink-2)">angle, aero torque, friction</text>
+        </g>
+        <g style="stroke:var(--ink-2);stroke-width:1.2">
+          <line x1="152" y1="132" x2="162" y2="132" marker-end="url(#ar)"/>
+          <line x1="318" y1="132" x2="328" y2="132" marker-end="url(#ar)"/>
+          <line x1="484" y1="132" x2="494" y2="132" marker-end="url(#ar)"/>
+          <line x1="650" y1="132" x2="660" y2="132" marker-end="url(#ar)"/>
+          <line x1="816" y1="132" x2="826" y2="132" marker-end="url(#ar)"/>
+          <line x1="982" y1="132" x2="992" y2="132" marker-end="url(#ar)"/>
+        </g>
+
+        <!-- lower annotation row: sensing, thermal limit, power -->
+        <rect x="0" y="178" width="400" height="46" rx="4" style="fill:var(--tint);stroke:var(--accent);stroke-width:1"/>
+        <text x="12" y="194" style="font-size:9.5px;font-weight:600;fill:var(--ink)">What the loop measures</text>
+        <text x="12" y="208" style="font-size:8px;fill:var(--ink-2)">ring IMU &middot; ring angle pickoff &middot; magnetometer</text>
+        <text x="12" y="218" style="font-size:8px;fill:var(--ink-2)">GNSS antenna on the spin axis; samples stamped at conversion</text>
+        <line x1="76" y1="178" x2="76" y2="162" marker-end="url(#ar)" style="stroke:var(--ink-2);stroke-width:1.2"/>
+
+        <rect x="420" y="178" width="340" height="46" rx="4" style="fill:var(--flag-tint);stroke:var(--flag);stroke-width:1"/>
+        <text x="432" y="194" style="font-size:9.5px;font-weight:600;fill:var(--ink)">Thermal limit &mdash; derate before trip</text>
+        <text x="432" y="208" style="font-size:8px;fill:var(--ink-2)">dump thermometry enters the same limit law and</text>
+        <text x="432" y="218" style="font-size:8px;fill:var(--ink-2)">trades guidance authority for thermal margin</text>
+        <line x1="574" y1="178" x2="574" y2="162" marker-end="url(#ar)" style="stroke:var(--flag);stroke-width:1.2"/>
+
+        <rect x="780" y="178" width="368" height="46" rx="4" style="fill:var(--band);stroke:var(--ink-3);stroke-width:1"/>
+        <text x="792" y="194" style="font-size:9.5px;font-weight:600;fill:var(--ink)">Machine and dump power electronics</text>
+        <text x="792" y="208" style="font-size:8px;fill:var(--ink-2)">four-quadrant stage &middot; 180 V nominal bus</text>
+        <text x="792" y="218" style="font-size:8px;fill:var(--ink-2)">chopper dump, 2.92 kW peak &middot; supercapacitor buffer</text>
+        <line x1="906" y1="178" x2="906" y2="162" marker-end="url(#ar)" style="stroke:var(--ink-2);stroke-width:1.2"/>
+
+        <text x="0" y="248" style="font-size:8.5px;fill:var(--ink-3)">Impact-point prediction for this airframe is published work. What we added is the gate that only commands when there is enough air pressure left to steer with.</text>
+        <text x="0" y="262" style="font-size:8.5px;fill:var(--ink-3)">The fault ladder has no shutdown: hold, derate, or hand the round back to the fuze. Compute carries about ten times the margin it needs.</text>
+        <text x="0" y="276" style="font-size:8.5px;fill:var(--ink-3)">Authenticated GNSS is conditional on the constellation&rsquo;s service and the receiver&rsquo;s support. If it is not there, the keys authenticate the setter only, and the deck says so.</text>
+      </svg>
+      <figcaption>The criterion behind each block is listed in the file rather than on the slide. A block diagram, not
+        a schematic: no component values are implied beyond the ones named.</figcaption>
+    </figure>
+  </div>
+
+  <div class="s-body" style="padding-top:10px">
+    <div class="cols c3">
+      <div>
+        <p class="h">Finding the target</p>
+        <ul class="b tight" style="font-size:10.5px">
+          <li>The round works out where it is going to land, every cycle, and turns the ring to cancel the miss.</li>
+          <li>Impact-point guidance for this kind of airframe is published work. <b>What we added is the gate</b> &mdash; the law only commands when there is enough air pressure left to actually steer with.</li>
+          <li>The IMU rides the ring, so the shell&rsquo;s spin comes off mechanically instead of being filtered out. A cheap &plusmn;2&nbsp;000&nbsp;&deg;/s part is enough.</li>
+          <li>The GNSS antenna sits on the spin axis and is symmetric about it, so the spin does not modulate the signal at all.</li>
+        </ul>
+      </div>
+      <div>
+        <p class="h">Holding the ring</p>
+        <ul class="b tight" style="font-size:10.5px">
+          <li>A 1&nbsp;kHz loop inside, the guidance law outside it at about 6&nbsp;Hz.</li>
+          <li>An observer estimates the aerodynamic torque we cannot measure and feeds it forward, so the loop is not chasing it.</li>
+          <li><b>Every limit moves with the flight.</b> Fixed limits are what lost control in the reference work; we schedule against what the machine can actually deliver at that moment.</li>
+          <li>If the dump runs hot we take authority away gradually rather than switching anything off.</li>
+        </ul>
+      </div>
+      <div>
+        <p class="h">The hardware</p>
+        <ul class="b tight" style="font-size:10.5px">
+          <li>A frameless outrunner, 14 poles and 12 slots, about 0.9&nbsp;kg. The ring is its rotor.</li>
+          <li>One bus, held at 180&nbsp;V, low enough that the converter never has to change character mid-flight.</li>
+          <li>The boards stack as rings inside the well, around the detonation path, so <b>they take no room from the nose</b>.</li>
+          <li>Power reaches the ring by transformer and data by light. <b>The fuze keeps its own processor and its own supply</b>, so a fault on our side never reaches it.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="s-foot">
+    <span><b>DRISHTI-PGK</b> &middot; SIH26098</span>
+    <span class="ph">Your Team Name &mdash; registered on portal</span>
+    <span>3 / 6</span>
+  </div>
+</section>
+
+<!-- ===================================================================== -->
+<!-- SLIDE 4 — FEASIBILITY AND VIABILITY                                   -->
+<!-- ===================================================================== -->
+<section class="slide">
+  <div class="s-head" style="padding-bottom:0">
+    <div class="eyebrow">Feasibility and Viability</div>
+    <h2 class="s-title" style="font-size:24px">It closes. Here is where it is tight</h2>
+  </div>
+  <div class="title-rule" style="margin-top:9px"></div>
+  <div class="s-body" style="padding-top:12px">
+    <div class="cols c2">
+      <figure class="fit">
+        <!-- FIG:fig2-error-budget:start -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 566 216" width="566" height="216" role="img" aria-label="Error-budget waterfall" style="font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;display:block">
+        <title>Error-budget waterfall</title>
+        <desc>One-sigma error terms accumulated in RSS to a CEP of 23.9 m against the 30 m claim.</desc>
+        <text x="44" y="22" text-anchor="start" style="font-size:11.5px;fill:var(--f-ink, #10151b);font-weight:600">Error budget — 1σ terms combined in RSS</text>
+        <text x="546" y="22" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">against the 30 m claim</text>
+        <line x1="44" y1="166" x2="546" y2="166" style="stroke:var(--f-rule, #d9dee4);stroke-width:1.2"/>
+        <text x="38" y="169" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">0</text>
+        <line x1="44" y1="124" x2="546" y2="124" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+        <text x="38" y="127" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">10</text>
+        <line x1="44" y1="82" x2="546" y2="82" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+        <text x="38" y="85" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">20</text>
+        <line x1="44" y1="40" x2="546" y2="40" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+        <text x="38" y="43" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">30</text>
+        <text x="38" y="32" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">m</text>
+        <line x1="44" y1="40" x2="546" y2="40" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.4;stroke-dasharray:5 4"/>
+        <text x="300" y="35" text-anchor="start" style="font-size:9px;fill:var(--f-accent, #0b5cad);font-weight:600">30 m claim</text>
+        <rect x="56.8571" y="145" width="46" height="21" rx="0" style="fill:var(--f-tint2, rgba(11,92,173,.30));stroke-width:1"/>
+        <text x="79.8571" y="139" text-anchor="middle" style="font-size:9.5px;fill:var(--f-ink2, #46525f);font-weight:600">5</text>
+        <text x="79.8571" y="181" text-anchor="middle" style="font-size:9px;fill:var(--f-ink2, #46525f);font-weight:400">NAV</text>
+        <rect x="128.571" y="91.5758" width="46" height="53.4242" rx="0" style="fill:var(--f-accent, #0b5cad);stroke-width:1"/>
+        <text x="151.571" y="85.5758" text-anchor="middle" style="font-size:9.5px;fill:var(--f-accent, #0b5cad);font-weight:600">17</text>
+        <text x="151.571" y="181" text-anchor="middle" style="font-size:9px;fill:var(--f-ink2, #46525f);font-weight:400">G&amp;C</text>
+        <rect x="200.286" y="88.6698" width="46" height="2.90601" rx="0" style="fill:var(--f-tint2, rgba(11,92,173,.30));stroke-width:1"/>
+        <text x="223.286" y="82.6698" text-anchor="middle" style="font-size:9.5px;fill:var(--f-ink2, #46525f);font-weight:600">5</text>
+        <text x="223.286" y="181" text-anchor="middle" style="font-size:9px;fill:var(--f-ink2, #46525f);font-weight:400">MET</text>
+        <rect x="272" y="81.6856" width="46" height="6.98421" rx="0" style="fill:var(--f-tint2, rgba(11,92,173,.30));stroke-width:1"/>
+        <text x="295" y="75.6856" text-anchor="middle" style="font-size:9.5px;fill:var(--f-ink2, #46525f);font-weight:600">8</text>
+        <text x="295" y="181" text-anchor="middle" style="font-size:9px;fill:var(--f-ink2, #46525f);font-weight:400">AERO</text>
+        <rect x="343.714" y="80.7493" width="46" height="0.936278" rx="0" style="fill:var(--f-tint2, rgba(11,92,173,.30));stroke-width:1"/>
+        <text x="366.714" y="74.7493" text-anchor="middle" style="font-size:9.5px;fill:var(--f-ink2, #46525f);font-weight:600">3</text>
+        <text x="366.714" y="181" text-anchor="middle" style="font-size:9px;fill:var(--f-ink2, #46525f);font-weight:400">FUZE</text>
+        <line x1="402.571" y1="34" x2="402.571" y2="188" style="stroke:var(--f-rule, #d9dee4);stroke-width:1;stroke-dasharray:3 3"/>
+        <rect x="415.429" y="80.7493" width="46" height="85.2507" rx="0" style="fill:var(--f-ink2, #46525f);stroke-width:1"/>
+        <text x="438.429" y="74.7493" text-anchor="middle" style="font-size:9.5px;fill:var(--f-ink2, #46525f);font-weight:600">20.3</text>
+        <text x="438.429" y="181" text-anchor="middle" style="font-size:9px;fill:var(--f-ink2, #46525f);font-weight:400">RSS</text>
+        <rect x="487.143" y="65.6258" width="46" height="100.374" rx="0" style="fill:var(--f-accent, #0b5cad);stroke-width:1"/>
+        <text x="510.143" y="59.6258" text-anchor="middle" style="font-size:9.5px;fill:var(--f-accent, #0b5cad);font-weight:600">23.9</text>
+        <text x="510.143" y="181" text-anchor="middle" style="font-size:9px;fill:var(--f-ink2, #46525f);font-weight:400">CEP</text>
+        <text x="44" y="196" text-anchor="start" style="font-size:8.5px;fill:var(--f-ink3, #7b8794);font-weight:400">√(5² + 17² + 5² + 8² + 3²) = 20.3 m, and CEP = 1.1774 × 20.3 = 23.9 m.</text>
+        <text x="44" y="210" text-anchor="start" style="font-size:8.5px;fill:var(--f-ink3, #7b8794);font-weight:400">The terms add as root-sum-square, not straight.  Guidance and prediction dominate; the rest are small.</text>
+        </svg>
+    <!-- FIG:fig2-error-budget:end -->
+      </figure>
+      <figure class="fit">
+        <!-- FIG:fig3-canard-authority:start -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 566 216" width="566" height="216" role="img" aria-label="Canard force and guidance authority against time" style="font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;display:block">
+        <title>Canard force and guidance authority against time</title>
+        <desc>Available control force envelope with the guided window shaded and the inhibited band marked.</desc>
+        <text x="46" y="22" text-anchor="start" style="font-size:11.5px;fill:var(--f-ink, #10151b);font-weight:600">Canard force and guidance authority against time</text>
+        <rect x="129.333" y="34" width="394.444" height="118" rx="0" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke-width:1"/>
+        <rect x="240.444" y="34" width="111.111" height="118" rx="0" style="fill:var(--f-paper, #ffffff);stroke:var(--f-flag, #a4551a);stroke-width:1;stroke-dasharray:3 3"/>
+        <line x1="46" y1="124.053" x2="546" y2="124.053" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+        <text x="40" y="127.053" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">-50</text>
+        <line x1="46" y1="93" x2="546" y2="93" style="stroke:var(--f-rule, #d9dee4);stroke-width:1.2"/>
+        <text x="40" y="96" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">0</text>
+        <line x1="46" y1="61.9474" x2="546" y2="61.9474" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+        <text x="40" y="64.9474" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">+50</text>
+        <text x="40" y="28" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">N</text>
+        <line x1="46" y1="152" x2="46" y2="156" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+        <text x="46" y="167" text-anchor="middle" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">0</text>
+        <line x1="129.333" y1="152" x2="129.333" y2="156" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+        <text x="129.333" y="167" text-anchor="middle" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">15</text>
+        <line x1="212.667" y1="152" x2="212.667" y2="156" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+        <text x="212.667" y="167" text-anchor="middle" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">30</text>
+        <line x1="296" y1="152" x2="296" y2="156" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+        <text x="296" y="167" text-anchor="middle" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">45</text>
+        <line x1="379.333" y1="152" x2="379.333" y2="156" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+        <text x="379.333" y="167" text-anchor="middle" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">60</text>
+        <line x1="462.667" y1="152" x2="462.667" y2="156" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+        <text x="462.667" y="167" text-anchor="middle" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">75</text>
+        <line x1="546" y1="152" x2="546" y2="156" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+        <text x="546" y="167" text-anchor="middle" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">90</text>
+        <text x="546" y="181" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">time of flight (s)</text>
+        <polygon points="46,40.2105 73.7778,40.2105 90.4444,77.4737 184.889,77.4737 229.333,81.8211 274.667,92.6895 312.667,88.0316 368.222,82.4421 423.778,80.5789 546,80.5789 546,105.421 423.778,105.421 368.222,103.558 312.667,97.9684 274.667,93.3105 229.333,104.179 184.889,108.526 90.4444,108.526 73.7778,145.789 46,145.789" style="fill:var(--f-tint2, rgba(11,92,173,.30));stroke-width:1"/>
+        <path d="M 46,40.2105 L 73.7778,40.2105 L 90.4444,77.4737 L 184.889,77.4737 L 229.333,81.8211 L 274.667,92.6895 L 312.667,88.0316 L 368.222,82.4421 L 423.778,80.5789 L 546,80.5789" style="fill:none;stroke:var(--f-accent, #0b5cad);stroke-width:1.4"/>
+        <path d="M 46,145.789 L 73.7778,145.789 L 90.4444,108.526 L 184.889,108.526 L 229.333,104.179 L 274.667,93.3105 L 312.667,97.9684 L 368.222,103.558 L 423.778,105.421 L 546,105.421" style="fill:none;stroke:var(--f-accent, #0b5cad);stroke-width:1.4"/>
+        <line x1="46" y1="81.7589" x2="546" y2="81.7589" style="stroke:var(--f-ink, #10151b);stroke-width:1.2;stroke-dasharray:4 3"/>
+        <line x1="46" y1="104.241" x2="546" y2="104.241" style="stroke:var(--f-ink, #10151b);stroke-width:1.2;stroke-dasharray:4 3"/>
+        <line x1="46" y1="84.2432" x2="546" y2="84.2432" style="stroke:var(--f-ink, #10151b);stroke-width:1.2;stroke-dasharray:4 3"/>
+        <line x1="46" y1="101.757" x2="546" y2="101.757" style="stroke:var(--f-ink, #10151b);stroke-width:1.2;stroke-dasharray:4 3"/>
+        <text x="544" y="45" text-anchor="end" style="font-size:8.5px;fill:var(--f-ink2, #46525f);font-weight:400">dashed: 18.1 N required (14.1 N on the gated phase)</text>
+        <line x1="274.667" y1="34" x2="274.667" y2="152" style="stroke:var(--f-ink3, #7b8794);stroke-width:1;stroke-dasharray:2 3"/>
+        <text x="269.667" y="145" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">apogee t ≈ 41 s</text>
+        <line x1="523.778" y1="34" x2="523.778" y2="152" style="stroke:var(--f-ink3, #7b8794);stroke-width:1;stroke-dasharray:2 3"/>
+        <text x="518.778" y="145" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">impact t ≈ 86 s</text>
+        <text x="134.333" y="145" text-anchor="start" style="font-size:9px;fill:var(--f-accent, #0b5cad);font-weight:600">guided</text>
+        <line x1="296" y1="60" x2="296" y2="80.4421" style="stroke:var(--f-flag, #a4551a);stroke-width:0.9;stroke-dasharray:2 2"/>
+        <text x="296" y="57" text-anchor="middle" style="font-size:8.5px;fill:var(--f-flag, #a4551a);font-weight:400">inhibited band</text>
+        <text x="46" y="196" text-anchor="start" style="font-size:8.5px;fill:var(--f-ink3, #7b8794);font-weight:400">Envelope taken from the reference flight profile.  It moves when our own aerodynamic data arrives.</text>
+        <text x="46" y="210" text-anchor="start" style="font-size:8.5px;fill:var(--f-ink3, #7b8794);font-weight:400">The requirement is on the worst point inside the window, not on the average.</text>
+        </svg>
+    <!-- FIG:fig3-canard-authority:end -->
+      </figure>
+    </div>
+    <p style="font-size:10px;color:var(--ink-2);margin:7px 0 0 0">
+      <b>And the hardware is now drawn:</b> the kit body is modelled against the fuze well from our own numbers &mdash; <b>124.70&nbsp;mm intrusion, zero interference with the reference shell</b>, and the seat annulus that carries the 121&nbsp;kJ matches the register&rsquo;s own area to 1.3&nbsp;%.
+    </p>
+  </div>
+
+  <div class="s-body" style="padding-top:6px">
+    <div class="cols c3">
+      <div>
+        <p class="h">Does the accuracy close?</p>
+        <ul class="b tight" style="font-size:10.5px">
+          <li>Yes. The budget adds to <b>24&nbsp;m against the 30&nbsp;m we are claiming</b>.</li>
+          <li>Navigation is the part we can check best: 3.7&nbsp;m against the 5&nbsp;m we allowed for it.</li>
+          <li>The biggest single line is prediction error, not hardware. That is why the aerodynamic data is the one dependency we are loud about.</li>
+          <li>We will publish how many rounds land outside 30&nbsp;m, not only the middle of the group.</li>
+        </ul>
+        <p class="h" style="margin-top:14px">And where does it land if it cannot get there?</p>
+        <ul class="b tight" style="font-size:10.5px">
+          <li>The kit knows where it is going to land, every cycle. <b>If that prediction says it will land more than 150&nbsp;m from the loaded target, it will not function.</b></li>
+          <li>That is the same call the fielded kit makes, and it is what lets a battery call fires near its own position.</li>
+          <li>The cost is real: a bad prediction can dud a round that would have landed acceptably &mdash; so we decide as late as the authority allows.</li>
+        </ul>
+      </div>
+      <div>
+        <p class="h">Where it is tight</p>
+        <ul class="b tight" style="font-size:10.5px">
+          <li>Steering authority: we need 407&nbsp;m of correction and we have 450. <b>That is 1.11 to 1</b>, and we would rather show you the margin than round it up.</li>
+          <li>Near the top of the flight the aerodynamic torque nearly vanishes while friction does not. <b>Friction is what decides whether the control pair can exist at all.</b></li>
+          <li>The kit makes 2.92&nbsp;kW at its peak and about 121&nbsp;kJ over the flight, and all of it has to leave through the fuze threads as heat. A bare thread will not carry that.</li>
+          <li>75&nbsp;kN of setback cannot go through the flight bearings. It goes around them.</li>
+          <li>Stability holds across the envelope, and we have named the resonance mode the literature reports for this exact configuration rather than waiting to be asked about it.</li>
+        </ul>
+      </div>
+      <div>
+        <p class="h">What we cannot claim yet</p>
+        <ul class="b tight" style="font-size:10.5px">
+          <li>Five things are still open: ring friction at real flight speed, the thermal joint, sensor coexistence, the ring-to-body link, and whether the capacitor bank survives launch. <b>All five are bench items.</b></li>
+          <li>The rig is specified and will be built if we are shortlisted. Until then these stay open, and we say so.</li>
+          <li>The friction figure we inherited was measured about twenty times slower than flight. It is a test question, not a fact.</li>
+          <li>The aerodynamic data is the long pole. It can still move every number on this slide.</li>
+          <li>Our platform numbers come from public data on this class of shell. Once we have your drawing, stability is re-run first.</li>
+          <li>And building the model priced two more: <b>mass</b> (the body alone reaches the 1.4&nbsp;kg limit in steel, so material and lightening are the levers) and the reserved centreline bore, which <b>costs the machine about 7&nbsp;% of its slot depth</b>. Both go to the reconciliation pass.</li>
+          <li>One thing we would still like you to confirm: <b>the 5&nbsp;000-a-year volume</b> that the cost target rests on. <span class="ph">open</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="s-foot">
+    <span><b>DRISHTI-PGK</b> &middot; SIH26098</span>
+    <span class="ph">Your Team Name &mdash; registered on portal</span>
+    <span>4 / 6</span>
+  </div>
+</section>
+
+<!-- ===================================================================== -->
+<!-- SLIDE 5 — IMPACT AND BENEFITS                                         -->
+<!-- ===================================================================== -->
+<section class="slide">
+  <div class="s-head">
+    <div class="eyebrow">Impact and Benefits</div>
+    <h2 class="s-title">What it buys, and what it costs</h2>
+  </div>
+  <div class="title-rule"></div>
+  <div class="s-body">
+    <div class="cols c3">
+      <div>
+        <p class="h">Cost and volume</p>
+        <ul class="b tight">
+          <li><b>&#8377;6.5&nbsp;lakh a unit at 5&nbsp;000 a year</b> &mdash; about 40&nbsp;% below what the fielded kit sells for.</li>
+          <li>That is a recurring price. Development and tooling are not in it, so it compares like for like with the imported article.</li>
+          <li><b>The volume is an assumption, not a forecast.</b> We have written it down so you can correct it.</li>
+          <li>The kit&rsquo;s cost sits mostly in the machine, the power electronics and the bearings. Make-or-buy has not been settled yet, and it is the biggest lever we have on this number.</li>
+          <li>The magnets are the one strategic-material item, so we spec them tightly: the coercivity is bought with the heavy rare earth placed only at the grain boundaries &mdash; the same temperature class with <b>less of the critical element, not more</b>.</li>
+        </ul>
+
+        <!-- Mini figure: unit cost against the fielded competitor.  K4 only. -->
+        <figure style="margin-top:12px">
+          <svg viewBox="0 0 366 104" role="img" aria-label="Recurring unit cost against the fielded competitor" style="display:block;font-family:var(--font)">
+            <title>Recurring unit cost against the fielded competitor</title>
+            <text x="0" y="10" style="font-size:9px;font-weight:600;fill:var(--ink)">Recurring unit cost</text>
+            <text x="0" y="30" style="font-size:8.5px;fill:var(--ink-2)">fielded kit &mdash; US$13,541 (FY2013)</text>
+            <rect x="0" y="36" width="338" height="15" style="fill:var(--ink-3)"/>
+            <text x="344" y="48" style="font-size:8.5px;font-weight:600;fill:var(--ink-2)">100 %</text>
+            <text x="0" y="70" style="font-size:8.5px;fill:var(--accent)">our target &mdash; &le; &#8377;6.5 lakh (&asymp; US$7,800)</text>
+            <rect x="0" y="76" width="195" height="15" style="fill:var(--accent)"/>
+            <line x1="338" y1="32" x2="338" y2="96" style="stroke:var(--accent);stroke-width:.9;stroke-dasharray:4 3"/>
+            <text x="201" y="88" style="font-size:8.5px;font-weight:600;fill:var(--accent)">&asymp; 58 % &mdash; about 40 % below</text>
+            <text x="0" y="103" style="font-size:8.5px;fill:var(--ink-3)">the class&rsquo;s 2026 production award was US$863 M</text>
+          </svg>
+        </figure>
+
+        <div class="note" style="margin-top:12px">
+          <b>Two things we are not claiming</b>
+          <ul class="b tight" style="font-size:10px;margin-top:5px">
+            <li>The fielded programme builds far more of these a year than we have assumed, and it already fields anti-jam electronics. Our target is a price and a volume, not a claim to have matched it.</li>
+            <li>The 5&nbsp;000-a-year figure is ours to justify and yours to correct.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div>
+        <p class="h">On the gun line</p>
+        <ul class="b tight">
+          <li><b>Four guided rounds do the work of about 264 today</b>, for a 90&nbsp;% chance against a point target.</li>
+          <li>No adjustment fire. The battery shoots and moves.</li>
+          <li>Range retention is written down as a requirement &mdash; better than 90&nbsp;% &mdash; so accuracy cannot be bought out of the shell&rsquo;s reach.</li>
+          <li>Nothing new to buy: same shell, same charge, same gun, same setter on the gun line.</li>
+          <li>Collateral effect falls with the group size. We state the accuracy claim in a form you can check &mdash; at the aimpoint, with target-location error shown separately rather than buried in the number.</li>
+        </ul>
+      </div>
+
+      <div>
+        <p class="h">What India gets to build</p>
+        <ul class="b tight">
+          <li>The shell body and the rifling interface are untouched, so <b>the round itself needs no re-qualification</b>.</li>
+          <li>The kit is heavier than the fuze it replaces &mdash; about 0.7 to 0.9&nbsp;kg more, with the nose about 7&nbsp;mm further forward. That sits inside the round&rsquo;s own spread, and we would rather tell you than have you find it.</li>
+          <li>The three modes line up with the Army&rsquo;s own requirement for 155&nbsp;mm electronic fuzes. The programmable time mode is the part the fielded kit does not offer.</li>
+          <li>No seeker in the baseline. The GPS-denied answer is anti-jam GNSS with inertial coasting, riding an antenna we already have.</li>
+          <li>It is a consumable added to a round you already buy, bought through the channel you already buy through &mdash; no new platform, no new training, no new supply chain.</li>
+          <li>Most of the work is what a shell factory already does: the ring and canards come off one machining setup, the stator core is pressed or stamped, the winding is conventional. The printed-copper and printed-iron parts we evaluated stay in development, and their cost is not in the price.</li>
+          <li>The complex low-volume parts come out of a digital cell: robot printing, the post-treatment chain that makes printed parts fit for gun launch, and automated electronics placement &mdash; so <b>for those parts a design change is a file, not a new die</b>. It also places components inside the structure while printing, and prints the conductors between them &mdash; removing the connectors and harness that fail first under launch acceleration. <b>Printed structural supports for circuit boards have already been shown to survive gun-launch shock.</b></li>
+          <li><b>The sensing stack is modular, with redundancy targeted rather than blanket:</b> a second inertial and magnetic channel and a second ring-angle pickoff cost about one per cent of the kit&rsquo;s mass. Bearings, detonation path and GNSS stay single, and we say why.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="s-foot">
+    <span><b>DRISHTI-PGK</b> &middot; SIH26098</span>
+    <span class="ph">Your Team Name &mdash; registered on portal</span>
+    <span>5 / 6</span>
+  </div>
+</section>
+
+<!-- ===================================================================== -->
+<!-- SLIDE 6 — RESEARCH AND REFERENCES                                     -->
+<!-- ===================================================================== -->
+<section class="slide">
+  <div class="s-head" style="padding-bottom:0">
+    <div class="eyebrow">Research and References</div>
+    <h2 class="s-title" style="font-size:24px">What we read, and what we build on</h2>
+  </div>
+  <div class="title-rule" style="margin-top:9px"></div>
+  <div class="s-body" style="padding-top:12px">
+    <div class="cols c3">
+      <div>
+        <p class="ref-h">Fielded systems and programmes</p>
+        <ol class="refs">
+          <li>Orbital ATK, <i>Precision Guidance Kit (PGK) Program Update</i>, NDIA Armament Systems Forum, 2015.</li>
+          <li><i>M1156 Precision Guidance Kit</i> &mdash; public programme record, US Army PM Combat Ammunition Systems.</li>
+          <li>Elbit Systems, <i>Silver Bullet II</i> product brochure, 2026.</li>
+          <li>US Army DOT&amp;E, <i>Precision Guidance Kit (PGK)</i>, FY2015 Annual Report.</li>
+          <li><i>Precision Guidance Kit E5</i> &mdash; anti-jam variant, production start 2026.</li>
+          <li>Indian Army RFI &mdash; indigenous manufacture of 155&nbsp;mm electronic fuzes, three categories.</li>
+        </ol>
+
+        <p class="ref-h" style="margin-top:14px">Standards</p>
+        <ol class="refs" start="7" style="counter-reset:r 6">
+          <li>NATO <b>AOP-22</b>, <i>Design Criteria and Test Methods for Inductive Setting of Large Calibre Projectile Fuzes</i>, Edition B Version 1, May 2018 (supporting STANAG&nbsp;4369&nbsp;/&nbsp;AOP-4369).</li>
+          <li><b>MIL-STD-1316</b> fuze design safety criteria &middot; <b>MIL-STD-331C</b> fuze environmental and performance tests &middot; <b>MIL-STD-810F</b> environmental &middot; <b>MIL-STD-461</b> EMC.</li>
+          <li><b>MIL-STD-333B</b>, <i>Fuze, Projectile and Accessory Contours for Large Caliber Armaments</i>, 1989 &mdash; the 2&Prime;-12&nbsp;UNS-2A nose fuze interface. STANAG&nbsp;4439&nbsp;/&nbsp;AOP-39 (insensitive munitions); STANAG&nbsp;9216.</li>
+          <li>MIL-HDBK-240&nbsp;/&nbsp;MIL-STD-464 (HERO and EME), STANAG&nbsp;4234 (EMR), MIL-STD-1686&nbsp;/&nbsp;STANAG&nbsp;4497 (ESD) &mdash; the ordnance electromagnetic-hazard set, named at P4.</li>
+        </ol>
+      </div>
+
+      <div>
+        <p class="ref-h">Airframe, guidance and stability</p>
+        <ol class="refs" style="counter-reset:r 10">
+          <li>G. G&uuml;nay, <i>Controller Design and Implementation for a Guidance Kit Used at Spinning Rockets and Projectiles</i>, M.Sc. thesis, Middle East Technical University, April 2022.</li>
+          <li>G. Clancy, T. Bybee, D. Friedrich, <i>Fixed canard 2-D guidance of artillery projectiles</i>, US Patent 6,981,672, 2006.</li>
+          <li>X. Zhang, X. Yao, Q. Zheng, <i>Impact point prediction guidance based on iterative process for dual-spin projectile with fixed canards</i>, Chinese Journal of Aeronautics 32(8), 2019.</li>
+          <li>J. Norris, A. Hameed, J. Economou et al., <i>A review of dual-spin projectile stability</i>, Defence Technology 16(1), 2020, pp.&nbsp;1&ndash;9.</li>
+          <li>R. Jaiswal, M. Kothari, A. Abhishek, <i>Design and aerodynamic characterization of canard guided fuze for dual-spin artillery projectiles</i>, AIAA 2024-1105.</li>
+          <li><i>Investigation of flight stability for fixed canard dual-spin projectile</i>, Defence Technology, 2025.</li>
+          <li>H. Guo, Z. Peng, W. Liu et al., <i>Resonance mechanism and aerodynamic optimization of a canard-type two-dimensional trajectory correction projectile</i>, Acta Armamentarii, 2026, DOI&nbsp;10.12382/bgxb.2026.0534.</li>
+          <li>L. Wang, Z. Wang, Z. Yu, <i>Influence of control strategy on stability of dual-spin projectiles with fixed canards</i>, Defence Technology 14(6), 2018.</li>
+          <li>P. Wernert, S. Theodoulis, <i>Modelling and stability analysis for a class of 155&nbsp;mm spin-stabilized projectiles with course correction fuze</i>, AIAA Atmospheric Flight Mechanics, 2013.</li>
+          <li>Gagnon, Lauzon, <i>Course Correction Fuze Concept Analysis for In-Service 155&nbsp;mm Spin-Stabilized Gunnery Projectiles</i>, AIAA 2008-6997.</li>
+          <li><i>Efficiency analysis of canards-based course correction fuze for a 155-mm spin-stabilized projectile</i>, Journal of Aerospace Engineering 29(6), 2016.</li>
+          <li><i>Robust velocity control of a fixed canard decoupled dual-spin projectile</i>, IEEE, 2024 &mdash; a motor&ndash;generator bench built to emulate this configuration.</li>
+          <li>Wang, Shen, Wang et al., <i>Analysis and compensation of inertial navigation external gimbal arm error for the fuze of double spin ballistic correction projectile</i>, Acta Armamentarii 46(6), 2025.</li>
+        </ol>
+      </div>
+
+      <div>
+        <p class="ref-h">Environment, thermal and safety</p>
+        <ol class="refs" style="counter-reset:r 23">
+          <li>A. K. J. Hasselstr&ouml;m, U. E. Nilsson, <i>Thermal Contact Conductance in Bolted Joints</i>, Chalmers University of Technology&nbsp;/&nbsp;RUAG Space, 2012.</li>
+          <li>Naval Surface Warfare Center Indian Head Division, <i>High Shock Modeling of Fuze Components</i>, 64th NDIA Fuze Conference, 2021.</li>
+          <li><i>Establishment of the damage tolerance criterion of projectile-borne electronics under in-bore launch</i>, Defence Technology, 2026.</li>
+          <li><i>Survivability of MEMS packages at high-g loads</i> &mdash; MEMS survivability to 20&nbsp;000&nbsp;g, 60&nbsp;000&nbsp;g by gas gun, Springer.</li>
+          <li><i>Friction torque in miniature ball bearings</i>, MDPI Lubricants 13(1):12, 2025; and <i>Influence of the cage on the friction torque in miniature ball bearings</i>, MDPI Lubricants 14(4):145, 2026.</li>
+          <li>Miniature bearing speed, friction, torque and heat generation &mdash; manufacturer technical guide: Q&nbsp;&prop;&nbsp;M<sub>friction</sub>&nbsp;&times;&nbsp;&omega;, and the thermal-preload runaway path.</li>
+          <li><i>High-g impact survivability of thermal batteries: gas-gun experiments and a validated 3D FEM design guidelines</i>, Defence Technology, 2026.</li>
+        </ol>
+
+        <p class="ref-h" style="margin-top:14px">Tools and programme</p>
+        <ol class="refs" style="counter-reset:r 30">
+          <li>RocketPy documentation, v1.13.0 (MIT licence) &mdash; the P3 simulation harness, Monte Carlo and atmosphere layer. Harness only: the governing model is our own 7-DOF body-plus-ring model.</li>
+          <li>SIH 2026 Guidelines &mdash; rubric and submission rules (six slides including the title slide; PDF only; business potential weighted).</li>
+          <li>Problem statement SIH26098, Ministry of Defence&nbsp;/&nbsp;Yantra India Limited, Smart India Hackathon 2026.</li>
+        </ol>
+
+        <p class="ref-h" style="margin-top:8px">Manufacturing</p>
+        <ol class="refs" style="counter-reset:r 33">
+          <li>Manufacturing and process set, rated in section&nbsp;J &mdash; soft-magnetic composites; printed-copper and hybrid windings; cold-sprayed copper; indium-foil interfaces; grain-boundary-diffusion Nd&ndash;Fe&ndash;B; plus additive post-processing (HIP, heat treatment, surface finishing), in-process monitoring, NASA-STD-6030, robotic WAAM cells, printed structural electronics, embedded fibre sensing.</li>
+        </ol>
+
+        <div class="note" style="margin-top:14px">
+          <b>Note on the reference list</b>
+          <ul class="b tight" style="font-size:10px;margin-top:5px">
+            <li>Entries 11&ndash;23 are work this design builds on and credits, not work it competes with.</li>
+            <li>Where a contribution has a fielded equivalent &mdash; the de-spun assembly, the in-flight time correction registered to the <b>XM8</b> (AOP-22&nbsp;E.16) &mdash; it is stated as a <b>target being met</b>, never an invention.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="s-foot">
+    <span><b>DRISHTI-PGK</b> &middot; SIH26098</span>
+    <span class="ph">Your Team Name &mdash; registered on portal</span>
+    <span>6 / 6</span>
+  </div>
+</section>
+
+</body>
+</html>

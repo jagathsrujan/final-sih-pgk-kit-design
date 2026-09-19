@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 566 216" width="566" height="216" role="img" aria-label="Error-budget waterfall" style="font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;display:block">
+<title>Error-budget waterfall</title>
+<desc>One-sigma error terms accumulated in RSS to a CEP of 23.9 m against the 30 m claim.</desc>
+<text x="44" y="22" text-anchor="start" style="font-size:11.5px;fill:var(--f-ink, #10151b);font-weight:600">Error budget — 1σ terms combined in RSS</text>
+<text x="546" y="22" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">against the 30 m claim</text>
+<line x1="44" y1="166" x2="546" y2="166" style="stroke:var(--f-rule, #d9dee4);stroke-width:1.2"/>
+<text x="38" y="169" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">0</text>
+<line x1="44" y1="124" x2="546" y2="124" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+<text x="38" y="127" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">10</text>
+<line x1="44" y1="82" x2="546" y2="82" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+<text x="38" y="85" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">20</text>
+<line x1="44" y1="40" x2="546" y2="40" style="stroke:var(--f-rule, #d9dee4);stroke-width:1"/>
+<text x="38" y="43" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">30</text>
+<text x="38" y="32" text-anchor="end" style="font-size:9px;fill:var(--f-ink3, #7b8794);font-weight:400">m</text>
+<line x1="44" y1="40" x2="546" y2="40" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.4;stroke-dasharray:5 4"/>
+<text x="300" y="35" text-anchor="start" style="font-size:9px;fill:var(--f-accent, #0b5cad);font-weight:600">30 m claim</text>
+<rect x="56.8571" y="145" width="46" height="21" rx="0" style="fill:var(--f-tint2, rgba(11,92,173,.30));stroke-width:1"/>
+<text x="79.8571" y="139" text-anchor="middle" style="font-size:9.5px;fill:var(--f-ink2, #46525f);font-weight:600">5</text>
+<text x="79.8571" y="181" text-anchor="middle" style="font-size:9px;fill:var(--f-ink2, #46525f);font-weight:400">NAV</text>
+<rect x="128.571" y="91.5758" width="46" height="53.4242" rx="0" style="fill:var(--f-accent, #0b5cad);stroke-width:1"/>
+<text x="151.571" y="85.5758" text-anchor="middle" style="font-size:9.5px;fill:var(--f-accent, #0b5cad);font-weight:600">17</text>
+<text x="151.571" y="181" text-anchor="middle" style="font-size:9px;fill:var(--f-ink2, #46525f);font-weight:400">G&amp;C</text>
+<rect x="200.286" y="88.6698" width="46" height="2.90601" rx="0" style="fill:var(--f-tint2, rgba(11,92,173,.30));stroke-width:1"/>
+<text x="223.286" y="82.6698" text-anchor="middle" style="font-size:9.5px;fill:var(--f-ink2, #46525f);font-weight:600">5</text>
+<text x="223.286" y="181" text-anchor="middle" style="font-size:9px;fill:var(--f-ink2, #46525f);font-weight:400">MET</text>
+<rect x="272" y="81.6856" width="46" height="6.98421" rx="0" style="fill:var(--f-tint2, rgba(11,92,173,.30));stroke-width:1"/>
+<text x="295" y="75.6856" text-anchor="middle" style="font-size:9.5px;fill:var(--f-ink2, #46525f);font-weight:600">8</text>
+<text x="295" y="181" text-anchor="middle" style="font-size:9px;fill:var(--f-ink2, #46525f);font-weight:400">AERO</text>
+<rect x="343.714" y="80.7493" width="46" height="0.936278" rx="0" style="fill:var(--f-tint2, rgba(11,92,173,.30));stroke-width:1"/>
+<text x="366.714" y="74.7493" text-anchor="middle" style="font-size:9.5px;fill:var(--f-ink2, #46525f);font-weight:600">3</text>
+<text x="366.714" y="181" text-anchor="middle" style="font-size:9px;fill:var(--f-ink2, #46525f);font-weight:400">FUZE</text>
+<line x1="402.571" y1="34" x2="402.571" y2="188" style="stroke:var(--f-rule, #d9dee4);stroke-width:1;stroke-dasharray:3 3"/>
+<rect x="415.429" y="80.7493" width="46" height="85.2507" rx="0" style="fill:var(--f-ink2, #46525f);stroke-width:1"/>
+<text x="438.429" y="74.7493" text-anchor="middle" style="font-size:9.5px;fill:var(--f-ink2, #46525f);font-weight:600">20.3</text>
+<text x="438.429" y="181" text-anchor="middle" style="font-size:9px;fill:var(--f-ink2, #46525f);font-weight:400">RSS</text>
+<rect x="487.143" y="65.6258" width="46" height="100.374" rx="0" style="fill:var(--f-accent, #0b5cad);stroke-width:1"/>
+<text x="510.143" y="59.6258" text-anchor="middle" style="font-size:9.5px;fill:var(--f-accent, #0b5cad);font-weight:600">23.9</text>
+<text x="510.143" y="181" text-anchor="middle" style="font-size:9px;fill:var(--f-ink2, #46525f);font-weight:400">CEP</text>
+<text x="44" y="196" text-anchor="start" style="font-size:8.5px;fill:var(--f-ink3, #7b8794);font-weight:400">√(5² + 17² + 5² + 8² + 3²) = 20.3 m, and CEP = 1.1774 × 20.3 = 23.9 m.</text>
+<text x="44" y="210" text-anchor="start" style="font-size:8.5px;fill:var(--f-ink3, #7b8794);font-weight:400">The terms add as root-sum-square, not straight.  Guidance and prediction dominate; the rest are small.</text>
+</svg>

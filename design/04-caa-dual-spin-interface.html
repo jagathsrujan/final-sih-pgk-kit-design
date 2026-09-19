@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dual-Spin Canard Assembly — Bearing vs PMSM parallel load paths (155 mm PGK)</title>
+
+<!--
+  ============================================================================
+  DRISHTI-PGK  ·  design/04-caa-dual-spin-interface.html
+  Single-file Three.js visualization of the dual-spin canard assembly.
+  No build step, no external assets. Open directly in a modern browser.
+  ============================================================================
+
+  WHAT THIS FILE MODELS
+  ---------------------
+  Two bodies:
+      BODY  = the 155 mm shell body (always spinning, ~250 rev/s in flight)
+      NOSE  = the canard assembly / de-spun ring (roll-controlled by the motor)
+
+  Two interfaces in PARALLEL between the same two bodies:
+      (A) BEARING  — mechanical.  Carries ALL structural loads.
+                     inner race -> shell body ONLY
+                     outer race -> canard assembly ONLY
+      (B) PMSM     — electromagnetic. Carries ONLY torque. No structural load.
+                     stator (windings) -> shell body ONLY
+                     rotor  (magnets)  -> canard assembly ONLY
+                     rotor and stator never touch (air gap)
+
+  A viewer must finish this and think: "the bearing holds it, the motor steers it."
+
+  GEOMETRY PROVENANCE
+  -------------------
+  Unit scale: 1 three.js unit = 10 mm  (declared task scale).
+  The radial build follows design/03-caa-machine-sizing.md (12 slot / 14 pole
+  frameless outrunner, 0.40 mm nominal air gap, machine OD <= 92 mm) and
+  design/02-reference-155mm-model.md (body dia 154.89 mm = 15.49 units).
+  Where the sources cannot both be drawn to scale the visualization says so on
+  screen — see the air-gap callout and the EXAGGERATED DIMENSIONS panel.
+
+  AXIAL STATIONS  (x, in units; nose is +x)
+      shell body ............. -54.0 ..  6.00  outer skin, hollow wall
+      hub / fuze-well spigot    6.00 .. 14.60  body side; carries races + stator
+      bearing bay ............   6.50 .. 10.00  two ball rows, thin section
+      motor bay ..............  10.50 .. 14.00  stator + air gap + rotor
+      canard root chord ......  12.20 .. 15.40
+      nose tip / fuze cavity    14.00 .. 18.15
+      annotations ............  19.8 / 21.2     torque arrows + roll marks
+
+  RADIAL BUILD, OUTWARD FROM THE AXIS  (r, in units)
+      MOTOR BAY                        |  BEARING BAY
+      0        .. 3.90  hub core   BODY|  0        .. 4.00  hub core        BODY
+      3.90     .. 4.70  yoke+teeth BODY|  4.00     .. 4.45  INNER race      BODY
+      4.70     .. 5.25  AIR GAP    void|  ball pitch radius 4.72, r_ball 0.28 (cage)
+      5.25     .. 5.75  magnets    NOSE|  5.00     .. 5.60  OUTER race      NOSE
+      5.75     .. 6.30  backiron   NOSE|  (hub ends at 4.00 — a 0.55 void gap
+      6.30     .. 7.00  skin       NOSE|   separates it from the outer race)
+   ============================================================================
+-->
+
+<style>
+  :root{
+    /* Colour code is fixed by the task brief and repeated in the legend. */
+    --c-shell:#8fa6bd;      /* shell body        steel grey      */
+    --c-nose:#e6e9ec;       /* canard assembly   light grey      */
+    --c-race:#5b6472;       /* races             dark chrome     */
+    --c-ball:#eef3f8;       /* rolling elements  bright silver   */
+    --c-copper:#c8792e;     /* stator windings   copper / orange */
+    --c-magnet:#2746c9;     /* rotor magnets     deep blue       */
+    --c-gap:#39e3ff;        /* air gap           cyan            */
+    --c-steer:#2f74ff;      /* steering canard   blue            */
+    --c-diff:#ffab2e;       /* differential pair amber           */
+    --c-reaction:#ff4fd8;   /* stator reaction torque            */
+
+    --bg:#0b0f14;
+    --panel:rgba(13,19,27,0.94);
+    --panel-line:rgba(120,160,200,0.22);
+    --ink:#d7e3ef;
+    --ink-dim:#8ba0b6;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);
+    font-family:var(--mono);font-size:12px;-webkit-font-smoothing:antialiased}
+  canvas{display:block}
+
+  #scene,#labels{position:absolute;inset:0}
+  #labels{pointer-events:none}
+  #labels.hidden{display:none}
+
+  /* ---------- CSS2D part labels ---------- */
+  .lbl{
+    font:11px/1.25 var(--mono);
+    padding:2px 6px;border-radius:3px;
+    background:rgba(8,12,17,0.8);
+    border:1px solid rgba(120,160,200,0.28);
+    color:var(--ink);white-space:nowrap;
+    transform:translate(-50%,-50%);
+    border-left-width:3px;
+  }
+  .lbl small{display:block;color:var(--ink-dim);font-size:10px;letter-spacing:.02em}
+  .lbl b{font-weight:600}
+  .lbl.exag{border-color:rgba(57,227,255,.55);background:rgba(4,26,32,.88);color:#bff3ff}
+  .lbl.exag small{color:#7fd8ee}
+
+  /* ---------- generic panels ---------- */
+  .panel{
+    position:absolute;background:var(--panel);
+    border:1px solid var(--panel-line);border-radius:6px;
+    backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);
+  }
+  .panel h2{
+    margin:0;padding:7px 10px;font-size:10.5px;font-weight:600;letter-spacing:.09em;
+    text-transform:uppercase;color:#9fd6ff;
+    border-bottom:1px solid var(--panel-line);background:rgba(30,50,70,.35);
+    border-radius:6px 6px 0 0;
+  }
+  .panel .body{padding:9px 10px}
+
+  /* ---------- left column ---------- */
+  #left{top:10px;left:10px;width:292px;max-height:calc(100vh - 20px);display:flex;flex-direction:column}
+  #left .body{overflow-y:auto;overflow-x:hidden}
+
+  #stateName{font-size:14px;font-weight:700;letter-spacing:.03em;color:#fff;margin:0 0 5px}
+  #caption{color:#ffd9a0;margin:0 0 9px;line-height:1.45;font-size:11.5px}
+
+  /* Readout: the label column takes its natural width so it never word-wraps
+     into a vertical stack; the value column takes the rest and may wrap. */
+  .readout{display:grid;grid-template-columns:max-content 1fr;gap:2px 8px;margin:0 0 8px;
+    border-top:1px solid var(--panel-line);padding-top:7px}
+  .readout .k{color:var(--ink-dim);font-size:10px;white-space:nowrap}
+  .readout .v{text-align:right;font-variant-numeric:tabular-nums;color:#e8f2fb;
+    font-size:10.5px;line-height:1.3}
+  .readout .v.hot{color:var(--c-gap)}
+
+  .sect{margin:11px 0 6px;color:#9fd6ff;font-size:10px;letter-spacing:.09em;text-transform:uppercase;
+    border-top:1px solid var(--panel-line);padding-top:8px}
+  .sect:first-child{border-top:0;padding-top:0;margin-top:0}
+
+  .row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+  button{
+    font:11px var(--mono);color:var(--ink);background:rgba(40,60,84,.6);
+    border:1px solid rgba(120,160,200,.3);border-radius:4px;padding:5px 8px;cursor:pointer;
+  }
+  button:hover{background:rgba(58,88,124,.78);border-color:rgba(140,190,240,.55)}
+  button.on{background:rgba(47,116,255,.35);border-color:#5b9bff;color:#fff;box-shadow:0 0 0 1px rgba(91,155,255,.35) inset}
+  button.wide{flex:1}
+  button.st{flex:1 1 62px;text-align:center;padding:6px 4px;line-height:1.2}
+  button.st.on{background:rgba(255,171,46,.28);border-color:var(--c-diff);color:#fff}
+
+  label.chk{display:flex;align-items:center;gap:6px;margin:0 0 5px;cursor:pointer;color:var(--ink)}
+  label.chk input{accent-color:#5b9bff;margin:0}
+  .slider{display:flex;align-items:center;gap:7px;margin:4px 0 6px}
+  .slider input[type=range]{flex:1;accent-color:#5b9bff;min-width:0}
+  .slider .val{width:52px;text-align:right;font-variant-numeric:tabular-nums;color:#9fd6ff}
+
+  .legend{display:grid;grid-template-columns:auto 1fr;gap:3px 7px;font-size:10.5px;color:var(--ink-dim)}
+  .legend .sw{width:11px;height:11px;border-radius:2px;border:1px solid rgba(0,0,0,.5);margin-top:1px}
+  .note{color:var(--ink-dim);line-height:1.55}
+
+  /* ---------- right column ----------
+     NOTE: #right is a plain container, so it must declare position:absolute
+     itself — top/right are ignored on a static element, which silently drops
+     the whole column into the top-left corner underneath #left. Its children
+     are then set back to static so they stack inside the flex column.        */
+  #right{position:absolute;top:10px;right:10px;width:330px;
+    max-height:calc(100vh - 20px);display:flex;flex-direction:column;gap:10px;overflow-y:auto}
+  #right .panel{position:static}
+  #parallel .body p{margin:0 0 7px;line-height:1.5}
+  #parallel .body p.lead{color:#fff}
+  .pill{display:block;padding:6px 8px;border-radius:4px;margin:0 0 6px;line-height:1.45}
+  .pill.a{background:rgba(91,100,114,.28);border-left:3px solid var(--c-race)}
+  .pill.b{background:rgba(200,121,46,.18);border-left:3px solid var(--c-copper)}
+  .pill.c{background:rgba(47,116,255,.14);border-left:3px solid var(--c-steer)}
+  .pill b{color:#fff}
+
+  /* ---------- bottom centre: load path ---------- */
+  #loadpath{left:50%;transform:translateX(-50%);bottom:10px;width:348px}
+  #loadpath .body{padding:6px 8px 4px}
+  #loadpath.hidden{display:none}
+  #loadpath svg{display:block;width:100%;height:auto}
+  .svgt{font:10.5px var(--mono);fill:#d7e3ef}
+  .svgt.dim{fill:#8ba0b6;font-size:9.5px}
+  .svgbox{fill:rgba(28,44,62,.85);stroke:rgba(120,160,200,.4)}
+  .svgfl{stroke:rgba(150,185,220,.75);stroke-width:1.3;fill:none}
+
+  /* ---------- accuracy self-check (lives in the right column) ---------- */
+  #right .panel{position:static}
+  #checks{display:none}
+  #checks.on{display:block}
+  #checks .ck{display:grid;grid-template-columns:13px 1fr;gap:5px;color:var(--ink-dim);
+    line-height:1.42;margin-bottom:5px;font-size:10.5px}
+  #checks .ck .t{color:#7fe0a0}
+
+  /* ---------- boot / error ---------- */
+  #boot{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    flex-direction:column;gap:10px;background:var(--bg);z-index:50;text-align:center;padding:20px}
+  #boot h1{font-size:14px;margin:0;letter-spacing:.08em;color:#9fd6ff;font-weight:600}
+  #boot p{margin:0;color:var(--ink-dim);max-width:560px;line-height:1.6}
+  #boot code{color:#ffd9a0}
+</style>
+</head>
+
+<body>
+
+<!-- ======================= boot / failure notice ======================= -->
+<div id="boot">
+  <h1>LOADING THREE.JS FROM CDN…</h1>
+  <p>This file pulls <code>three</code>, <code>OrbitControls</code>, <code>CSS2DRenderer</code> and
+     <code>RoomEnvironment</code> from the importmap below — one network fetch, then the browser
+     caches it. Every other object in the scene is generated in code; there are no image or font assets.</p>
+  <p id="bootErr"></p>
+</div>
+
+<div id="scene"></div>
+<div id="labels"></div>
+
+<!-- ======================= LEFT: HUD + controls ======================= -->
+<div class="panel" id="left">
+  <h2>Dual-spin canard assembly — controls</h2>
+  <div class="body">
+
+    <p id="stateName">FREE SPIN</p>
+    <p id="caption">…</p>
+
+    <div class="readout">
+      <span class="k">Shell body spin</span><span class="v" id="rBodyReal">—</span>
+      <span class="k">Shown (slow-mo)</span><span class="v" id="rSlow">—</span>
+      <span class="k">Ring roll rate</span><span class="v" id="rNose">—</span>
+      <span class="k">Relative rate</span><span class="v" id="rRel">—</span>
+      <span class="k">Ring angle (earth)</span><span class="v" id="rAng">—</span>
+      <span class="k">Ring vs body</span><span class="v" id="rAngRel">—</span>
+      <span class="k">Motor torque</span><span class="v" id="rTorque">—</span>
+      <span class="k">Machine power</span><span class="v hot" id="rPower">—</span>
+      <span class="k">Bearing duty</span><span class="v" id="rLoad">—</span>
+    </div>
+
+    <div class="sect">Playback</div>
+    <div class="row">
+      <button id="btnPlay" class="wide on">❚❚ Pause</button>
+      <button id="btnReset" class="wide">↺ Reset camera</button>
+    </div>
+    <div class="slider">
+      <span style="color:var(--ink-dim)">slow-mo</span>
+      <input id="slow" type="range" min="0.01" max="1" step="0.01" value="0.02" />
+      <span class="val" id="slowVal">0.02×</span>
+    </div>
+    <div class="note" style="margin:-2px 0 8px;font-size:10px">
+      Real spin is 250 rev/s. The slider carries the requested 0.05×–1× range and is extended down to
+      0.01× so the rotation reads as motion rather than as strobing. Readouts always quote the real rate too.
+    </div>
+
+    <div class="sect">Rotation state</div>
+    <div class="row">
+      <button class="st" data-state="free">Free spin</button>
+      <button class="st" data-state="brake">Braking</button>
+      <button class="st" data-state="locked">Locked</button>
+      <button class="st" data-state="gen">Power gen</button>
+    </div>
+    <label class="chk"><input type="checkbox" id="auto" checked /> Auto-cycle every 6 s</label>
+
+    <div class="sect">View</div>
+    <label class="chk"><input type="checkbox" id="cutaway" checked /> Cutaway / half-section</label>
+    <label class="chk"><input type="checkbox" id="exploded" /> Exploded view (+ leader lines)</label>
+    <label class="chk"><input type="checkbox" id="labelsOn" checked /> Part labels</label>
+    <label class="chk"><input type="checkbox" id="arrowsOn" checked /> Show torque arrows</label>
+    <label class="chk"><input type="checkbox" id="loadOn" checked /> Load-path diagram</label>
+    <label class="chk"><input type="checkbox" id="checksOn" /> Accuracy self-check list</label>
+
+    <div class="sect">Camera</div>
+    <div class="row">
+      <button data-cam="front">Front</button>
+      <button data-cam="side">Side</button>
+      <button data-cam="iso">Isometric</button>
+    </div>
+    <div class="row">
+      <button data-cam="bearing" class="wide">Close-up: bearing</button>
+      <button data-cam="pmsm" class="wide">Close-up: PMSM</button>
+    </div>
+
+    <div class="sect">Colour code</div>
+    <div class="legend">
+      <span class="sw" style="background:var(--c-shell)"></span><span>Shell body</span>
+      <span class="sw" style="background:var(--c-nose)"></span><span>Canard assembly</span>
+      <span class="sw" style="background:var(--c-race)"></span><span>Bearing races (dark chrome)</span>
+      <span class="sw" style="background:var(--c-ball)"></span><span>Rolling elements (silver)</span>
+      <span class="sw" style="background:var(--c-copper)"></span><span>PMSM stator windings</span>
+      <span class="sw" style="background:var(--c-magnet)"></span><span>PMSM rotor magnets</span>
+      <span class="sw" style="background:var(--c-gap)"></span><span>Air gap (torque only)</span>
+      <span class="sw" style="background:var(--c-steer)"></span><span>Steering canards</span>
+      <span class="sw" style="background:var(--c-diff)"></span><span>Differential canards</span>
+      <span class="sw" style="background:var(--c-gap)"></span><span>Torque applied to rotor</span>
+      <span class="sw" style="background:var(--c-reaction)"></span><span>Equal &amp; opposite on stator</span>
+    </div>
+
+    <div class="sect">Exaggerated dimensions</div>
+    <div class="note" style="font-size:10px">
+      Declared scale is 1 unit = 10 mm, and the axial stations and radial build follow
+      <i>03-caa-machine-sizing.md</i>. Three things are drawn out of scale for visibility, and each is
+      labelled on screen:
+      <br>• <b style="color:var(--c-gap)">Air gap</b> — drawn 5.5 mm (0.55 unit). Design value
+        <b>0.40 mm</b> (C35), so this is roughly 14× exaggerated.
+      <br>• <b>Bearing balls</b> — ball diameter drawn 5.6 mm. The races are at a realistic mean
+        Ø94 mm (the design ring OD is ≈Ø98 mm), so only the ball size is enlarged.
+      <br>• <b>Canard span</b> — tips drawn at Ø166 mm. The design caps canard tips at <b>Ø151 mm</b>
+        (C31) so they stay inside the Ø155 mm bore when stowed. Span is drawn long so the two pairs read clearly.
+      <br>Everything else — body Ø15.49 units, wall thicknesses, station spacing, 12 slots / 14 poles,
+      and the 1.00 unit clearance between the bearing outer race and the body hub — is to scale.
+    </div>
+
+  </div>
+</div>
+
+<!-- ======================= RIGHT: the parallel-interface statement ======================= -->
+<div id="right">
+
+  <div class="panel" id="parallel">
+    <h2>The two parallel interfaces</h2>
+    <div class="body">
+      <p class="lead">The bearing and the PMSM are <b>PARALLEL</b> interfaces between the same two bodies.</p>
+      <span class="pill a"><b>BEARING</b> → carries <b>100 % of structural loads</b></span>
+      <span class="pill b"><b>PMSM</b> → carries <b>100 % of torque control</b></span>
+      <p>The bearing keeps the air gap alive.<br>The PMSM controls the roll angle.</p>
+      <p style="color:#fff;margin-bottom:0">Neither can replace the other.</p>
+    </div>
+  </div>
+
+  <div class="panel" id="howto">
+    <h2>How to read this visualization</h2>
+    <div class="body">
+      <span class="pill a" style="border-left-color:var(--c-race)">
+        <b>1.</b> The bearing is the <b>only</b> thing holding the nose on. Its inner race is seated on
+        the shell-body hub, its outer race is pressed into the canard-assembly bore. Every newton of the
+        73.5 kN setback, all bending and all radial load goes through those balls — and through nothing else.
+      </span>
+      <span class="pill b" style="border-left-color:var(--c-copper)">
+        <b>2.</b> The PMSM touches nothing. Rotor magnets are mounted on the nose, stator windings on the
+        body, and a 0.40 mm air gap sits between them. It can only ever exchange <b>torque</b>. It is
+        physically incapable of carrying a structural load, and the air gap is only alive because the
+        bearing holds position across it.
+      </span>
+      <span class="pill c">
+        <b>3.</b> Together they give a body spinning at 250 rev/s a nose that holds a commanded roll
+        angle — so the fixed canards can point somewhere useful. The bearing makes it <b>hold</b>;
+        the motor makes it <b>aim</b>. Remove either one and the concept fails.
+      </span>
+      <p class="note" style="margin:6px 0 0;font-size:10px">
+        One honest consequence worth watching in the readouts: in <i>every</i> controlled state the
+        electromagnetic torque opposes the relative rotation, so the machine is absorbing — never idling.
+        Holding the ring against full body spin is a kilowatt-class duty that has to be dissipated
+        (register items W7 / W12).
+      </p>
+    </div>
+  </div>
+
+  <div class="panel" id="checks">
+    <h2>Technical accuracy self-check</h2>
+    <div class="body" id="checksBody"></div>
+  </div>
+
+  <div class="panel" id="reconcile">
+    <h2>Where this picture and the register differ</h2>
+    <div class="body">
+      <p class="note" style="margin:0 0 6px;font-size:10px">
+        Everything below is a <b>deliberate</b> difference between the drawing and the criteria register, not a
+        defect — but it is listed so a reader who checks one against the other is not left guessing. <b>The register
+        is authoritative in every case.</b> Recorded 2026-09-19.
+      </p>
+      <span class="pill c" style="font-size:10px">
+        <b>Canard azimuths.</b> The two pairs are drawn at −45° / +135° (steering) and +45° / +225° (differential),
+        purely so the cutaway reads clearly. The register's convention is <b>0° / 180° steering</b> and
+        <b>90° / −90° control</b> (C1). Same architecture, rotated for framing.
+      </span>
+      <span class="pill c" style="font-size:10px">
+        <b>Torque reference for the power readouts.</b> The readouts multiply the duty torque by the
+        <i>launch</i> spin, 1 623 rad/s, which is the machine-sizing case — so holding shows ≈3.8 kW and
+        braking ≈3.9 kW. <b>C42's published peak is 2.92 kW</b>, referenced to a different point in the spin
+        decay. The two are the same physics at two speeds; reconciling the reference is a P2 item (risk 37).
+        <b>Do not quote the on-screen figure as C42's value.</b>
+      </span>
+      <span class="pill c" style="font-size:10px">
+        <b>Exaggerated dimensions.</b> Air gap drawn ≈14× (design <b>0.40 mm</b>, C35 — the tooltip's
+        "0.5–1 mm" is the drawn width, not the specification); canard tips drawn at Ø166 mm against the
+        <b>Ø151 mm</b> design cap (C31), i.e. the exaggerated tip radius the code itself labels.
+      </span>
+      <span class="pill c" style="font-size:10px">
+        <b>Bus voltage is not shown.</b> The readouts say "→ bus" and "→ dump" without a number on purpose:
+        <b>H8 set the bus at ≈150–200 V (180 V nominal)</b>, below the flight-minimum EMF, superseding the
+        400 V of the 2026-09-18 sizing pass. Any figure this file shows from that pass is historical.
+      </span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ======================= load path diagram ======================= -->
+<div class="panel" id="loadpath">
+  <h2>Load path — what goes through which interface</h2>
+  <div class="body">
+    <svg viewBox="0 0 322 308" xmlns="http://www.w3.org/2000/svg" aria-label="Load path diagram">
+      <defs>
+        <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="rgba(150,185,220,.85)"/>
+        </marker>
+        <marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#8d99a8"/>
+        </marker>
+        <marker id="ahc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#c8792e"/>
+        </marker>
+      </defs>
+
+      <!-- 1. incoming loads -->
+      <rect class="svgbox" x="56" y="4" width="210" height="30"/>
+      <text class="svgt" x="161" y="23" text-anchor="middle">AERODYNAMIC + INERTIAL LOADS</text>
+      <line class="svgfl" x1="161" y1="34" x2="161" y2="58" marker-end="url(#ah)"/>
+
+      <!-- 2. canard assembly -->
+      <rect class="svgbox" x="81" y="60" width="160" height="30"/>
+      <text class="svgt" x="161" y="79" text-anchor="middle">CANARD ASSEMBLY</text>
+      <line class="svgfl" x1="161" y1="90" x2="161" y2="106" marker-end="url(#ah)"/>
+
+      <!-- 3. the fork -->
+      <path class="svgfl" d="M161,106 L161,114 M85,114 L237,114 M85,114 L85,130 M237,114 L237,130"/>
+
+      <!-- 4. bearing branch -->
+      <line class="svgfl" x1="85" y1="130" x2="85" y2="148" marker-end="url(#ahb)"/>
+      <rect x="10" y="150" width="150" height="48" fill="rgba(91,100,114,.30)" stroke="#8d99a8" stroke-width="1.4"/>
+      <text class="svgt" x="85" y="168" text-anchor="middle" fill="#dbe3ec">BEARING</text>
+      <text class="svgt dim" x="85" y="184" text-anchor="middle">100 % of structural loads</text>
+      <text class="svgt dim" x="85" y="211" text-anchor="middle">no torque path</text>
+
+      <!-- 5. PMSM branch -->
+      <line class="svgfl" x1="237" y1="130" x2="237" y2="148" marker-end="url(#ahc)"/>
+      <rect x="162" y="150" width="150" height="48" fill="rgba(200,121,46,.18)" stroke="#c8792e" stroke-width="1.4"/>
+      <text class="svgt" x="237" y="168" text-anchor="middle" fill="#f0c08a">PMSM</text>
+      <text class="svgt dim" x="237" y="184" text-anchor="middle">100 % of torque control</text>
+      <text class="svgt dim" x="237" y="211" text-anchor="middle">no load path</text>
+
+      <!-- 6. the merge -->
+      <path class="svgfl" d="M85,198 L85,224 M237,198 L237,224 M85,224 L237,224 M161,224 L161,240"/>
+      <line class="svgfl" x1="161" y1="240" x2="161" y2="254" marker-end="url(#ah)"/>
+
+      <!-- 7. shell body -->
+      <rect class="svgbox" x="81" y="256" width="160" height="30" stroke="#8fa6bd"/>
+      <text class="svgt" x="161" y="275" text-anchor="middle" fill="#c2d2e2">SHELL BODY</text>
+
+      <text class="svgt dim" x="161" y="300" text-anchor="middle" fill="#7f95ab">
+        Two independent paths. Neither carries the other's duty.
+      </text>
+    </svg>
+  </div>
+</div>
+
+<!-- Early failure notice: if the module never runs (offline CDN), say so -->
+<script>
+  window.addEventListener('load', () => setTimeout(() => {
+    const b = document.getElementById('boot');
+    if (b && b.style.display !== 'none') {
+      document.getElementById('bootErr').innerHTML =
+        'Still waiting… the import map points at unpkg.com. If this machine is offline, either allow that ' +
+        'fetch or swap the two importmap URLs for a local copy of three.js.';
+    }
+  }, 9000));
+  window.addEventListener('error', e => {
+    const b = document.getElementById('bootErr');
+    if (b) b.textContent = 'Error: ' + (e.message || e.error || 'unknown');
+  });
+</script>
+
+<!-- ======================= import map ======================= -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+/* ===========================================================================
+   0.  GEOMETRY CONSTANTS — all in three.js units, 1 unit = 10 mm
+   Every constant below is a dimension, not a taste. Change one and the model
+   and the self-check text follow it.
+   =========================================================================== */
+
+// --- axial stations (nose is +x) -------------------------------------------
+const BODY_FRONT_X   =   6.00;   // shell body front face / fuze-well shoulder
+const BODY_LEN       =  60.00;   // 600 mm of visible shell body
+const BODY_BORE_R    =   4.00;   // fuze-well bore radius (the hub fits into it)
+const NOSE_REAR_X    =   6.15;   // 1.5 mm axial split between the two bodies
+const BEAR_X0        =   6.50;   // bearing pair: two ball rows inside this bay
+const BEAR_X1        =  10.00;
+const MOTOR_X0       =  10.50;   // PMSM active stack, 30 mm  (L = 25-30 mm)
+const MOTOR_X1       =  14.00;
+const CANARD_X0      =  12.20;   // canard root chord
+const CANARD_X1      =  15.40;
+const ANN_X          =  19.80;   // axial station of the torque-arrow annotations
+const MARK_X         =  21.20;   // axial station of the roll-reference marks
+
+// Shared derived station. Declared here rather than inside a builder block
+// because BOTH the stator (body side) and the rotor magnets (nose side) use it.
+const X_MOTOR_MID    = (MOTOR_X0 + MOTOR_X1) / 2;
+
+// --- radial build, outward from the axis -----------------------------------
+const R_HUB_MOTOR    =   3.90;   // hub radius under the stator
+const R_HUB_BEAR     =   4.00;   // hub radius under the bearing inner races
+const R_STATOR_OUT   =   4.70;   // yoke + tooth tips (faces the gap)
+const R_GAP_IN       =   4.70;   // AIR GAP inner — stator side
+const R_GAP_OUT      =   5.25;   // AIR GAP outer — rotor side
+const R_MAG_OUT      =   5.75;
+const R_ROTOR_BACK_O =   6.30;
+const R_NOSE_BORE_M  =   6.30;   // nose bore over the motor bay
+const R_BEAR_IN_I    =   4.00;
+const R_BEAR_IN_O    =   4.45;
+const R_BALL         =   4.72;   // ball pitch radius
+const BALL_R         =   0.28;
+const R_BEAR_OUT_I   =   5.00;
+const R_BEAR_OUT_O   =   5.60;
+const R_NOSE_BORE_B  =   5.60;   // nose bore over the bearing bay
+
+const BODY_R         =   7.745;  // 154.89 mm body radius
+const NOSE_R         =   7.00;   // canard assembly radius (~Ø14 units)
+const CANARD_ROOT_R  =   6.75;   // buried slightly into the skin
+const CANARD_TIP_R   =   8.30;   // EXAGGERATED — design cap is 7.55 (Ø151 mm)
+const CANARD_CANT    = THREE.MathUtils.degToRad(10);   // 10° datum cant
+
+const N_BALLS        =  24;      // per row, two rows
+const N_SLOTS        =  12;      // 12 slots / 14 poles, p = 7   — C16
+const N_POLES        =  14;
+
+// --- real numbers quoted in the HUD ----------------------------------------
+const SPIN_REAL_HZ     = 250;              // ~250 rev/s = 15 000 rpm
+const SPIN_REAL_RADS   = SPIN_REAL_HZ * 2 * Math.PI;
+const SPIN_LAUNCH_RADS = 1623;             // [ref] launch spin — the sizing case
+const TORQUE_HOLD      = 2.36;             // N·m, holding duty (Taero 2.2 + Tf 0.157)
+const TORQUE_BRAKE     = 2.40;             // N·m, transient retarding torque
+const TORQUE_GEN       = 0.80;             // N·m, extraction duty
+const SETBACK_KN       = 73.5;             // kN, ring setback at 15 000 g — C26
+
+const lerp = THREE.MathUtils.lerp;
+const wrapPi = a => { const t = (a + Math.PI) % (2 * Math.PI); return (t < 0 ? t + 2 * Math.PI : t) - Math.PI; };
+const hz2 = a => a / (2 * Math.PI);
+const deg = THREE.MathUtils.radToDeg;
+
+/* ===========================================================================
+   1.  RENDERER / SCENE / CAMERA
+   =========================================================================== */
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+renderer.localClippingEnabled = true;      // <- this is what makes the half-section work
+document.getElementById('scene').appendChild(renderer.domElement);
+
+const labelRenderer = new CSS2DRenderer();
+labelRenderer.setSize(innerWidth, innerHeight);
+labelRenderer.domElement.style.position = 'absolute';
+labelRenderer.domElement.style.top = '0';
+labelRenderer.domElement.style.pointerEvents = 'none';
+document.getElementById('labels').appendChild(labelRenderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0b0f14);
+scene.fog = new THREE.Fog(0x0b0f14, 140, 340);
+
+const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.5, 900);
+
+// OrbitControls is centred ON THE CANARD ASSEMBLY (which spans x = 6.15 .. 18.15),
+// so orbiting pivots about the part under discussion rather than about the
+// airframe. The 600 mm of shell body behind it is context, not subject.
+// This eye point was chosen by projecting the hardware to screen: it puts the
+// nose tip and the body's rear both inside the clear band between the two side
+// panels, with the cutaway internals on the centre line.
+const TARGET = new THREE.Vector3(8, 0, 0);
+camera.position.set(40, 13, 21);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.07;
+controls.target.copy(TARGET);
+controls.minDistance = 5;
+controls.maxDistance = 220;
+controls.maxPolarAngle = Math.PI * 0.94;
+controls.update();
+
+/* ===========================================================================
+   2.  LIGHTING + ENVIRONMENT
+   Metal needs an environment or it renders black. RoomEnvironment is generated
+   in code (no asset fetch); the lights are a fallback that keeps the scene
+   readable whichever path the PMREM takes.
+   =========================================================================== */
+
+scene.add(new THREE.HemisphereLight(0x9fb8d0, 0x0a0e12, 0.75));
+
+const key = new THREE.DirectionalLight(0xffffff, 2.0);   key.position.set(26, 34, 30);  scene.add(key);
+const fill = new THREE.DirectionalLight(0x8fb4dd, 0.75); fill.position.set(-30, -12, -26); scene.add(fill);
+const rim = new THREE.DirectionalLight(0xbfe6ff, 0.9);   rim.position.set(-14, 20, -30); scene.add(rim);
+const warmth = new THREE.PointLight(0xffb066, 24, 60);   warmth.position.set(11, 3, 7);  scene.add(warmth);
+
+try {
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  const envScene = new RoomEnvironment();
+  scene.environment = pmrem.fromScene(envScene, 0.04).texture;
+  if (envScene.dispose) envScene.dispose();
+  pmrem.dispose();
+} catch (err) {
+  console.warn('RoomEnvironment unavailable — continuing with direct lighting only.', err);
+}
+
+// Subtle technical grid, well below the axis so it reads as a reference plane.
+const grid = new THREE.GridHelper(260, 65, 0x1d2c3b, 0x141d26);
+grid.position.set(0, -16, 0);
+grid.material.transparent = true;
+grid.material.opacity = 0.5;
+scene.add(grid);
+
+/* ===========================================================================
+   3.  MATERIALS
+   `noClip` marks annotation geometry that must stay whole in cutaway mode —
+   torque arrows and roll marks are overlays, not hardware, so slicing them in
+   half would destroy the information they carry.
+   =========================================================================== */
+
+const DS = THREE.DoubleSide;   // safe for lathe ring solids and shelled sections
+
+const M = {
+  shell:     new THREE.MeshStandardMaterial({ color: 0x8fa6bd, metalness: 0.92, roughness: 0.42, side: DS }),
+  shellDark: new THREE.MeshStandardMaterial({ color: 0x5d6b7c, metalness: 0.90, roughness: 0.50, side: DS }),
+  nose:      new THREE.MeshStandardMaterial({ color: 0xe6e9ec, metalness: 0.55, roughness: 0.45, side: DS }),
+  hub:       new THREE.MeshStandardMaterial({ color: 0x74818f, metalness: 0.90, roughness: 0.45, side: DS }),
+  race:      new THREE.MeshStandardMaterial({ color: 0x5b6472, metalness: 0.98, roughness: 0.22, side: DS }),
+  ball:      new THREE.MeshStandardMaterial({ color: 0xeef3f8, metalness: 1.00, roughness: 0.06 }),
+  copper:    new THREE.MeshStandardMaterial({ color: 0xc8792e, metalness: 0.85, roughness: 0.38,
+                                              emissive: 0x331a05, emissiveIntensity: 0.5, side: DS }),
+  magnet:    new THREE.MeshStandardMaterial({ color: 0x2746c9, metalness: 0.72, roughness: 0.35,
+                                              emissive: 0x0a1a6b, emissiveIntensity: 0.85, side: DS }),
+  magnetAlt: new THREE.MeshStandardMaterial({ color: 0x1a2f8f, metalness: 0.72, roughness: 0.40,
+                                              emissive: 0x060f3a, emissiveIntensity: 0.6, side: DS }),
+  yoke:      new THREE.MeshStandardMaterial({ color: 0x6d7a88, metalness: 0.88, roughness: 0.50, side: DS }),
+  gap:       new THREE.MeshBasicMaterial({ color: 0x39e3ff, transparent: true, opacity: 0.20, side: DS,
+                                           depthWrite: false, blending: THREE.AdditiveBlending }),
+  gapEdge:   new THREE.MeshBasicMaterial({ color: 0x39e3ff, transparent: true, opacity: 0.5, side: DS,
+                                           depthWrite: false }),
+  steer:     new THREE.MeshStandardMaterial({ color: 0x2f74ff, metalness: 0.60, roughness: 0.35,
+                                              emissive: 0x0d2f8a, emissiveIntensity: 0.9, side: DS }),
+  diff:      new THREE.MeshStandardMaterial({ color: 0xffab2e, metalness: 0.60, roughness: 0.35,
+                                              emissive: 0x8a4f00, emissiveIntensity: 0.9, side: DS }),
+  stripe:    new THREE.MeshStandardMaterial({ color: 0x3b4756, metalness: 0.90, roughness: 0.50, side: DS }),
+
+  torqueRotor:  new THREE.MeshStandardMaterial({ color: 0x2ee6ff, emissive: 0x2ee6ff, emissiveIntensity: 1.5,
+                                                 roughness: 0.4, metalness: 0.2 }),
+  torqueStator: new THREE.MeshStandardMaterial({ color: 0xff4fd8, emissive: 0xff4fd8, emissiveIntensity: 1.5,
+                                                 roughness: 0.4, metalness: 0.2 }),
+  mark:         new THREE.MeshStandardMaterial({ color: 0x2ee6ff, emissive: 0x2ee6ff, emissiveIntensity: 1.2,
+                                                 roughness: 0.5, metalness: 0.1 }),
+  markNose:     new THREE.MeshStandardMaterial({ color: 0xffab2e, emissive: 0xffab2e, emissiveIntensity: 1.2,
+                                                 roughness: 0.5, metalness: 0.1 }),
+  leader:       new THREE.LineBasicMaterial({ color: 0x7fa8cc, transparent: true, opacity: 0.75 }),
+  leaderGap:    new THREE.LineBasicMaterial({ color: 0x39e3ff, transparent: true, opacity: 0.9 }),
+};
+
+// Annotation materials are exempted from the cutaway clipping plane.
+[M.torqueRotor, M.torqueStator, M.mark, M.markNose].forEach(m => { m.userData.noClip = true; });
+
+/* ===========================================================================
+   4.  GEOMETRY HELPERS
+   =========================================================================== */
+
+/** Solid annular ring — a lathe of a rectangular profile, axis rotated onto +X.
+ *  Used for every race, yoke, backiron and magnet ring, so each is a real solid
+ *  with a real wall section. That is what makes the half-section read like an
+ *  engineering section rather than a paper shell.                             */
+function ringGeom(rIn, rOut, len, seg = 72) {
+  const h = len / 2;
+  const g = new THREE.LatheGeometry([
+    new THREE.Vector2(rIn,  -h), new THREE.Vector2(rOut, -h),
+    new THREE.Vector2(rOut,  h), new THREE.Vector2(rIn,   h),
+    new THREE.Vector2(rIn,  -h),
+  ], seg);
+  g.rotateZ(-Math.PI / 2);      // lathe axis +Y  ->  world +X
+  return g;
+}
+
+/** Ring mesh centred between two axial stations. */
+function ring(rIn, rOut, x0, x1, mat, seg) {
+  const m = new THREE.Mesh(ringGeom(rIn, rOut, x1 - x0, seg), mat);
+  m.position.x = (x0 + x1) / 2;
+  return m;
+}
+
+/** Hollow shell of revolution from an explicit [(radius, height), …] profile,
+ *  traced outer-then-inner. Rotated so the profile height becomes axial station. */
+function latheOnX(profile, seg = 96) {
+  const g = new THREE.LatheGeometry(profile.map(p => new THREE.Vector2(p[0], p[1])), seg);
+  g.rotateZ(-Math.PI / 2);      // +Y -> +X
+  return g;
+}
+
+/** Axially-aligned box placed at a roll angle about +X.
+ *  Rotation about X by `a` maps local +Y to (0, cos a, sin a) — i.e. radially
+ *  outward. So every part built here has local Y = radial, local Z = tangential,
+ *  and `a` places it correctly. Getting this sign wrong would tilt the magnets,
+ *  teeth and canards by twice the roll angle, so it is done once, here.       */
+function rollBox(w, radial, tangential, x, a, radius, mat) {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w, radial, tangential), mat);
+  m.position.set(x, Math.cos(a) * radius, Math.sin(a) * radius);
+  m.rotation.x = a;
+  return m;
+}
+
+/** A torque arrow: an arc about the +X axis with a head.
+ *  dir = +1 sweeps +Y toward +Z, i.e. a POSITIVE rotation about +X (right-hand
+ *  rule). Newton's third law is drawn explicitly by calling this a second time
+ *  with the opposite dir on the other body.                                   */
+function torqueArrow(x, radius, dir, mat, span = 1.9, start = -0.95) {
+  const g = new THREE.Group();
+  const pts = [];
+  const N = 28;
+  for (let i = 0; i <= N; i++) {
+    const a = start + dir * span * (i / N);
+    pts.push(new THREE.Vector3(x, Math.cos(a) * radius, Math.sin(a) * radius));
+  }
+  g.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 44, 0.075, 8, false), mat));
+
+  const aEnd = start + dir * span;
+  const head = new THREE.Mesh(new THREE.ConeGeometry(0.23, 0.62, 16), mat);
+  head.position.set(x, Math.cos(aEnd) * radius, Math.sin(aEnd) * radius);
+  const tangent = new THREE.Vector3(0, -Math.sin(aEnd) * dir, Math.cos(aEnd) * dir).normalize();
+  head.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), tangent);
+  g.add(head);
+  return g;
+}
+
+/** Small radial tick marking a roll reference angle. */
+function rollTick(x, radius, roll, mat) {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.85, 0.18), mat);
+  m.position.set(x, Math.cos(roll) * radius, Math.sin(roll) * radius);
+  m.rotation.x = roll;
+  return m;
+}
+
+/* ===========================================================================
+   5.  THE FOUR GROUPS
+   ---------------------------------------------------------------------------
+   This grouping IS the engineering claim of the visualization:
+
+     bodyGroup   — everything bolted to the shell body
+     noseGroup   — everything bolted to the canard assembly
+     cageGroup   — the rolling elements: owned by NEITHER body, orbiting at the
+                   mean of the two race speeds
+     staticGroup — non-rotating annotations (the air-gap void, command mark)
+
+   Nothing crosses a boundary. Each mesh is in exactly one group.
+   =========================================================================== */
+
+const bodyGroup   = new THREE.Group();   // spins with the shell
+const noseGroup   = new THREE.Group();   // roll-controlled by the PMSM
+const cageGroup   = new THREE.Group();   // bearing rolling elements
+const staticGroup = new THREE.Group();   // annotations that do not rotate
+scene.add(bodyGroup, noseGroup, cageGroup, staticGroup);
+
+/* Tag objects for the exploded view. Offsets are purely AXIAL, so a part can go
+   on spinning about its own axis while separated — which is exactly what you
+   want to see: every ring turning, and only the rotor/stator pair disagreeing. */
+const EXPLODE = {
+  shell:      -14.0,
+  bearingIn:   -6.0,
+  cage:        -2.0,
+  bearingOut:   2.0,
+  stator:       4.5,
+  gap:          8.0,
+  rotor:       13.5,
+  nose:        19.0,
+};
+const explodeParts = {};   // key -> [{ obj, baseX }, …]
+const tag = (obj, key) => { obj.userData.explodeKey = key; return obj; };
+
+/* ---------------------------------------------------------------------------
+   5.1  SHELL BODY (steel grey) — outer skin + fuze-well hub
+   The skin is a hollow shell of revolution: outer contour back to a boattail,
+   then forward along an inner wall. The hub is the spigot that screws into the
+   MIL-STD-333B fuze well (2"-12 UNS-2A) and carries BOTH the bearing inner
+   races AND the stator. That hub is why the body owns half of both interfaces.
+   --------------------------------------------------------------------------- */
+{
+  const prof = [
+    [BODY_BORE_R,     0.05],          // front shoulder face, bore -> outer
+    [BODY_R,          0.00],
+    [BODY_R,         51.00],          // outer cylinder
+    [BODY_R - 0.45,  55.00],          // boattail
+    [BODY_R - 1.15,  BODY_LEN],
+    [BODY_R - 2.35,  BODY_LEN],       // base face
+    [BODY_R - 2.35,  46.00],          // inner wall, forward
+    [BODY_BORE_R + 0.6, 43.50],
+    [BODY_BORE_R,    40.00],
+    [BODY_BORE_R,     0.06],
+  ];
+  const skin = new THREE.Mesh(latheOnX(prof), M.shell);
+  skin.position.x = BODY_FRONT_X;
+  bodyGroup.add(tag(skin, 'shell'));
+
+  // Longitudinal stripes. Without a mark, a body at 250 rev/s is unreadable;
+  // these give the eye something to track so the spin is visible as motion.
+  for (let i = 0; i < 8; i++) {
+    const a = (i / 8) * Math.PI * 2;
+    bodyGroup.add(tag(rollBox(44, 0.16, 0.5, BODY_FRONT_X - 28, a, BODY_R - 0.03, M.stripe), 'shell'));
+  }
+
+  // --- fuze-well hub: TWO radii, because the interface changes along it -----
+  //   bearing bay r = 4.00 — the bearing inner races seat here
+  //   motor bay   r = 3.90 — the stator yoke seats directly on it
+  bodyGroup.add(tag(ring(0, R_HUB_BEAR,  BODY_FRONT_X,     BEAR_X1 + 0.25,  M.hub, 64), 'shell'));
+  bodyGroup.add(tag(ring(0, R_HUB_MOTOR, BEAR_X1 + 0.20,   MOTOR_X1 + 0.60, M.hub, 64), 'shell'));
+
+  // shoulder face closing the annulus between the body bore and the hub
+  const shoulder = new THREE.Mesh(new THREE.RingGeometry(BODY_BORE_R, BODY_R - 2.35, 64), M.shellDark);
+  shoulder.position.x = BODY_FRONT_X + 0.02;
+  shoulder.rotation.y = -Math.PI / 2;
+  bodyGroup.add(tag(shoulder, 'shell'));
+
+  // --- BEARING INNER RACES (dark chrome) -----------------------------------
+  // Two rows make a bearing PAIR, which is what gives the moment stiffness the
+  // 0.20 mm air-gap deflection limit demands (C35). The inner race sits on the
+  // body hub at r 4.00-4.45; the nearest nose surface is the 5.60 bore, so it
+  // cannot touch the canard assembly.
+  [BEAR_X0 + 0.9, BEAR_X1 - 0.9].forEach(x =>
+    bodyGroup.add(tag(ring(R_BEAR_IN_I, R_BEAR_IN_O, x - 0.75, x + 0.75, M.race, 64), 'bearingIn')));
+
+  // --- STATOR: yoke + 12 teeth + copper coils ------------------------------
+  // Attached to the shell body. 12 slots / 14 poles, p = 7 (C16).
+  bodyGroup.add(tag(ring(R_HUB_MOTOR, R_STATOR_OUT, MOTOR_X0, MOTOR_X1, M.yoke, 72), 'stator'));
+
+  const stackLen = MOTOR_X1 - MOTOR_X0 - 0.4;
+  const rToothMid = (R_HUB_MOTOR + R_STATOR_OUT) / 2;
+  for (let i = 0; i < N_SLOTS; i++) {
+    const a = (i / N_SLOTS) * Math.PI * 2;
+    // the tooth — this is what the air gap looks across
+    bodyGroup.add(tag(rollBox(stackLen, R_STATOR_OUT - R_HUB_MOTOR, 0.62, X_MOTOR_MID, a, rToothMid, M.yoke), 'stator'));
+    // concentrated double-layer winding: copper bulging either side of the tooth
+    bodyGroup.add(tag(rollBox(stackLen - 0.5, 0.74, 1.05, X_MOTOR_MID, a, rToothMid, M.copper), 'stator'));
+  }
+
+  // --- STATOR-SIDE TORQUE ARROW (the reaction, Newton's third law) ---------
+  // Whatever torque the motor puts on the ring, it puts the opposite on the body.
+  // Drawn just forward of the nose tip and outside it, so it is visible in BOTH
+  // cutaway and solid mode and is exempt from the clipping plane.
+  bodyGroup.userData.arrowP = tag(torqueArrow(ANN_X, 4.55, +1, M.torqueStator), 'stator');
+  bodyGroup.userData.arrowN = tag(torqueArrow(ANN_X, 4.55, -1, M.torqueStator), 'stator');
+  bodyGroup.userData.arrowP.visible = bodyGroup.userData.arrowN.visible = false;
+  bodyGroup.add(bodyGroup.userData.arrowP, bodyGroup.userData.arrowN);
+}
+
+/* ---------------------------------------------------------------------------
+   5.2  ROLLING ELEMENTS (bright silver spheres)
+   Owned by NEITHER body. A ball in a bearing orbits at the mean of the two race
+   speeds, so the cage angle is (theta_body + theta_nose) / 2. That is why this
+   is its own group rather than a child of either body — and it is why the balls
+   visibly lag the spinning body whenever the ring is being held.
+   --------------------------------------------------------------------------- */
+{
+  const ballGeo = new THREE.SphereGeometry(BALL_R, 16, 12);
+  [BEAR_X0 + 0.9, BEAR_X1 - 0.9].forEach(x => {
+    for (let i = 0; i < N_BALLS; i++) {
+      const a = (i / N_BALLS) * Math.PI * 2;
+      const b = new THREE.Mesh(ballGeo, M.ball);
+      b.position.set(x, Math.cos(a) * R_BALL, Math.sin(a) * R_BALL);
+      cageGroup.add(tag(b, 'cage'));
+    }
+  });
+}
+
+/* ---------------------------------------------------------------------------
+   5.3  CANARD ASSEMBLY (light grey / off-white) — nose skin + 4 fixed canards
+   The skin is a hollow shell with a STEPPED BORE, and that step is the whole
+   interface in one line of geometry:
+        bearing bay   bore = 5.60  ->  the bearing OUTER race is pressed in here
+        motor bay     bore = 6.30  ->  the ROTOR BACKIRON mounts on this face
+   So the nose owns the outer half of both interfaces, exactly as the body owns
+   the inner half. The canards are children of this group and are therefore
+   FIXED to it — no per-fin actuation exists anywhere in this model.
+   --------------------------------------------------------------------------- */
+{
+  // profile traced: rear face -> outer contour -> tip -> bore -> back to rear
+  const prof = [
+    [R_NOSE_BORE_B,  0.00],
+    [NOSE_R,         0.00],
+    [NOSE_R + 0.05,  0.40],
+    [NOSE_R - 0.05,  8.60],
+    [NOSE_R - 0.20,  9.80],
+    [6.10,          10.70],
+    [4.90,          11.45],
+    [3.10,          11.88],
+    [2.30,          12.00],          // tip (the fuze well is inboard of this)
+    [1.95,          11.95],          // ---- bore, running back from the tip ----
+    [2.80,          11.70],
+    [4.55,          11.20],
+    [R_NOSE_BORE_M, 10.20],
+    [R_NOSE_BORE_M,  4.35],          // motor bay bore — rotor mounts here
+    [R_NOSE_BORE_B,  4.10],          // step inboard
+    [R_NOSE_BORE_B,  0.00],          // bearing bay bore — outer race mounts here
+  ];
+  const skin = new THREE.Mesh(latheOnX(prof), M.nose);
+  skin.position.x = NOSE_REAR_X;
+  noseGroup.add(tag(skin, 'nose'));
+
+  // --- ROTOR: backiron + 14 magnets ---------------------------------------
+  // Backiron OD 6.30 = nose bore 6.30, so the rotor is mounted on the ring.
+  // Outboard of it is the air gap; inboard of that the stator. It touches
+  // nothing on the body side.
+  noseGroup.add(tag(ring(R_MAG_OUT, R_ROTOR_BACK_O, MOTOR_X0, MOTOR_X1, M.yoke, 72), 'rotor'));
+  noseGroup.add(tag(ring(R_GAP_OUT, R_MAG_OUT,     MOTOR_X0, MOTOR_X1, M.magnet, 72), 'rotor'));
+
+  const magLen = MOTOR_X1 - MOTOR_X0 - 0.5;
+  const rMag = (R_GAP_OUT + R_MAG_OUT) / 2;
+  for (let i = 0; i < N_POLES; i++) {
+    const a = (i / N_POLES) * Math.PI * 2 + Math.PI / N_POLES;
+    // Alternating poles: the second shade marks N/S, inset a hair so the arcs
+    // read as discrete magnets rather than one continuous ring.
+    noseGroup.add(tag(rollBox(magLen, 0.42, 0.90, X_MOTOR_MID, a, rMag,
+                              i % 2 ? M.magnet : M.magnetAlt), 'rotor'));
+  }
+
+  // --- BEARING OUTER RACES (dark chrome) ----------------------------------
+  // Pressed into the nose bore r = 5.60. The body hub is at r = 4.00, so there
+  // is a 0.55 unit clear void between the outer race and anything body-side.
+  [BEAR_X0 + 0.9, BEAR_X1 - 0.9].forEach(x =>
+    noseGroup.add(tag(ring(R_BEAR_OUT_I, R_BEAR_OUT_O, x - 0.75, x + 0.75, M.race, 64), 'bearingOut')));
+
+  // --- THE FOUR FIXED CANARDS ---------------------------------------------
+  // Trapezoidal planform, extruded tangentially, canted about its own span axis.
+  // The cant is what splits fin normal force into a steering component and a
+  // roll-torque component:
+  //   STEERING PAIR     (blue)   equal cant     -> forces ADD, roll torques CANCEL
+  //   DIFFERENTIAL PAIR (amber)  opposite cant  -> roll torques ADD, forces CANCEL
+  // Both pairs are rigid children of the nose: fixed incidence, no actuation.
+  const chordRoot = CANARD_X1 - CANARD_X0;
+  const span = CANARD_TIP_R - CANARD_ROOT_R;
+
+  const shape = new THREE.Shape();
+  shape.moveTo(-chordRoot / 2, 0);                    // root leading edge
+  shape.lineTo( chordRoot / 2, 0);                    // root trailing edge
+  shape.lineTo( chordRoot / 2 - 0.55, span);          // tip TE (swept)
+  shape.lineTo(-chordRoot / 2 + 0.95, span);          // tip LE (swept)
+  shape.closePath();
+
+  const canardGeom = new THREE.ExtrudeGeometry(shape, { depth: 0.22, bevelEnabled: false });
+  canardGeom.translate(0, 0, -0.11);                  // centre thickness on the fin plane
+
+  const FIN_SPEC = [
+    { roll: THREE.MathUtils.degToRad(-45), mat: M.steer, cant: +CANARD_CANT },  // steering pair
+    { roll: THREE.MathUtils.degToRad(135), mat: M.steer, cant: +CANARD_CANT },  // steering pair
+    { roll: THREE.MathUtils.degToRad(45),  mat: M.diff,  cant: +CANARD_CANT },  // differential pair
+    { roll: THREE.MathUtils.degToRad(225), mat: M.diff,  cant: -CANARD_CANT },  // differential pair
+  ];
+
+  FIN_SPEC.forEach(spec => {
+    // holder sets the roll position about the shell axis (X); +Y is radial in
+    // its local frame, so the arm simply steps out to the root radius.
+    const holder = new THREE.Object3D();
+    holder.rotation.x = spec.roll;
+    noseGroup.add(tag(holder, 'nose'));
+
+    const arm = new THREE.Object3D();
+    arm.position.set((CANARD_X0 + CANARD_X1) / 2, CANARD_ROOT_R, 0);
+    holder.add(arm);
+
+    // In the arm frame: local X = chord (axial), Y = span (radial), Z = thickness
+    // (tangential). Rotating about local Y applies the cant angle.
+    const fin = new THREE.Mesh(canardGeom, spec.mat);
+    fin.rotation.y = spec.cant;
+    arm.add(fin);
+  });
+
+  // --- ROTOR-SIDE TORQUE ARROW --------------------------------------------
+  // The torque applied to the rotor (canard-assembly side). The magenta arrow
+  // on the body is its equal-and-opposite reaction.
+  noseGroup.userData.arrowP = tag(torqueArrow(ANN_X, 7.05, +1, M.torqueRotor), 'rotor');
+  noseGroup.userData.arrowN = tag(torqueArrow(ANN_X, 7.05, -1, M.torqueRotor), 'rotor');
+  noseGroup.userData.arrowP.visible = noseGroup.userData.arrowN.visible = false;
+  noseGroup.add(noseGroup.userData.arrowP, noseGroup.userData.arrowN);
+
+  // The nose's own roll mark. It is the amber tick you watch park under the
+  // cyan command mark when the state reaches LOCKED.
+  noseGroup.add(tag(rollTick(MARK_X, 7.6, 0, M.markNose), 'nose'));
+}
+
+/* ---------------------------------------------------------------------------
+   5.4  STATIC ANNOTATIONS — the air-gap band and the commanded-angle mark
+   The air gap is a VOID: it belongs to neither body, so drawing it in a static
+   group is not a shortcut, it is the correct topology.
+   --------------------------------------------------------------------------- */
+{
+  const gapLen = MOTOR_X1 - MOTOR_X0 - 0.1;
+  const band = new THREE.Mesh(ringGeom(R_GAP_IN, R_GAP_OUT, gapLen, 72), M.gap);
+  band.position.x = (MOTOR_X0 + MOTOR_X1) / 2;
+  staticGroup.add(tag(band, 'gap'));
+
+  // Bright edges on both faces of the band, so the gap still reads when it is
+  // viewed edge-on against the copper.
+  [R_GAP_IN, R_GAP_OUT].forEach(r => {
+    const e = new THREE.Mesh(ringGeom(r - 0.015, r + 0.015, gapLen, 72), M.gapEdge);
+    e.position.x = (MOTOR_X0 + MOTOR_X1) / 2;
+    staticGroup.add(tag(e, 'gap'));
+  });
+
+  // Commanded-roll-angle reference: cyan tick at world roll 0. The nose carries
+  // an identical amber tick, so the two lining up IS the LOCKED state.
+  staticGroup.add(rollTick(MARK_X, 7.6, 0, M.mark));
+}
+
+/* ===========================================================================
+   6.  LABELS (CSS2DRenderer) + LEADER LINES (exploded view)
+   Labels live in a STATIC group — never inside a spinning one, or they would
+   orbit the screen. Because the exploded offsets are purely axial, a label can
+   follow its part by adding the same axial offset and nothing else.
+   =========================================================================== */
+
+const labelGroup = new THREE.Group();
+scene.add(labelGroup);
+
+const LABELS = [
+  { id:'shell',   exKey:'shell',
+    html:'<b>SHELL BODY (spinning)</b><small>spinning · 250 rev/s</small>',
+    at:[-5.56, 8.77, 0], from:[0.00, 7.70, 0] },
+
+  { id:'steer',   exKey:'nose',
+    html:'<b>STEERING CANARD</b><small>equal cant · force, no torque</small>',
+    at:[8.62, 11.89, 0], from:[13.20, 6.90, 0] },
+
+  { id:'diff',    exKey:'nose',
+    html:'<b>DIFFERENTIAL CANARD</b><small>opposite cant · counter-torque</small>',
+    at:[13.47, 11.94, 0], from:[15.00, 6.70, 0] },
+
+  { id:'nose',    exKey:'nose',
+    html:'<b>CANARD ASSEMBLY (roll-controlled)</b><small>de-spun ring</small>',
+    at:[14.57, 7.70, 0], from:[11.00, 6.90, 0] },
+
+  { id:'fuze',    exKey:'nose',
+    html:'<b>FUZE / AVIONICS CAVITY</b><small>forward of the ring</small>',
+    at:[18.71, 5.00, 0], from:[17.00, 2.00, 0] },
+
+  { id:'bearing', exKey:'bearingIn',
+    html:'<b>BEARING — carries structural loads</b><small>inner race → body · outer race → ring</small>',
+    at:[2.77, 1.13, 0], from:[8.25, 4.20, 0] },
+
+  { id:'stator',  exKey:'stator',
+    html:'<b>PMSM STATOR — windings</b><small>fixed to shell body</small>',
+    at:[17.85, 0.66, 0], from:[12.25, 4.30, 0] },
+
+  { id:'rotor',   exKey:'rotor',
+    html:'<b>PMSM ROTOR — magnets</b><small>fixed to canard assembly</small>',
+    at:[19.15, -2.55, 0], from:[12.25, 6.00, 0] },
+
+  { id:'gap',     exKey:'gap', exag:true,
+    html:'<b>AIR GAP — torque coupling only</b><small>design 0.40 mm (C35) · drawn ≈14× for visibility</small>',
+    at:[19.94, -6.13, 0], from:[12.25, 5.00, 0] },
+];
+
+const labelObjs = [];
+LABELS.forEach(spec => {
+  const el = document.createElement('div');
+  el.className = 'lbl' + (spec.exag ? ' exag' : '');
+  el.innerHTML = spec.html;
+  const obj = new CSS2DObject(el);
+  obj.position.set(spec.at[0], spec.at[1], 0);
+  labelGroup.add(obj);
+
+  // Leader line from the part surface to the label. Shown only in exploded
+  // view, where it does the real work of tying each layer to its name.
+  const geom = new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(spec.from[0], spec.from[1], spec.from[2]),
+    new THREE.Vector3(spec.at[0] - 0.8, spec.at[1], 0),
+  ]);
+  const leader = new THREE.Line(geom, spec.exag ? M.leaderGap : M.leader);
+  leader.visible = false;
+  labelGroup.add(leader);
+
+  labelObjs.push({ spec, obj, leader });
+});
+
+/* Explode bookkeeping: walk every group once, after everything is built, and
+   register each tagged object against its base axial position. staticGroup is
+   included so the air-gap band travels with the stack it belongs to. */
+[bodyGroup, noseGroup, cageGroup, staticGroup].forEach(g => g.traverse(o => {
+  const k = o.userData.explodeKey;
+  if (!k) return;
+  (explodeParts[k] || (explodeParts[k] = [])).push({ obj: o, baseX: o.position.x });
+}));
+
+/* ===========================================================================
+   7.  CLIPPING PLANE — the cutaway
+   A TRUE half-section: every hardware material carries the world plane z ≤ 0,
+   so the cut reveals a genuine radial section through skin / backiron / magnets
+   / air gap / teeth / yoke / hub. Nothing is hidden and nothing is faked.
+   Annotation materials (torque arrows, roll marks) are exempt so they stay whole.
+   =========================================================================== */
+
+const CUT_PLANE = new THREE.Plane(new THREE.Vector3(0, 0, -1), 0);   // keeps z <= 0
+
+const ALL_MATERIALS = (() => {
+  const set = new Set();
+  scene.traverse(o => {
+    if (!o.isMesh && !o.isLine) return;
+    (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => m && set.add(m));
+  });
+  return [...set];
+})();
+
+function applyCutaway(on) {
+  ALL_MATERIALS.forEach(m => {
+    const clip = on && !m.userData.noClip;
+    m.clippingPlanes = clip ? [CUT_PLANE] : [];
+    m.needsUpdate = true;
+  });
+  grid.material.clippingPlanes = [];      // the reference grid always stays whole
+}
+
+/* ===========================================================================
+   8.  STATE MACHINE — the four rotation states
+   ---------------------------------------------------------------------------
+   theta_body is driven directly. theta_nose is the controlled variable, and the
+   controller is chosen to match the physical claim of each state:
+
+     free   — the motor is off (T = 0), so the nose is slaved to the body
+     brake  — retarding torque; the nose decelerates from body rate. The energy
+              is absorbed and has to go somewhere (W7 / W12).
+     locked — a PD controller holding a COMMANDED roll angle. The nose reaches
+              zero rate and then parks: rate ~0 while the body spins.
+     gen    — a steady relative rate is held, with power taken out to the bus.
+
+   Note the honest common thread, stated in the panel: in every controlled state
+   the electromagnetic torque OPPOSES the relative rotation, so the machine
+   absorbs rather than idles. Holding the ring against full body spin is a
+   kilowatt-class duty.
+   =========================================================================== */
+
+const STATE = {
+  free: {
+    name: 'FREE SPIN (no control)',
+    cap:  'Canards spin with the shell — no steering',
+    torque: 0, power: 0, mode: 'slave', powerText: '0 W — motor off',
+  },
+  brake: {
+    name: 'BRAKING (roll control active)',
+    cap:  'Motor brakes the nose — canards begin to orient',
+    torque: -TORQUE_BRAKE, mode: 'rate', targetFrac: 0.30,
+    powerText: (TORQUE_BRAKE * SPIN_LAUNCH_RADS / 1000).toFixed(2) + ' kW absorbed → dump',
+  },
+  locked: {
+    name: 'LOCKED (steering)',
+    cap:  'Canards held at target angle — steering lift generated',
+    torque: -TORQUE_HOLD, mode: 'hold',
+    powerText: (TORQUE_HOLD * SPIN_LAUNCH_RADS / 1000).toFixed(2) + ' kW absorbed → dump',
+  },
+  gen: {
+    name: 'POWER GENERATION',
+    cap:  'Relative spin drives generator — powers onboard electronics',
+    torque: -TORQUE_GEN, mode: 'rate', targetFrac: 0.35,
+    powerText: (TORQUE_GEN * SPIN_LAUNCH_RADS / 1000).toFixed(2) + ' kW extracted → bus',
+  },
+};
+
+const sim = {
+  playing: true,
+  slowmo: 0.02,
+  state: 'free',
+  auto: true,
+  autoTimer: 0,
+  thetaBody: 0,
+  thetaNose: 0,
+  omegaNose: 0,
+};
+
+const ui = { cutaway: true, exploded: false, labels: true, arrows: true, load: true, checks: false };
+const AUTO_ORDER = ['free', 'brake', 'locked', 'gen'];
+
+/* ===========================================================================
+   9.  UI WIRING
+   =========================================================================== */
+
+const $ = id => document.getElementById(id);
+const elState = $('stateName'), elCap = $('caption');
+const elBodyR = $('rBodyReal'), elSlow = $('rSlow'), elNose = $('rNose'), elRel = $('rRel');
+const elAng = $('rAng'), elAngRel = $('rAngRel'), elTorque = $('rTorque');
+const elPower = $('rPower'), elLoad = $('rLoad');
+
+function setState(name, fromAuto = false) {
+  sim.state = name;
+  if (!fromAuto) { sim.auto = false; $('auto').checked = false; }
+  document.querySelectorAll('button.st').forEach(b => b.classList.toggle('on', b.dataset.state === name));
+  elState.textContent = STATE[name].name;
+  elCap.textContent = STATE[name].cap;
+}
+
+document.querySelectorAll('button.st').forEach(b =>
+  b.addEventListener('click', () => setState(b.dataset.state)));
+
+$('auto').addEventListener('change', e => {
+  sim.auto = e.target.checked;
+  sim.autoTimer = 0;
+  if (sim.auto) setState('free', true);
+});
+
+$('btnPlay').addEventListener('click', e => {
+  sim.playing = !sim.playing;
+  e.currentTarget.textContent = sim.playing ? '❚❚ Pause' : '▶ Play';
+  e.currentTarget.classList.toggle('on', sim.playing);
+});
+
+$('slow').addEventListener('input', e => {
+  sim.slowmo = parseFloat(e.target.value);
+  $('slowVal').textContent = sim.slowmo.toFixed(2) + '×';
+});
+
+$('cutaway').addEventListener('change', e => { ui.cutaway = e.target.checked; applyCutaway(ui.cutaway); });
+
+$('exploded').addEventListener('change', e => {
+  ui.exploded = e.target.checked;
+  labelObjs.forEach(l => { l.leader.visible = ui.exploded; });
+  const dir = camera.position.clone().sub(controls.target).normalize();
+  if (ui.exploded) {
+    // Pull back so the whole exploded stack (shell at x = -68 to the nose at
+    // x = +40) stays in frame while the leader lines do the identifying.
+    controls.target.set(0, 0, 0);
+    camera.position.copy(controls.target).addScaledVector(dir, 100);
+  } else {
+    controls.target.copy(TARGET);
+    camera.position.copy(controls.target).addScaledVector(dir, 45);
+  }
+  controls.update();
+});
+
+$('labelsOn').addEventListener('change', e => {
+  ui.labels = e.target.checked;
+  document.getElementById('labels').classList.toggle('hidden', !ui.labels);
+});
+
+$('arrowsOn').addEventListener('change', e => { ui.arrows = e.target.checked; });
+
+$('loadOn').addEventListener('change', e => {
+  ui.load = e.target.checked;
+  $('loadpath').classList.toggle('hidden', !ui.load);
+});
+
+$('checksOn').addEventListener('change', e => {
+  ui.checks = e.target.checked;
+  $('checks').classList.toggle('on', ui.checks);
+});
+
+// --- camera presets --------------------------------------------------------
+function flyTo(px, py, pz, tx, ty, tz) {
+  controls.target.set(tx, ty, tz);
+  camera.position.set(px, py, pz);
+  controls.update();
+}
+const CAMS = {
+  front:   () => flyTo(46, 4.0, 0.001, 12, 0, 0),          // looking down the axis at the nose
+  side:    () => flyTo(9, 2.0, 42, 9, 0, 0),               // perpendicular to the axis
+  iso:     () => flyTo(40, 13, 21, TARGET.x, 0, 0),        // the default 3/4 front view
+  bearing: () => flyTo(3.5, 6.0, 15.0, BEAR_X0 + 1.6, 0, 0),
+  pmsm:    () => flyTo(6.0, 5.5, 14.0, (MOTOR_X0 + MOTOR_X1) / 2, 0, 0),
+};
+document.querySelectorAll('button[data-cam]').forEach(b =>
+  b.addEventListener('click', () => CAMS[b.dataset.cam]()));
+$('btnReset').addEventListener('click', () => CAMS.iso());
+
+// --- accuracy self-check (generated from the actual constants) -------------
+const CHECKS = [
+  `Bearing inner race touches only the shell body — race at r ${R_BEAR_IN_I.toFixed(2)}–${R_BEAR_IN_O.toFixed(2)}, seated on the body hub at r ${R_HUB_BEAR.toFixed(2)}. The nearest canard-assembly surface is the ${R_NOSE_BORE_B.toFixed(2)} bore, a ${(R_NOSE_BORE_B - R_BEAR_IN_O).toFixed(2)} unit clear void away.`,
+  `Bearing outer race touches only the canard assembly — race at r ${R_BEAR_OUT_I.toFixed(2)}–${R_BEAR_OUT_O.toFixed(2)}, pressed into the nose bore at r ${R_NOSE_BORE_B.toFixed(2)}. The body hub ends at r ${R_HUB_BEAR.toFixed(2)}, a ${(R_BEAR_OUT_I - R_HUB_BEAR).toFixed(2)} unit clearance.`,
+  `PMSM stator is attached to the shell body — every stator mesh is a child of bodyGroup, and the yoke inner radius ${R_HUB_MOTOR.toFixed(2)} equals the hub radius ${R_HUB_MOTOR.toFixed(2)}.`,
+  `PMSM rotor is attached to the canard assembly — every rotor mesh is a child of noseGroup, and the backiron outer radius ${R_ROTOR_BACK_O.toFixed(2)} equals the nose motor-bay bore ${R_NOSE_BORE_M.toFixed(2)}.`,
+  `PMSM rotor and stator never touch — they are separated by the air gap band r ${R_GAP_IN.toFixed(2)}–${R_GAP_OUT.toFixed(2)}, a void owned by neither body and rendered in neither group.`,
+  `Canards are fixed to the canard assembly — all four are rigid children of noseGroup with a fixed ${deg(CANARD_CANT).toFixed(0)}° cant. No per-fin actuation exists anywhere in the model.`,
+  `LOCKED state: the ring is driven by a position law on a commanded roll angle, with a slew limit of one body-rate change per 1.4 s. Its rate settles to ~0 and it holds, while theta_body keeps advancing without limit.`,
+  `FREE SPIN state: the motor torque is zero, so the ring rate is driven back up to the body rate by the aerodynamic spin-up torque and a position term removes the residual angle offset — the ring ends up locked to the shell, turning at the same rate.`,
+  `Cutaway reveals the internals — every hardware material carries the world clipping plane z ≤ 0, giving a true half-section through races, balls, teeth, coils, gap, magnets and backiron.`,
+  `No on-screen string claims the PMSM carries structural load. The only load-carrying member named anywhere in this file is the bearing.`,
+  `No on-screen string claims the bearing controls the roll angle. Roll control is attributed to the PMSM in every caption, panel and legend entry.`,
+  `Rolling elements belong to neither body — the cage angle is (theta_body + theta_nose)/2, the standard mean-speed result for a ball bearing, so the balls visibly lag a spinning body whenever the ring is held.`,
+];
+$('checksBody').innerHTML = CHECKS.map(t => `<div class="ck"><span class="t">✓</span><span>${t}</span></div>`).join('');
+
+/* ===========================================================================
+   10.  ANIMATION LOOP
+   =========================================================================== */
+
+const clock = new THREE.Clock();
+
+function updateSim(dt) {
+  const s = STATE[sim.state];
+  const omegaBody = SPIN_REAL_RADS * sim.slowmo;     // rad/s, as displayed
+
+  // theta_body always advances — the shell never stops spinning.
+  sim.thetaBody += omegaBody * dt;
+
+  /* --- the ring controller -------------------------------------------------
+     Every state is expressed as a DESIRED rate plus a slew limit, so the only
+     thing that differs between states is the control law — which is exactly how
+     you would read it off a block diagram:
+
+       free   the motor is off, so there is no torque on the ring. Its rate is
+              driven back up to the body rate by the aerodynamic spin-up torque,
+              and a small position term removes the residual angle offset. The
+              result is a ring genuinely locked to the shell.
+       brake  a retarding rate command: the ring is dragged down to 30 % of body
+              rate. The energy that leaves the ring is absorbed electrically.
+       locked a position law on a commanded roll angle. The nearest multiple of
+              2*pi IS the commanded angle, so it parks there and holds, and it
+              returns to the same angle if you leave and re-enter the state.
+       gen    a steady 35 % relative rate is held and the power goes to the bus.
+
+     The slew limit (reaching full body rate in ~1.4 s of watched time) is what
+     makes the transitions smooth and legible instead of instantaneous.        */
+  const aMax = omegaBody / 1.4;
+  let desired;
+
+  if (s.mode === 'slave') {
+    desired = omegaBody - 1.5 * wrapPi(sim.thetaNose - sim.thetaBody);
+  } else if (s.mode === 'hold') {
+    const target = Math.round(sim.thetaNose / (2 * Math.PI)) * 2 * Math.PI;   // commanded angle
+    desired = THREE.MathUtils.clamp(-2.0 * wrapPi(sim.thetaNose - target), -omegaBody, omegaBody);
+  } else {
+    desired = omegaBody * s.targetFrac;
+  }
+
+  sim.omegaNose += THREE.MathUtils.clamp(desired - sim.omegaNose, -aMax * dt, aMax * dt);
+  sim.thetaNose += sim.omegaNose * dt;
+
+  // --- apply ----------------------------------------------------------------
+  bodyGroup.rotation.x = sim.thetaBody;
+  noseGroup.rotation.x = sim.thetaNose;
+  cageGroup.rotation.x = (sim.thetaBody + sim.thetaNose) / 2;   // mean-speed rule
+
+  // --- torque arrows --------------------------------------------------------
+  // Direction is computed from the physics rather than hand-set: the
+  // electromagnetic torque on the rotor always OPPOSES the relative rotation,
+  // and the stator feels the equal and opposite reaction.
+  const rel = sim.omegaNose - omegaBody;       // negative whenever the ring lags
+  const showArrows = ui.arrows && sim.state !== 'free' && Math.abs(rel) > 1e-9;
+  const rotorDir = rel < 0 ? +1 : -1;          // torque on the rotor pushes it toward body rate
+  const statorDir = -rotorDir;
+
+  noseGroup.userData.arrowP.visible = showArrows && rotorDir === +1;
+  noseGroup.userData.arrowN.visible = showArrows && rotorDir === -1;
+  bodyGroup.userData.arrowP.visible = showArrows && statorDir === +1;
+  bodyGroup.userData.arrowN.visible = showArrows && statorDir === -1;
+
+  // --- readouts -------------------------------------------------------------
+  elBodyR.textContent  = '250 rev/s · 15 000 rpm';
+  elSlow.textContent   = hz2(omegaBody).toFixed(2) + ' rev/s';
+  elNose.textContent   = hz2(sim.omegaNose).toFixed(2) + ' rev/s';
+  elRel.textContent    = hz2(Math.abs(rel)).toFixed(2) + ' rev/s';
+  elAng.textContent    = deg(wrapPi(sim.thetaNose)).toFixed(1) + '°';
+  elAngRel.textContent = sim.state === 'free'
+    ? '0° — slaved'
+    : deg(wrapPi(sim.thetaNose - sim.thetaBody)).toFixed(1) + '°';
+
+  elTorque.textContent = s.torque === 0
+    ? '0 N·m — motor off'
+    : `${Math.abs(s.torque).toFixed(2)} N·m retarding`;
+  elPower.textContent = s.powerText;
+  elLoad.textContent  = `${SETBACK_KN.toFixed(1)} kN + bending + radial`;
+
+  // --- auto-cycle -----------------------------------------------------------
+  if (sim.auto && sim.playing) {
+    sim.autoTimer += dt;
+    if (sim.autoTimer >= 6) {
+      sim.autoTimer = 0;
+      const i = (AUTO_ORDER.indexOf(sim.state) + 1) % AUTO_ORDER.length;
+      setState(AUTO_ORDER[i], true);
+    }
+  }
+}
+
+function explodeBlend(dt) {
+  const k = 1 - Math.exp(-dt / 0.18);
+  Object.keys(EXPLODE).forEach(key => {
+    const target = ui.exploded ? EXPLODE[key] : 0;
+    (explodeParts[key] || []).forEach(({ obj, baseX }) => {
+      obj.position.x = lerp(obj.position.x, baseX + target, k);
+    });
+  });
+
+  // Labels follow their part axially. They must NOT inherit the spin, so they
+  // live in a static group and are offset by hand.
+  labelObjs.forEach(({ spec, obj, leader }) => {
+    const dx = ui.exploded ? EXPLODE[spec.exKey] : 0;
+    obj.position.set(spec.at[0] + dx, spec.at[1], spec.at[2]);
+    const pos = leader.geometry.attributes.position;
+    pos.setXYZ(0, spec.from[0] + dx, spec.from[1], spec.from[2]);
+    pos.setXYZ(1, spec.at[0] + dx - 0.8, spec.at[1], 0);
+    pos.needsUpdate = true;
+    leader.geometry.computeBoundingSphere();
+  });
+}
+
+function tick() {
+  requestAnimationFrame(tick);
+  const dt = Math.min(clock.getDelta(), 0.05);
+  if (sim.playing) updateSim(dt);
+  explodeBlend(dt);
+  controls.update();
+  renderer.render(scene, camera);
+  labelRenderer.render(scene, camera);
+}
+
+/* ===========================================================================
+   11.  BOOT
+   =========================================================================== */
+
+function onResize() {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+  labelRenderer.setSize(innerWidth, innerHeight);
+}
+addEventListener('resize', onResize);
+
+applyCutaway(ui.cutaway);       // default view: cutaway, as specified
+setState('free', true);         // default state: free spin
+$('slowVal').textContent = sim.slowmo.toFixed(2) + '×';
+onResize();
+document.getElementById('boot').style.display = 'none';
+tick();
+</script>
+</body>
+</html>
