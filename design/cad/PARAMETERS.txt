@@ -17,6 +17,8 @@ DRISHTI-PGK — CAD parameter audit
   WellEngageTurns            9.0000            P6     PROVISIONAL 
   WellFlankBand              0.8000 mm         P6     PROVISIONAL 
   WellBoreDia               44.0000 mm         P6     PROVISIONAL 
+  SpigotClearance            0.1000 mm         P6     PROVISIONAL 
+  ThreadClearance            0.1000 mm         P6     PROVISIONAL 
   KitIntrusionMax          124.7000 mm         P12    PARAMETRIC  
   KitVisibleMax             95.2500 mm         P12    PARAMETRIC  
   KitMassMax                 1.4000 kg         P9     PARAMETRIC  
@@ -46,7 +48,8 @@ DRISHTI-PGK — CAD parameter audit
   MagnetThick                1.5000 mm         C38    DERIVED     
   BackironThick              4.7000 mm         C40    DERIVED     
   StatorYokeThick            4.7000 mm         C40    DERIVED     
-  SlotDepth                 19.6000 mm         C40    DERIVED     
+  SlotDepthSizing           19.6000 mm         C40    DERIVED     
+  SpineWall                  1.5000 mm         F9     PROVISIONAL 
   StatorBoreDia             30.0000 mm         F9     DEFINED     
   MachineODMax              92.0000 mm         C34    DEFINED     
   StackLen                  28.0000 mm         C40    PROVISIONAL 
@@ -81,6 +84,12 @@ DRISHTI-PGK — CAD parameter audit
   CanardTransient           85.0000 N          C28    PROVISIONAL 
   AirGapDeflMax              0.2000 mm         C35    DERIVED     
   AxialPathStiff           367.0000 N/um       C35    DERIVED     
+
+[BODY]
+  SpiderHoles                8.0000            CAD    PROVISIONAL 
+  SpiderHoleDia             10.0000 mm         CAD    PROVISIONAL 
+  SpiderHolePCD             41.0000 mm         CAD    PROVISIONAL 
+  WebThickness               2.0000 mm         CAD    PROVISIONAL 
 
 [FRONT_END]
   RadarFreq                 24.0000 GHz        F2     DEFINED     
@@ -124,12 +133,17 @@ DRISHTI-PGK — CAD parameter audit
   RGapMid                      39.55000
   RGapOut                      39.75000
   RMagnetOut                   41.25000
-  RStatorBore                  15.00000
-  RYokeIn                      19.75000
-  RYokeThickCheck               4.75000
+  RSpineOut                    16.50000
+  RTrainBore                   15.00000
+  RYokeIn                      16.50000
+  RYokeOut                     21.20000
   RingLen                      80.00000
   RingR                        49.00000
   RingWallThick                 3.05000
+  SlotAreaRatio                 0.92602
+  SlotDepth                    18.15000
+  SlotDepthLost                 1.45000
+  TorqueScaleFromT3             0.92602
   WellBoreArea              17237.29057
   WellBoreAreaP6            18800.00000
   WellEngageLen                19.05000
@@ -153,7 +167,11 @@ DRISHTI-PGK — CAD parameter audit
 ------------------------------------------------------------------------------
 CLOSURE CHECKS
   machine OD          = 91.90 mm  vs limit 92.0 mm  -> margin 0.10 mm
-  yoke thickness      = 4.75 mm  vs sizing 4.70 mm
+  spine tube          = Ø30.0 .. Ø33.0  (wall 1.50)
+  yoke                = r 16.50 .. 21.20  (4.70 mm)
+  slot depth          = 18.15 mm  vs sizing 19.60 mm  -> lost 1.45 mm (7.4 %)
+    T3: torque scales with slot area, so C19's 5.76 N·m and C42's
+        2.92 kW both carry a x0.926 factor from the train bore.
   ring wall over rotor= 3.05 mm
   exposed canard span = 26.50 mm  (register says 26.5)
   canard chord/span   = 0.33  (AR)

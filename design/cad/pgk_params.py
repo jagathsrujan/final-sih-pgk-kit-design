@@ -91,6 +91,14 @@ REFERENCE = [
        "implies a 48 mm bore -- 9 %% larger, and it is the figure P6's >=58 W/K "
        "closing route is sized on. Both areas are computed outputs here so the "
        "register can adopt whichever YIL's drawing confirms."),
+    _p("SpigotClearance",   0.10,  "mm", "P6", "PROVISIONAL",
+       "RADIAL assembly clearance on the spigot. It is a MODELLING necessity -- "
+       "a nominal-against-nominal fit is a full-volume boolean clash -- and a "
+       "design one: P6 rules that a clearance gap conducts nothing (a 0.1 mm air "
+       "film over that area is only ~5 W/K), so this gap is not the thermal path. "
+       "P6's route is a COMPLIANT CONTACTING element in it, modelled in Phase 6."),
+    _p("ThreadClearance",   0.10,  "mm", "P6", "PROVISIONAL",
+       "radial allowance so the 2A external thread clears the 2B internal"),
 
     # Kit envelope limits
     _p("KitIntrusionMax",  124.7,  "mm", "P12", "PARAMETRIC",
@@ -150,9 +158,18 @@ MACHINE = [
     _p("MagnetThick",        1.5,  "mm", "C38", "DERIVED", "NdFeB radial thickness, SH/UH grade"),
     _p("BackironThick",      4.7,  "mm", "C40", "DERIVED", "rotor backiron at 1.5 T"),
     _p("StatorYokeThick",    4.7,  "mm", "C40", "DERIVED", "stator yoke at 1.5 T"),
-    _p("SlotDepth",         19.6,  "mm", "C40", "DERIVED", "fills the remaining annulus"),
+    _p("SlotDepthSizing",   19.6,  "mm", "C40", "DERIVED",
+       "the sizing's slot depth, = gap inner radius - yoke inner radius. It "
+       "assumes the stator's own bore IS the train bore, i.e. that the 30 mm "
+       "train reservation costs no structural material. T3: it does."),
+    _p("SpineWall",          1.5,  "mm", "F9",  "PROVISIONAL",
+       "T3: the structural spine tube that carries the machine between its two "
+       "races. The stator core cannot double as the train-bore wall, because F9 "
+       "reserves a clear 30 mm through the machine section -- so something has "
+       "to be there and it is not the core. 1.5 mm of steel is the thin end of "
+       "what carries the machine's bending; set with C32/C35."),
     _p("StatorBoreDia",     30.0,  "mm", "F9",  "DEFINED",
-       "stator bore is structure, not flux; this IS the train-bore reservation"),
+       "the TRAIN-BORE reservation, not the stator core's own bore"),
     _p("MachineODMax",      92.0,  "mm", "C34", "DEFINED", "hard ceiling, set by the annulus"),
     _p("StackLen",          28.0,  "mm", "C40", "PROVISIONAL",
        "nominal of the 25-30 mm sizing band (L=25 -> 0.81 kg, L=30 -> 0.97 kg)"),
@@ -211,6 +228,22 @@ LOADS = [
        "gap 0.40 mm -> half the gap is the allowable relative deflection"),
     _p("AxialPathStiff",  367.0,   "N/um", "C35", "DERIVED",
        "73.5 kN / 0.20 mm — a structural-case spec, NOT a bearing spec"),
+]
+
+# ---------------------------------------------------------------------------
+# 5b. Kit body detail                      (T4 -- mass is the live problem)
+# ---------------------------------------------------------------------------
+
+BODY = [
+    _p("SpiderHoles",        8.0,  "", "CAD", "PROVISIONAL",
+       "lightening holes per spider. T4: modelled solid, the body alone is "
+       "2.57 kg in steel against P9's 1.4 kg for the WHOLE kit, so every web "
+       "that is not a load path gets a hole."),
+    _p("SpiderHoleDia",     10.0,  "mm", "CAD", "PROVISIONAL", "lightening hole diameter"),
+    _p("SpiderHolePCD",     41.0,  "mm", "CAD", "PROVISIONAL",
+       "hole pitch circle, midway between the train bore and the spider OD"),
+    _p("WebThickness",       2.0,  "mm", "CAD", "PROVISIONAL",
+       "stator end-plate thickness; a mounting face, not a structural member"),
 ]
 
 # ---------------------------------------------------------------------------
@@ -311,25 +344,39 @@ def derived():
     d["CantSinCtrl"] = math.sin(math.radians(p("CantCtrl")))
 
     # --- machine radial build, outward from the axis ------------------------
-    r_bore = p("StatorBoreDia") / 2.0
+    # T3 shapes this: F9 reserves a clear 30 mm bore through the machine
+    # section, so the stator core cannot also be the train-bore wall. A spine
+    # tube of SpineWall sits on the reservation and the core is built outside
+    # it, which costs slot depth -- and torque -- against the sizing.
+    r_train = p("StatorBoreDia") / 2.0
+    r_spine_out = r_train + p("SpineWall")
     r_gap_mid = p("GapDiaMid") / 2.0
     r_gap_in = r_gap_mid - p("AirGap") / 2.0
     r_gap_out = r_gap_mid + p("AirGap") / 2.0
-    r_yoke_in = r_gap_in - p("SlotDepth")
+    r_yoke_in = r_spine_out
+    r_yoke_out = r_yoke_in + p("StatorYokeThick")
+    slot_depth = r_gap_in - r_yoke_out
     r_mag_out = r_gap_out + p("MagnetThick")
     r_back_out = r_mag_out + p("BackironThick")
-    d["RStatorBore"] = r_bore
+
+    d["RTrainBore"] = r_train
+    d["RSpineOut"] = r_spine_out
     d["RGapMid"] = r_gap_mid
     d["RGapIn"] = r_gap_in
     d["RGapOut"] = r_gap_out
     d["RYokeIn"] = r_yoke_in
-    d["RYokeThickCheck"] = r_yoke_in - r_bore
+    d["RYokeOut"] = r_yoke_out
+    d["SlotDepth"] = slot_depth
+    d["SlotDepthLost"] = p("SlotDepthSizing") - slot_depth
+    d["SlotAreaRatio"] = slot_depth / p("SlotDepthSizing")
     d["RMagnetOut"] = r_mag_out
     d["RBackironOut"] = r_back_out
     d["MachineODCheck"] = 2.0 * r_back_out
     d["MachineODMargin"] = p("MachineODMax") - d["MachineODCheck"]
     # radial space left for the ring skin outside the rotor backiron
     d["RingWallThick"] = d["RingR"] - r_back_out
+    # torque scales with slot area, so T3's cost lands directly on C19/C42
+    d["TorqueScaleFromT3"] = d["SlotAreaRatio"]
 
     # --- axial envelope audit ---------------------------------------------
     # Bottom-up: every station is placed relative to the part it bolts to.
@@ -373,7 +420,7 @@ _TABLE = {}
 
 def _load():
     _TABLE.clear()
-    for group in (REFERENCE, CAA, MACHINE, BEARING, LOADS, FRONT_END, STATIONS):
+    for group in (REFERENCE, CAA, MACHINE, BEARING, LOADS, BODY, FRONT_END, STATIONS):
         for prm in group:
             if prm.alias in _TABLE:
                 raise ValueError("duplicate alias: %s" % prm.alias)
@@ -421,6 +468,7 @@ def groups():
         ("MACHINE", MACHINE),
         ("BEARING", BEARING),
         ("LOADS", LOADS),
+        ("BODY", BODY),
         ("FRONT_END", FRONT_END),
         ("STATIONS", STATIONS),
     ]
@@ -494,7 +542,15 @@ def report():
     lines.append("CLOSURE CHECKS")
     lines.append("  machine OD          = %.2f mm  vs limit %.1f mm  -> margin %.2f mm"
                  % (d["MachineODCheck"], p("MachineODMax"), d["MachineODMargin"]))
-    lines.append("  yoke thickness      = %.2f mm  vs sizing 4.70 mm" % d["RYokeThickCheck"])
+    lines.append("  spine tube          = Ø%.1f .. Ø%.1f  (wall %.2f)"
+                 % (2 * d["RTrainBore"], 2 * d["RSpineOut"], p("SpineWall")))
+    lines.append("  yoke                = r %.2f .. %.2f  (%.2f mm)"
+                 % (d["RYokeIn"], d["RYokeOut"], p("StatorYokeThick")))
+    lines.append("  slot depth          = %.2f mm  vs sizing %.2f mm  -> lost %.2f mm (%.1f %%)"
+                 % (d["SlotDepth"], p("SlotDepthSizing"), d["SlotDepthLost"],
+                    100.0 * (1.0 - d["SlotAreaRatio"])))
+    lines.append("    T3: torque scales with slot area, so C19's 5.76 N·m and C42's")
+    lines.append("        2.92 kW both carry a x%.3f factor from the train bore." % d["TorqueScaleFromT3"])
     lines.append("  ring wall over rotor= %.2f mm" % d["RingWallThick"])
     lines.append("  exposed canard span = %.2f mm  (register says 26.5)" % d["CanardSpanExposed"])
     lines.append("  canard chord/span   = %.2f  (AR)" % d["CanardAspectRatio"])

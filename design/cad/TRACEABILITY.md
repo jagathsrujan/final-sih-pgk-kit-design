@@ -9,9 +9,9 @@ Status vocabulary is the register's own. **PROVISIONAL** means the CAD adopted a
 | status | count |
 |---|---:|
 | DEFINED | 18 |
-| DERIVED | 69 |
+| DERIVED | 74 |
 | PARAMETRIC | 16 |
-| PROVISIONAL | 30 |
+| PROVISIONAL | 37 |
 
 
 ## REFERENCE
@@ -33,6 +33,8 @@ Status vocabulary is the register's own. **PROVISIONAL** means the CAD adopted a
 | `WellEngageTurns` | 9 |  | P6 | PROVISIONAL | P6's own flank-area estimate uses ~9 turns; confirm against YIL |
 | `WellFlankBand` | 0.8 | mm | P6 | PROVISIONAL | P6's effective contact band on the thread flank |
 | `WellBoreDia` | 44 | mm | P6 | PROVISIONAL | the well bore below the thread. 44.0 is the SELF-CONSISTENT reading: P6's seat annulus of 0.5e-3 m^2 over a ring 44-50.8 reproduces exactly at this diameter (and a kit shoulder bearing on that seat is what makes the annulus real). P6's other figure, an 18.8e-3 m^2 contact area, implies a 48 mm bore -- 9 %% larger, and it is the figure P6's >=58 W/K closing route is sized on. Both areas are computed outputs here so the register can adopt whichever YIL's drawing confirms. |
+| `SpigotClearance` | 0.1 | mm | P6 | PROVISIONAL | RADIAL assembly clearance on the spigot. It is a MODELLING necessity -- a nominal-against-nominal fit is a full-volume boolean clash -- and a design one: P6 rules that a clearance gap conducts nothing (a 0.1 mm air film over that area is only ~5 W/K), so this gap is not the thermal path. P6's route is a COMPLIANT CONTACTING element in it, modelled in Phase 6. |
+| `ThreadClearance` | 0.1 | mm | P6 | PROVISIONAL | radial allowance so the 2A external thread clears the 2B internal |
 | `KitIntrusionMax` | 124.7 | mm | P12 | PARAMETRIC | fielded benchmark intrusion |
 | `KitVisibleMax` | 95.25 | mm | P12 | PARAMETRIC | fielded benchmark visible length above the seat |
 | `KitMassMax` | 1.4 | kg | P9 | PARAMETRIC | fielded benchmark kit mass |
@@ -68,8 +70,9 @@ Status vocabulary is the register's own. **PROVISIONAL** means the CAD adopted a
 | `MagnetThick` | 1.5 | mm | C38 | DERIVED | NdFeB radial thickness, SH/UH grade |
 | `BackironThick` | 4.7 | mm | C40 | DERIVED | rotor backiron at 1.5 T |
 | `StatorYokeThick` | 4.7 | mm | C40 | DERIVED | stator yoke at 1.5 T |
-| `SlotDepth` | 19.6 | mm | C40 | DERIVED | fills the remaining annulus |
-| `StatorBoreDia` | 30 | mm | F9 | DEFINED | stator bore is structure, not flux; this IS the train-bore reservation |
+| `SlotDepthSizing` | 19.6 | mm | C40 | DERIVED | the sizing's slot depth, = gap inner radius - yoke inner radius. It assumes the stator's own bore IS the train bore, i.e. that the 30 mm train reservation costs no structural material. T3: it does. |
+| `SpineWall` | 1.5 | mm | F9 | PROVISIONAL | T3: the structural spine tube that carries the machine between its two races. The stator core cannot double as the train-bore wall, because F9 reserves a clear 30 mm through the machine section -- so something has to be there and it is not the core. 1.5 mm of steel is the thin end of what carries the machine's bending; set with C32/C35. |
+| `StatorBoreDia` | 30 | mm | F9 | DEFINED | the TRAIN-BORE reservation, not the stator core's own bore |
 | `MachineODMax` | 92 | mm | C34 | DEFINED | hard ceiling, set by the annulus |
 | `StackLen` | 28 | mm | C40 | PROVISIONAL | nominal of the 25-30 mm sizing band (L=25 -> 0.81 kg, L=30 -> 0.97 kg) |
 | `Kt` | 0.362 | N*m/A | C14 | DEFINED | per ampere rms line current |
@@ -109,6 +112,15 @@ Status vocabulary is the register's own. **PROVISIONAL** means the CAD adopted a
 | `CanardTransient` | 85 | N | C28 | PROVISIONAL | [ref] launch transient |
 | `AirGapDeflMax` | 0.2 | mm | C35 | DERIVED | gap 0.40 mm -> half the gap is the allowable relative deflection |
 | `AxialPathStiff` | 367 | N/um | C35 | DERIVED | 73.5 kN / 0.20 mm — a structural-case spec, NOT a bearing spec |
+
+## BODY
+
+| alias | value | unit | criterion | status | basis |
+|---|---:|---|---|---|---|
+| `SpiderHoles` | 8 |  | CAD | PROVISIONAL | lightening holes per spider. T4: modelled solid, the body alone is 2.57 kg in steel against P9's 1.4 kg for the WHOLE kit, so every web that is not a load path gets a hole. |
+| `SpiderHoleDia` | 10 | mm | CAD | PROVISIONAL | lightening hole diameter |
+| `SpiderHolePCD` | 41 | mm | CAD | PROVISIONAL | hole pitch circle, midway between the train bore and the spider OD |
+| `WebThickness` | 2 | mm | CAD | PROVISIONAL | stator end-plate thickness; a mounting face, not a structural member |
 
 ## FRONT_END
 
@@ -163,12 +175,17 @@ Recomputed on every load from the table above — change an input and these move
 | `RGapMid` | 39.55 |
 | `RGapOut` | 39.75 |
 | `RMagnetOut` | 41.25 |
-| `RStatorBore` | 15 |
-| `RYokeIn` | 19.75 |
-| `RYokeThickCheck` | 4.75 |
+| `RSpineOut` | 16.5 |
+| `RTrainBore` | 15 |
+| `RYokeIn` | 16.5 |
+| `RYokeOut` | 21.2 |
 | `RingLen` | 80 |
 | `RingR` | 49 |
 | `RingWallThick` | 3.05 |
+| `SlotAreaRatio` | 0.926 |
+| `SlotDepth` | 18.15 |
+| `SlotDepthLost` | 1.45 |
+| `TorqueScaleFromT3` | 0.926 |
 | `WellBoreArea` | 17237.2906 |
 | `WellBoreAreaP6` | 18800 |
 | `WellEngageLen` | 19.05 |
@@ -219,7 +236,14 @@ Recomputed on every load from the table above — change an input and these move
 | `NoseWallThick` | CAD | see basis — criterion is OPEN in the register |
 | `RingOD` | C7 | see basis — criterion is OPEN in the register |
 | `ShoulderLen` | CAD | see basis — criterion is OPEN in the register |
+| `SpiderHoleDia` | CAD | see basis — criterion is OPEN in the register |
+| `SpiderHolePCD` | CAD | see basis — criterion is OPEN in the register |
+| `SpiderHoles` | CAD | see basis — criterion is OPEN in the register |
+| `SpigotClearance` | P6 | see basis — criterion is OPEN in the register |
+| `SpineWall` | F9 | see basis — criterion is OPEN in the register |
 | `StackLen` | C40 | see basis — criterion is OPEN in the register |
+| `ThreadClearance` | P6 | see basis — criterion is OPEN in the register |
+| `WebThickness` | CAD | see basis — criterion is OPEN in the register |
 | `WellBoreDia` | P6 | see basis — criterion is OPEN in the register |
 | `WellEngageTurns` | P6 | see basis — criterion is OPEN in the register |
 | `WellFlankBand` | P6 | see basis — criterion is OPEN in the register |

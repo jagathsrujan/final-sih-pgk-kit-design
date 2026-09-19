@@ -138,6 +138,31 @@ PARAMETRIC benchmark rather than a hard requirement, and C31's permanent exposur
 removes the folding option that let the fielded kit hide its chord, the likely answer is
 that this kit is legitimately slightly longer. That is a register decision, not a CAD one.
 
+**T3 — the train bore costs slot depth, and no criterion owned it.** F9 reserves a clear
+≈Ø30 through the whole well *and* machine section. The machine sizing's radial build
+assumes the stator core's own bore **is** that reservation, so it is charged nothing for
+the structure that holds the machine together. A spine tube of 1.5 mm (`SpineWall`, at
+Ø30–33) is needed, and the core then builds outside it: **slot depth falls 19.60 → 18.15 mm
+(−7.4 %)**, and because torque scales with slot area, **C19's 5.76 N·m and C42's 2.92 kW /
+121 kJ each carry a ×0.926 factor.** `SpineWall` is PROVISIONAL and belongs with C32/C35.
+
+**T4 — the kit body alone consumes P9's entire mass budget.** Measured off the solid:
+
+| material | A1 kit body | against P9's ≤ 1.4 kg for the *whole kit* |
+|---|---:|---|
+| steel | **1.407 kg** | **100 % of the budget, before anything else** |
+| titanium | 0.794 kg | 57 % |
+| aluminium | 0.484 kg | 35 % |
+
+C40 already puts the machine alone at 0.81–0.97 kg, and C40's own note conceded the kit
+would land at 1.4–1.7 kg. With the ring, canards, bearings, boards, fuze, dump and buffer
+added the kit looks like **roughly ×2 over P9**. The spigot is the irreducible core of it:
+Ø44 OD with the Ø30 train bore leaves 7 mm of wall over 105 mm, which is 0.675 kg in steel
+— 48 % of the budget in one tube that F9 and P6 between them fully determine. The levers
+are **material** (the spigot is not strength-critical if C32 routes the launch load through
+the seat) and **lightening every web that is not a load path**. P9 and C40 need a joint
+decision; the CAD prices it.
+
 ---
 
 ## Gate discipline
