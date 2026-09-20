@@ -739,6 +739,60 @@ hand.
 
 ---
 
+## Defect fix — the buffer was laid straight through the board stack · 2026-09-20
+
+**Found by asking where the capacitors are**, which is the second time in a row
+that a question caught what a gate could not. The 55 mm supercapacitor buffer
+and the 16 mm board stack occupied **the same space** — **3914.7 mm³** of overlap
+between two body-side parts.
+
+### Why no gate saw it
+
+Every gate compares **across the F9 line**:
+
+- Gate 6 compares the annular items against the Ø30 train bore, and against A1
+- Gate 7 compares ring-side against body-side
+- Gate 4 compares the fins against the ring
+
+**Nothing compared two parts on the same side with each other.** The buffer and
+the board stack are both annular, both body-side, and both at the same radius —
+so no existing check had any reason to look at them as a pair.
+
+### The fix
+
+The stations were a **hand-set table**, and a hand-set table is a list of numbers
+that can silently disagree with the lengths in it. The buffer's entry still read
+36 mm from an earlier sizing pass while `BufferLen` had become 55, so it started
+at z = −74 and ran to −19 — through everything.
+
+They are now **derived**: `stack_layout()` packs the stack sequentially from the
+seat aft, each item starting where the previous one ends. The overlap is no
+longer representable — item *n+1* begins at item *n*'s aft face, by construction.
+
+| item | station | length |
+|---|---:|---:|
+| `A5_Avionics_Stack` | −35.05 … −19.05 | 16.0 mm |
+| `A7_Buffer` | −90.05 … −35.05 | **55.0 mm** |
+| `A6_Dump_Stage` | −110.05 … −90.05 | 20.0 mm |
+| `C3_Harness` | −118.05 … −110.05 | 8.0 mm |
+| *spare to the well bottom* | −124.70 | **6.65 mm** |
+
+**Gate 6 now has check 1b** — the annular items against *each other* — which is
+the check whose absence let this through.
+
+### What this changes
+
+Nothing, in the end: the buffer still gets its 55 mm, its 26.9 cm³ and its
+**188 J**, and the stack still leaves 6.65 mm at the well bottom, exactly as the
+budget predicted. The only thing that moved is that the parts are now where the
+arithmetic always assumed they were.
+
+That is the point worth keeping. **The budget was right; the geometry was
+wrong.** A volumetric check said +6.3 % margin while two items were sharing a
+station, because the budget summed *lengths* and never asked *where* they went.
+
+---
+
 ## Defect fix — the canards were built lying in the disc plane · 2026-09-20
 
 **Found by eye, not by a gate: the fins were oriented wrong and attached to

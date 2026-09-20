@@ -51,18 +51,36 @@ P = C.params()
 DOCNAME = "PGK-Internals"
 OUT = os.path.join(CAD, "out")
 
-# Stations are (z_aft, length). The annular parts run the FULL well length even
-# where the train is, because F9's split is RADIAL not axial: the annulus is
-# r 15.5-21.4 and the train is r < 15, so the two share the same z band happily.
-# That is what "the fuze stack built as rings about it" means, and packing them
-# axially instead would waste most of the available length.
-ANNULAR = [
-    # name,                 z_aft,   length
-    ("A5_Avionics_Stack",   -36.0,  None),          # board count sets it
-    ("A7_Buffer",           -74.0,  36.0),
-    ("A6_Dump_Stage",      -112.0,  20.0),
-    ("C3_Harness",         -122.0,   8.0),
+# THE ANNULAR STACK IS LAID OUT SEQUENTIALLY, from the seat aft, each item's
+# station derived from the previous item's length. It is NOT a hand-set table.
+#
+# It was a hand-set table, and this is what that cost: the buffer is 55 mm long
+# and was placed at z = -74, so it ran to z = -19 -- straight through the board
+# stack sitting at -36..-20. 3914.7 mm^3 of overlap between two body-side parts,
+# and no gate could see it: Gate 6 checks the annulus against the bore and
+# against A1, and Gate 7 checks ring-side against body-side. Nothing ever
+# compared two body-side parts with each other.
+#
+# Deriving the stations from the lengths makes the overlap unrepresentable --
+# item n+1 starts where item n ends, by construction. Gate 6 now also asserts it.
+STACK_ORDER = [
+    ("A5_Avionics_Stack", "BoardStackLen"),
+    ("A7_Buffer",         "BufferLen"),
+    ("A6_Dump_Stage",     "DumpLen"),
+    ("C3_Harness",        "HarnessLen"),
 ]
+
+
+def stack_layout():
+    """{name: (z_aft, z_fore)} for the annular stack, packed from the seat aft."""
+    z = P.p("ZThreadRoot")
+    out = {}
+    for name, key in STACK_ORDER:
+        L = P.p(key)
+        out[name] = (z - L, z)
+        z -= L
+    return out
+
 
 ON_AXIS = [
     ("A9_Impact_Switch",   -106.0,   6.0),
@@ -84,7 +102,7 @@ def annulus():
 
 def avionics_stack():
     r_in, r_out = annulus()
-    z = dict((n, za) for n, za, _ in ANNULAR)["A5_Avionics_Stack"]
+    z = stack_layout()["A5_Avionics_Stack"][0]
     shapes = []
     for i in range(int(P.p("BoardCount"))):
         shapes.append(C.make_tube(r_in, r_out, z, z + P.p("BoardThick")))
@@ -97,8 +115,8 @@ def avionics_stack():
 
 def buffer_pack():
     r_in, r_out = annulus()
-    z = dict((n, za) for n, za, _ in ANNULAR)["A7_Buffer"]
-    return C.make_tube(r_in, r_out, z, z + P.p("BufferLen"))
+    z0, z1 = stack_layout()["A7_Buffer"]
+    return C.make_tube(r_in, r_out, z0, z1)
 
 
 def dump_stage():
@@ -106,14 +124,14 @@ def dump_stage():
     sink: W7's finding is that the 121 kJ leaves through the well interface, so
     the shortest thermal path to it is the right place to put them."""
     r_in, r_out = annulus()
-    z = dict((n, za) for n, za, _ in ANNULAR)["A6_Dump_Stage"]
-    return C.make_tube(r_in, r_out, z, z + P.p("DumpLen"))
+    z0, z1 = stack_layout()["A6_Dump_Stage"]
+    return C.make_tube(r_in, r_out, z0, z1)
 
 
 def harness():
     r_in, r_out = annulus()
-    z = dict((n, za, ) for n, za, _ in ANNULAR)["C3_Harness"]
-    return C.make_tube(r_in + 1.5, r_out - 1.5, z, z + P.p("HarnessLen"))
+    z0, z1 = stack_layout()["C3_Harness"]
+    return C.make_tube(r_in + 1.5, r_out - 1.5, z0, z1)
 
 
 def on_axis(name):
@@ -195,10 +213,14 @@ def build():
     print("")
     print("  annulus: r %.1f .. %.1f  (%.2f mm of radial space)"
           % (r_in, r_out, r_out - r_in))
-    print("  annular stack spans z %.1f .. %.1f across %d items"
-          % (min(za for _, za, _ in ANNULAR),
-             max(za + (ln if ln else P.p("BoardStackLen"))
-                 for _, za, ln in ANNULAR), len(ANNULAR)))
+    lay = stack_layout()
+    print("  annular stack, packed sequentially from the seat aft:")
+    for n, _ in STACK_ORDER:
+        z0, z1 = lay[n]
+        print("      %-22s Z %8.2f .. %8.2f  (%.1f mm)" % (n, z0, z1, z1 - z0))
+    low = min(z0 for z0, _ in lay.values())
+    print("      stack ends at Z = %.2f, well bottom %.2f, spare %.2f mm"
+          % (low, P.p("ZWellBottom"), low - P.p("ZWellBottom")))
     print("  train spans        z %.1f .. %.1f across %d items"
           % (min(za for _, za, _ in ON_AXIS),
              max(za + ln for _, za, ln in ON_AXIS), len(ON_AXIS)))
@@ -230,6 +252,29 @@ def gate6(annular_parts, axis_parts, other):
     for n, v in intruding:
         print("      %s intrudes %.1f mm^3 into the train bore" % (n, v))
     print("      (boards, dump, buffer, harness: none may cross the line)")
+
+    # 1b. THE CHECK THAT WAS MISSING. Every other gate compares ACROSS the F9
+    #     line -- annular against the bore, ring-side against body-side -- and
+    #     nothing compared two parts on the SAME side with each other. That is
+    #     how a 55 mm buffer came to be laid straight through the board stack.
+    names = list(annular_parts)
+    clashes = []
+    for i in range(len(names)):
+        for j in range(i + 1, len(names)):
+            v = annular_parts[names[i]].common(annular_parts[names[j]]).Volume
+            if v > 1.0:
+                clashes.append((names[i], names[j], v))
+    good = not clashes
+    ok &= good
+    print("")
+    print("  1b annular items against EACH OTHER: %d overlaps ......... %s"
+          % (len(clashes), "PASS" if good else "FAIL"))
+    for a, b, v in clashes:
+        print("      %s <-> %s  %.1f mm^3  <-- CLASH" % (a, b, v))
+    if clashes:
+        print("      -> they share a radius band by design, so the only thing")
+        print("         separating them is their AXIAL stations. stack_layout()")
+        print("         derives those from the lengths; hand-set ones overlapped.")
 
     # the train is SUPPOSED to be in there -- report what occupies it
     print("")
