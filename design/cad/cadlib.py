@@ -115,6 +115,37 @@ def report_shape(label, shape, density=None):
         print("  %-22s *** NOT A SOLID — geometry downstream is meaningless ***" % "")
 
 
+# ---------------------------------------------------------------------------
+# measurement feedback
+# ---------------------------------------------------------------------------
+
+MEASURED_JSON = os.path.join(HERE, "out", "measured.json")
+
+
+def publish_measured(values):
+    """Write measured masses so the SSOT can size other parts on them.
+
+    This is the loop that makes T6 automatic: Phase 2 measures the ring, the
+    file records it, and pgk_params reads it back to size C32's collar against
+    the real load instead of C26's 0.5 kg assumption. Values are merged, so a
+    phase only has to publish what it owns.
+    """
+    import json
+    os.makedirs(os.path.dirname(MEASURED_JSON), exist_ok=True)
+    data = {}
+    if os.path.exists(MEASURED_JSON):
+        try:
+            with open(MEASURED_JSON) as f:
+                data = json.load(f)
+        except Exception:
+            data = {}
+    data.update({k: round(float(v), 6) for k, v in values.items()})
+    with open(MEASURED_JSON, "w") as f:
+        json.dump(data, f, indent=2, sort_keys=True)
+        f.write("\n")
+    return MEASURED_JSON
+
+
 def wall_at(shape, r, z, theta_deg=0.0):
     """True if the point (r, theta, z) is inside the solid."""
     a = math.radians(theta_deg)

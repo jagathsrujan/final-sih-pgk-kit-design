@@ -9,9 +9,9 @@ Status vocabulary is the register's own. **PROVISIONAL** means the CAD adopted a
 | status | count |
 |---|---:|
 | DEFINED | 18 |
-| DERIVED | 74 |
+| DERIVED | 88 |
 | PARAMETRIC | 16 |
-| PROVISIONAL | 37 |
+| PROVISIONAL | 45 |
 
 
 ## REFERENCE
@@ -99,6 +99,21 @@ Status vocabulary is the register's own. **PROVISIONAL** means the CAD adopted a
 | `BrgPreload` | 0 | N | C23 | PROVISIONAL | PLACEHOLDER — the one knob owning the C35 (>=122 N/um) vs C13 (Tf <= 0.10 N*m) tension; value set with C22 |
 | `BrgStiffnessReq` | 122 | N/um | C35 | DERIVED | 24.5 kN radial / 0.20 mm allowable deflection, on the pair |
 | `FrictionBudget` | 0.1 | N*m | C13 | DERIVED | flat across the speed envelope; load-dominated, not viscous |
+| `PressFitClearance` | 0.02 | mm | CAD | PROVISIONAL | press-fit interfaces are MODELLED with a nominal clearance so the interference check reports real clashes only. Press fits, thread engagement and bond lines are the allowed interfaces. |
+
+## RETENTION
+
+| alias | value | unit | criterion | status | basis |
+|---|---:|---|---|---|---|
+| `RetTravel` | 0.1 | mm | C32 | PROVISIONAL | axial travel of the ring before the thrust collar takes the load. It must stay well inside the bearing's internal clearance and it does NOT affect the radial air gap. |
+| `RetCollarThick` | 4 | mm | C32 | PROVISIONAL | thrust collar thickness; 212 kN across this face at ~230 MPa |
+| `RetFaceBite` | 75 | mm^2/kN | C32 | DERIVED | FACE AREA PER kN of setback the collar must accept at a stated allowable bearing stress — recomputed against the measured load below |
+| `RetBearingStress` | 300 | MPa | C32 | PROVISIONAL | allowable compressive stress on a hardened, ground thrust face |
+| `RingThrustBoreDia` | 91.9 | mm | C32 | PROVISIONAL | the ring's bore over the aft band. NOT opened beyond the bearing bore: the collar's thrust face has to sit UNDER the ring's aft face, so the two must share a radius band, and a narrow band at the skin radius costs 245 MPa of contact stress where a wide one costs 56 MPa. The 0.03 kg the opening would have saved is not worth that. |
+| `RetFaceID` | 26.5 | mm | C32 | DERIVED | inner edge of the thrust contact band. Set as low as the ring's aft recess allows, because contact stress falls directly with area: at 34.5 the margin is x1.3, at 26.5 it is x1.8. |
+| `RingAftBoreDia` | 53 | mm | C32 | PROVISIONAL | the ring's bore over the aft recess band, below the bearing. Opened from the bearing bore to widen the C32 thrust face — the one place the ring can afford a few grams because it buys contact area directly. |
+| `RetFaceOD` | 48.8 | mm | C32 | PROVISIONAL | outer edge of the thrust contact band, just inside the ring's skin |
+| `CollarID` | 25.92 | mm | C32 | PROVISIONAL | the collar is a disc from the body's shoulder (r 25.9 + press fit) out to RetFaceOD, so the load reaches the body through a continuous section rather than a ring on stilts |
 
 ## LOADS
 
@@ -150,6 +165,8 @@ Recomputed on every load from the table above — change an input and these move
 
 | alias | value |
 |---|---:|
+| `AxialPathStiffMeasured` | 1116.9494 |
+| `AxialPathStiffRatio` | 3.0435 |
 | `BrgRowSeparation` | 60 |
 | `CanardAspectRatio` | 0.3312 |
 | `CanardChordFitMax` | 69.25 |
@@ -179,9 +196,19 @@ Recomputed on every load from the table above — change an input and these move
 | `RTrainBore` | 15 |
 | `RYokeIn` | 16.5 |
 | `RYokeOut` | 21.2 |
+| `RetFaceArea` | 1318.8327 |
+| `RetFaceStress` | 169.3845 |
+| `RetOverlapCheck` | true |
+| `RetStressMargin` | 1.7711 |
 | `RingLen` | 80 |
+| `RingMassAssumed_C26` | 0.5 |
+| `RingMassMeasured` | 1.5197 |
+| `RingMassScaling` | 3.0393 |
 | `RingR` | 49 |
+| `RingRotatingMeasured` | 1.8764 |
 | `RingWallThick` | 3.05 |
+| `SetbackMeasured` | 223.3899 |
+| `SetbackRotating` | 275.832 |
 | `SlotAreaRatio` | 0.926 |
 | `SlotDepth` | 18.15 |
 | `SlotDepthLost` | 1.45 |
@@ -229,12 +256,20 @@ Recomputed on every load from the table above — change an input and these move
 | `CanardTransient` | C28 | see basis — criterion is OPEN in the register |
 | `CantCtrl` | C3 | see basis — criterion is OPEN in the register |
 | `CantSteer` | C2 | see basis — criterion is OPEN in the register |
+| `CollarID` | C32 | see basis — criterion is OPEN in the register |
 | `GnssApertureDia` | N3 | see basis — criterion is OPEN in the register |
 | `HubAftInset` | CAD | see basis — criterion is OPEN in the register |
 | `MachineInRingAft` | CAD | see basis — criterion is OPEN in the register |
 | `NoseCapLen` | CAD | see basis — criterion is OPEN in the register |
 | `NoseWallThick` | CAD | see basis — criterion is OPEN in the register |
+| `PressFitClearance` | CAD | see basis — criterion is OPEN in the register |
+| `RetBearingStress` | C32 | see basis — criterion is OPEN in the register |
+| `RetCollarThick` | C32 | see basis — criterion is OPEN in the register |
+| `RetFaceOD` | C32 | see basis — criterion is OPEN in the register |
+| `RetTravel` | C32 | see basis — criterion is OPEN in the register |
+| `RingAftBoreDia` | C32 | see basis — criterion is OPEN in the register |
 | `RingOD` | C7 | see basis — criterion is OPEN in the register |
+| `RingThrustBoreDia` | C32 | see basis — criterion is OPEN in the register |
 | `ShoulderLen` | CAD | see basis — criterion is OPEN in the register |
 | `SpiderHoleDia` | CAD | see basis — criterion is OPEN in the register |
 | `SpiderHolePCD` | CAD | see basis — criterion is OPEN in the register |

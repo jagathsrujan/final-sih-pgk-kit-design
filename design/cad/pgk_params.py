@@ -25,7 +25,37 @@ Axes:  +Z = spin axis, forward toward the nose.
 """
 
 from dataclasses import dataclass
+import json
 import math
+import os
+
+_HERE = os.path.dirname(os.path.abspath(__file__))
+_MEASURED = os.path.join(_HERE, "out", "measured.json")
+
+
+def measured(key, fallback):
+    """A mass the CAD has actually measured, or `fallback` if none yet.
+
+    The macros write out/measured.json after every build, so a value like C26's
+    ring mass stops being an assumption and starts being a measurement that
+    flows back into whatever is sized on it. If the file is missing (a fresh
+    checkout) the fallback is the last recorded figure, and it is labelled as
+    such in the traceability table.
+    """
+    try:
+        with open(_MEASURED) as f:
+            return float(json.load(f)[key])
+    except Exception:
+        return fallback
+
+
+def measured_source(key):
+    try:
+        with open(_MEASURED) as f:
+            json.load(f)[key]
+        return "measured by the CAD (out/measured.json)"
+    except Exception:
+        return "FALLBACK — no measurement recorded yet"
 
 # ---------------------------------------------------------------------------
 # Record type
@@ -208,6 +238,51 @@ BEARING = [
        "24.5 kN radial / 0.20 mm allowable deflection, on the pair"),
     _p("FrictionBudget",     0.10, "N*m", "C13", "DERIVED",
        "flat across the speed envelope; load-dominated, not viscous"),
+    _p("PressFitClearance",  0.02, "mm", "CAD", "PROVISIONAL",
+       "press-fit interfaces are MODELLED with a nominal clearance so the "
+       "interference check reports real clashes only. Press fits, thread "
+       "engagement and bond lines are the allowed interfaces."),
+]
+
+# ---------------------------------------------------------------------------
+# 5a. C32 — the launch-load bypass           (the answer to T6's 212-265 kN)
+#     C26's structural conclusion: 74 kN cannot pass through the flight
+#     bearings, so the axial launch path must bypass them. T6 raises that to
+#     212-265 kN, which makes this part load-bearing in the strongest sense.
+# ---------------------------------------------------------------------------
+
+RETENTION = [
+    _p("RetTravel",          0.10, "mm", "C32", "PROVISIONAL",
+       "axial travel of the ring before the thrust collar takes the load. It "
+       "must stay well inside the bearing's internal clearance and it does NOT "
+       "affect the radial air gap."),
+    _p("RetCollarThick",     4.0,  "mm", "C32", "PROVISIONAL",
+       "thrust collar thickness; 212 kN across this face at ~230 MPa"),
+    _p("RetFaceBite",       75.0,  "mm^2/kN", "C32", "DERIVED",
+       "FACE AREA PER kN of setback the collar must accept at a stated "
+       "allowable bearing stress — recomputed against the measured load below"),
+    _p("RetBearingStress", 300.0,  "MPa", "C32", "PROVISIONAL",
+       "allowable compressive stress on a hardened, ground thrust face"),
+    _p("RingThrustBoreDia", 91.9,  "mm", "C32", "PROVISIONAL",
+       "the ring's bore over the aft band. NOT opened beyond the bearing bore: "
+       "the collar's thrust face has to sit UNDER the ring's aft face, so the "
+       "two must share a radius band, and a narrow band at the skin radius "
+       "costs 245 MPa of contact stress where a wide one costs 56 MPa. The "
+       "0.03 kg the opening would have saved is not worth that."),
+    _p("RetFaceID",         26.5,  "mm", "C32", "DERIVED",
+       "inner edge of the thrust contact band. Set as low as the ring's aft "
+       "recess allows, because contact stress falls directly with area: at "
+       "34.5 the margin is x1.3, at 26.5 it is x1.8."),
+    _p("RingAftBoreDia",    53.0,  "mm", "C32", "PROVISIONAL",
+       "the ring's bore over the aft recess band, below the bearing. Opened "
+       "from the bearing bore to widen the C32 thrust face — the one place the "
+       "ring can afford a few grams because it buys contact area directly."),
+    _p("RetFaceOD",         48.8,  "mm", "C32", "PROVISIONAL",
+       "outer edge of the thrust contact band, just inside the ring's skin"),
+    _p("CollarID",          25.92, "mm", "C32", "PROVISIONAL",
+       "the collar is a disc from the body's shoulder (r 25.9 + press fit) out "
+       "to RetFaceOD, so the load reaches the body through a continuous "
+       "section rather than a ring on stilts"),
 ]
 
 # ---------------------------------------------------------------------------
@@ -412,6 +487,36 @@ def derived():
     # ...and the q floor that a shorter chord would impose is C31(d)'s trade,
     # which the register already shows cannot buy the force back with area.
 
+    # --- C32 retention, sized against the load C26 ASSUMED -----------------
+    # T6: C26 is built on a 0.5 kg ring. The reservation below is the number the
+    # collar must actually accept once the ring's measured mass is in; Phase 3
+    # overwrites RingMassMeasured with the CAD's own figure.
+    d["RingMassAssumed_C26"] = 0.5
+    d["RingMassMeasured"] = measured("B1_Ring_Carrier", 1.415)
+    d["RingRotatingMeasured"] = (
+        d["RingMassMeasured"]
+        + measured("B2_Rotor_Backiron", 0.283)
+        + measured("B3_Magnets", 0.074))
+    d["RingMassScaling"] = d["RingMassMeasured"] / d["RingMassAssumed_C26"]
+    d["SetbackMeasured"] = (p("SetbackRing")
+                            * d["RingMassMeasured"] / d["RingMassAssumed_C26"])
+    d["SetbackRotating"] = (p("SetbackRing")
+                            * d["RingRotatingMeasured"] / d["RingMassAssumed_C26"])
+    # C35's structural case follows the load, so it moves with T6. Careful with
+    # the units: the setback is in kN, so 1000 converts to N, and dividing by
+    # millimetres gives N/mm -- which must then be divided by 1000 for N/um.
+    d["AxialPathStiffMeasured"] = (d["SetbackMeasured"] * 1000.0
+                                   / p("AirGapDeflMax") / 1000.0)
+    d["AxialPathStiffRatio"] = d["AxialPathStiffMeasured"] / p("AxialPathStiff")
+
+    # The thrust contact is only where the collar's face and the ring's aft face
+    # OVERLAP -- a face that does not overlap its partner takes no load at all.
+    d["RetFaceArea"] = (math.pi / 4.0
+                        * (p("RetFaceOD") ** 2 - p("RetFaceID") ** 2))
+    d["RetOverlapCheck"] = p("RetFaceOD") <= p("RingOD") / 2.0 - 0.1
+    d["RetFaceStress"] = d["SetbackMeasured"] * 1000.0 / d["RetFaceArea"]
+    d["RetStressMargin"] = p("RetBearingStress") / d["RetFaceStress"]
+
     return d
 
 
@@ -420,7 +525,8 @@ _TABLE = {}
 
 def _load():
     _TABLE.clear()
-    for group in (REFERENCE, CAA, MACHINE, BEARING, LOADS, BODY, FRONT_END, STATIONS):
+    for group in (REFERENCE, CAA, MACHINE, BEARING, RETENTION, LOADS, BODY,
+                  FRONT_END, STATIONS):
         for prm in group:
             if prm.alias in _TABLE:
                 raise ValueError("duplicate alias: %s" % prm.alias)
@@ -430,13 +536,24 @@ def _load():
 _load()
 
 
-def _promote():
-    """Fold every derived() quantity into the table as a DERIVED record.
+_IN_DERIVED = [False]
 
-    derived() must only read base aliases through p(); derived-to-derived
-    references inside it use its own local dict, so this cannot recurse.
+
+def _promote_apply():
+    """Compute derived() once and fold its results into the table as records.
+
+    derived() must reach derived-to-derived values through its own local dict,
+    never back through p(). If it does, p() finds the alias missing, calls back
+    in here, and recurses until the stack dies with a RecursionError that says
+    nothing about which alias caused it. The flag below turns that into a named
+    error instead.
     """
-    for k, v in derived().items():
+    _IN_DERIVED[0] = True
+    try:
+        vals = derived()
+    finally:
+        _IN_DERIVED[0] = False
+    for k, v in vals.items():
         if k not in _TABLE:
             _TABLE[k] = _p(k, v, "", "CAD", "DERIVED", "computed in derived()")
 
@@ -444,20 +561,24 @@ def _promote():
 def p(alias):
     """Value of a parameter or derived quantity, by alias."""
     if alias not in _TABLE:
-        _promote()
+        if _IN_DERIVED[0]:
+            raise RuntimeError(
+                "derived() read '%s' through p(), but '%s' is itself derived. "
+                "Read it from derived()'s own dict." % (alias, alias))
+        _promote_apply()
     return _TABLE[alias].value
 
 
 def rec(alias):
     """Full record for a parameter, by alias."""
     if alias not in _TABLE:
-        _promote()
+        _promote_apply()
     return _TABLE[alias]
 
 
 def all_params():
     """Every parameter and derived quantity, sorted by alias."""
-    _promote()
+    _promote_apply()
     return [_TABLE[k] for k in sorted(_TABLE)]
 
 
@@ -467,6 +588,7 @@ def groups():
         ("CAA", CAA),
         ("MACHINE", MACHINE),
         ("BEARING", BEARING),
+        ("RETENTION", RETENTION),
         ("LOADS", LOADS),
         ("BODY", BODY),
         ("FRONT_END", FRONT_END),

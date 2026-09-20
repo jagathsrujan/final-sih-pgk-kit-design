@@ -289,3 +289,76 @@ machine, not the electronics — that is spending it.**
 
 - `out/PGK-CAA.FCStd`
 - `out/screenshots/p2-machine-section.png`
+
+---
+
+## Phase 3 — bearings and the C32 launch-load bypass · **PASS** · 2026-09-19
+
+Document `PGK-Bearings`. Macro `macros/30_phase3_bearings.py`.
+Screenshot `p3-retention-section.png`.
+`A4_Brg_Inner_Races`, `B4_Brg_Outer_Races`, `C1_Balls_Cage`, `A11_Retention_Collar`.
+
+### Gate 3 — the launch path
+
+| # | check | result |
+|---|---|---|
+| 1 | balls fit the race gap | envelope r 30.75 vs race face r 31.00 → PASS |
+| 2 | collar clears the ring skin | Ø97.60 inside Ø98.00, 0.200 mm → PASS |
+| 3 | **thrust contact band overlaps** | 22.30 mm of radius, **1318.8 mm²** → PASS |
+| 4 | axial travel before contact | 0.100 mm exactly → PASS |
+| 5 | no compliant element in the axial path | collar and races monolithic steel → PASS |
+
+Sized against the load T6 measured, not C26's assumption:
+
+| | C26 assumed | Phase 2/3 measured |
+|---|---:|---:|
+| ring mass | 0.5 kg | **1.520 kg** |
+| axial setback (carrier) | 73.5 kN | **223.4 kN** |
+| axial setback (rotating assembly) | — | **275.8 kN** |
+| scaling | — | **×3.04** |
+| C35 structural stiffness case | 367 N/µm | **1117 N/µm** |
+
+The collar's face is **1318.8 mm²** and sees **169.4 MPa** at 223.4 kN against a
+PROVISIONAL 300 MPa allowable → **×1.77 margin**. For comparison, the first
+arrangement that was tried put the same load on 935.6 mm² (233 MPa, ×1.29) —
+widening the ring's aft recess from Ø53 … Ø69 to reach inboard of the bearing bore
+cost 0.036 kg and bought a third of the margin back. That is the T4/T5 trade being
+spent where it actually pays.
+
+### Two bugs, and the second one would have shipped
+
+1. **Units.** `SetbackMeasured * 1000 / AirGapDeflMax` gives **N/mm**, which the
+   code then printed as N/µm — reporting C35's case as 1 040 322 N/µm, a factor of
+   1000 wrong and absurd enough to notice. Fixed at source, with the conversion
+   written into the expression rather than into a comment.
+2. **A thrust face that does not overlap its partner takes no load, whatever the
+   area formula says.** The collar's face was placed at r 39.35–45.85 while the
+   ring's aft face sat at r 45.95–49.00 — a 0.10 mm radial gap, so the ring would
+   have landed on **air**. Every number in the stress arithmetic still ran and
+   still looked healthy; only an explicit *overlap* check catches this. Gate 3 now
+   has one, and it is the check that matters most in this phase.
+
+### Measurement feedback
+
+Phase 2 now writes `out/measured.json`, and `pgk_params` reads it back. So C26's
+ring mass, the setback derived from it, the collar sized on that setback and C35's
+stiffness case all follow the *model* rather than a number typed into the source.
+If the file is absent the last recorded figure is used and labelled a fallback.
+
+### Session note — FreeCAD restarted mid-phase
+
+The FreeCAD process was restarted between Phase 2 and Phase 3, taking the
+in-memory documents with it. **All four phases were rebuilt from their macros with
+identical results** (Phase 0 reproduced its 0.091 mm worst deviation and its
+11 789.6 cm³ exactly). This is the scripted approach earning its keep: a
+hand-modelled CAD session would have lost the work.
+
+Two development-loop bugs surfaced by the same restart, both now fixed: FreeCAD's
+long-lived interpreter caches `pgk_params` **and** `cadlib`, so an edited source of
+truth was being silently shadowed by the previous import. Every macro now re-reads
+both deliberately.
+
+### Phase 3 outputs
+
+- `out/PGK-Bearings.FCStd`
+- `out/screenshots/p3-retention-section.png`

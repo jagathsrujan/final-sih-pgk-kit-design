@@ -31,6 +31,8 @@ CAD = os.path.dirname(HERE)
 if CAD not in sys.path:
     sys.path.insert(0, CAD)
 
+# cadlib is cached by FreeCAD's long-lived interpreter too, so re-read it
+sys.modules.pop("cadlib", None)
 import cadlib as C  # noqa: E402
 
 P = C.params()
@@ -94,6 +96,10 @@ def build():
 
     r_spider = r_thread + 0.6
     r_web = P.p("RGapIn") - 0.35         # stator end plate OD, clear of the magnets
+    # The inner races need a real cylindrical seat, so the spider is machined
+    # down to the race bore over each bearing band.
+    r_seat = P.p("BrgBoreDia") / 2.0
+    brg_half = P.p("BrgRowWidth") / 2.0
 
     outer = []
     outer.append((r_train, z_aft))
@@ -102,6 +108,10 @@ def build():
     outer += thread_sawtooth(z_seat, z_mouth, r_thread, P.p("WellPitch"),
                              thread_depth, P.p("WellEngageTurns"))
     outer.append((r_spider, z_mouth))                    # shoulder above the mouth
+    outer.append((r_spider, P.p("ZBrgRow1") - brg_half))  # aft spider
+    outer.append((r_seat, P.p("ZBrgRow1") - brg_half))    # bearing row 1 seat
+    outer.append((r_seat, P.p("ZBrgRow1") + brg_half))
+    outer.append((r_spider, P.p("ZBrgRow1") + brg_half))
     outer.append((r_spider, z_plate_aft))
     outer.append((r_web, z_plate_aft))                   # stator aft end plate
     outer.append((r_web, z_mach_aft))
@@ -110,7 +120,11 @@ def build():
     outer.append((r_web, z_mach_fore))                   # stator fore end plate
     outer.append((r_web, z_plate_fore))
     outer.append((r_spider, z_plate_fore))
-    outer.append((r_spider, z_spider_fore_end))          # fore spider
+    outer.append((r_spider, P.p("ZBrgRow2") - brg_half))  # fore spider
+    outer.append((r_seat, P.p("ZBrgRow2") - brg_half))    # bearing row 2 seat
+    outer.append((r_seat, P.p("ZBrgRow2") + brg_half))
+    outer.append((r_spider, P.p("ZBrgRow2") + brg_half))
+    outer.append((r_spider, z_spider_fore_end))
     outer.append((r_spigot, z_spider_fore_end + 2.0))    # front hub begins (A10)
     outer.append((r_spigot, z_hub_end))
     outer.append((r_train, z_hub_end))                   # fore face

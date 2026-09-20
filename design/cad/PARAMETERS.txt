@@ -74,6 +74,18 @@ DRISHTI-PGK — CAD parameter audit
   BrgPreload                 0.0000 N          C23    PROVISIONAL 
   BrgStiffnessReq          122.0000 N/um       C35    DERIVED     
   FrictionBudget             0.1000 N*m        C13    DERIVED     
+  PressFitClearance          0.0200 mm         CAD    PROVISIONAL 
+
+[RETENTION]
+  RetTravel                  0.1000 mm         C32    PROVISIONAL 
+  RetCollarThick             4.0000 mm         C32    PROVISIONAL 
+  RetFaceBite               75.0000 mm^2/kN    C32    DERIVED     
+  RetBearingStress         300.0000 MPa        C32    PROVISIONAL 
+  RingThrustBoreDia         91.9000 mm         C32    PROVISIONAL 
+  RetFaceID                 26.5000 mm         C32    DERIVED     
+  RingAftBoreDia            53.0000 mm         C32    PROVISIONAL 
+  RetFaceOD                 48.8000 mm         C32    PROVISIONAL 
+  CollarID                  25.9200 mm         C32    PROVISIONAL 
 
 [LOADS]
   gAxial                 15000.0000 g          E1     PARAMETRIC  
@@ -108,6 +120,8 @@ DRISHTI-PGK — CAD parameter audit
   HubAftInset               10.0000 mm         CAD    PROVISIONAL 
 
 [DERIVED]
+  AxialPathStiffMeasured     1116.94936
+  AxialPathStiffRatio           3.04346
   BrgRowSeparation             60.00000
   CanardAspectRatio             0.33125
   CanardChordFitMax            69.25000
@@ -137,9 +151,19 @@ DRISHTI-PGK — CAD parameter audit
   RTrainBore                   15.00000
   RYokeIn                      16.50000
   RYokeOut                     21.20000
+  RetFaceArea                1318.83274
+  RetFaceStress               169.38454
+  RetOverlapCheck               1.00000
+  RetStressMargin               1.77112
   RingLen                      80.00000
+  RingMassAssumed_C26           0.50000
+  RingMassMeasured              1.51966
+  RingMassScaling               3.03932
   RingR                        49.00000
+  RingRotatingMeasured          1.87641
   RingWallThick                 3.05000
+  SetbackMeasured             223.38987
+  SetbackRotating             275.83198
   SlotAreaRatio                 0.92602
   SlotDepth                    18.15000
   SlotDepthLost                 1.45000

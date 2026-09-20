@@ -38,6 +38,8 @@ CAD = os.path.dirname(HERE)
 if CAD not in sys.path:
     sys.path.insert(0, CAD)
 
+# cadlib is cached by FreeCAD's long-lived interpreter too, so re-read it
+sys.modules.pop("cadlib", None)
 import cadlib as C  # noqa: E402
 
 P = C.params()
@@ -89,8 +91,14 @@ def ring_carrier(shape_only=False):
     prof.append((r_gap_clear + 2.0, z_b1 + brg_w / 2.0 + rim))
     prof.append((r_brg, z_b1 + brg_w / 2.0 + rim))
     prof.append((r_brg, z_b1 - brg_w / 2.0 - rim))
-    prof.append((r_gap_clear + 2.0, z_b1 - brg_w / 2.0 - rim))
-    prof.append((r_gap_clear + 2.0, z_aft))
+    # The aft face must be a WIDE annulus: the C32 collar's thrust face sits
+    # under it, and two faces only share load where they share a radius band.
+    # The bore is also recessed below the bearing to widen that band further --
+    # the one place the ring can afford grams, because they buy contact area.
+    r_aft = P.p("RingAftBoreDia") / 2.0
+    prof.append((r_aft, z_b1 - brg_w / 2.0 - rim))
+    prof.append((r_aft, z_aft))
+    prof.append((r_out, z_aft))
 
     return C.make_revolve(prof)
 
@@ -214,6 +222,10 @@ def build():
     print("")
     print("  tooth width %.2f mm, slot opening %.2f mm at the gap (sizing gives 8.45)"
           % (tooth, slot_w))
+
+    # publish the measurements so everything sized on them follows this build
+    C.publish_measured(total)
+    print("  published to out/measured.json: %s" % ", ".join(sorted(total)))
 
     doc.recompute()
     return doc, shapes, total
