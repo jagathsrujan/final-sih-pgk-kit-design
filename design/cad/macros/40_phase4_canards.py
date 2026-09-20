@@ -63,22 +63,38 @@ FINS = [
 def canard_master():
     """One fin: a trapezoidal plate lofted from a thick root to a thin tip.
 
-    Built with its span along +Y and its chord along X, so the cant is a pure
-    rotation about Y and the azimuth a pure rotation about Z. That ordering is
-    the reason the tip radius is independent of the cant: rotating about the
-    span axis cannot move a point along the span.
+    THE AXES ARE THE WHOLE POINT, and getting them wrong is silent:
+
+        span      +Y   radial, 49 -> 75.5 mm            (the loft direction)
+        chord     +Z   AXIAL, +/-40 mm                   (along the body)
+        thickness +X   TANGENTIAL, +/-6 at the root      (across the flow)
+
+    The first version of this function had the chord and thickness swapped --
+    chord laid out RADIALLY, thickness along the axis. That makes each canard a
+    flat paddle lying in the disc plane with its face into the airflow: a fan
+    blade, not a fin. It generates drag and no useful lateral force, which is
+    exactly what it looked like on screen.
+
+    Nothing in the gates caught it, because every check was RADIAL -- tip
+    envelope, in-bore clearance, exposed span, cant. All of those are properties
+    of the radius and the radius was right. The chord direction and the thickness
+    direction were never asserted, so no gate could fail. Gate 4 now asserts the
+    orientation, and Gate 7 asserts that the fin is attached to something.
     """
-    r_root = P.p("RingR")
+    # the root is BURIED, not butted: a root at exactly RingR touches the skin
+    # and shares no volume with the ring, which is a joint in name only. The
+    # exposed span is measured from RingR, so C31's 26.5 mm is unaffected.
+    r_root = P.p("RingR") - P.p("CanardEmbed")
     r_tip = P.p("CanardTipDiaMax") / 2.0
     c = P.p("CanardChordRoot")
     t_root = P.p("CanardRootThick")
     t_tip = P.p("CanardThick")
 
     def rect(r, thickness):
-        h = c / 2.0
-        t = thickness / 2.0
-        pts = [App.Vector(-h, r, -t), App.Vector(h, r, -t),
-               App.Vector(h, r, t), App.Vector(-h, r, t)]
+        h = c / 2.0          # half-chord, along Z
+        t = thickness / 2.0  # half-thickness, along X
+        pts = [App.Vector(-t, r, -h), App.Vector(t, r, -h),
+               App.Vector(t, r, h), App.Vector(-t, r, h)]
         return Part.Wire([Part.makeLine(pts[i], pts[(i + 1) % 4])
                           for i in range(4)])
 
@@ -88,10 +104,21 @@ def canard_master():
 
 
 def place(fin, azimuth_deg, cant_sign):
-    """Cant about the span axis, then swing to the azimuth."""
+    """Cant about the span axis, move to the bay, then swing to the azimuth.
+
+    The cant is a rotation about +Y -- the span -- so it tilts the chord out of
+    the axial plane and leaves the span exactly where it was. That is why the
+    tip radius is independent of the cant, and why C31's span arithmetic holds
+    whatever the cant turns out to be.
+
+    The translation puts the fin ON the ring. Without it the fin sits at the
+    mouth plane, floating clear of everything -- which the interference grid
+    cannot see, because a part that touches nothing overlaps nothing.
+    """
     s = fin.copy()
     s.rotate(App.Vector(0, 0, 0), App.Vector(0, 1, 0),
              cant_sign * P.p("CantSteer"))
+    s.translate(App.Vector(0, 0, P.p("ZCanardMid")))
     s.rotate(App.Vector(0, 0, 0), App.Vector(0, 0, 1), azimuth_deg)
     return s
 
@@ -100,22 +127,9 @@ def measure_cant(shape):
     """Recover the cant angle from the solid, not from the number used to build it.
 
     The fin is a thin plate, so its inertia tensor has a clear signature: the
-    largest principal moment belongs to the axis normal to the plate, i.e. the
-    thickness direction. Uncanted that direction is +Z; canted by d about the
-    span axis it is (sin d, 0, cos d). So the angle between the two is the cant.
-
-    Two traps were fallen into getting here, and both are worth keeping:
-
-      * Measuring the fin's LARGEST face reads 13.15 deg, because that surface
-        is tapered in thickness and its normal is tilted ~8.6 deg by the taper
-        alone, in a different plane from the cant.
-      * Selecting faces by surface TYPE reads nothing at all: the leading- and
-        trailing-edge faces are exactly the ones whose normal carries the cant
-        cleanly, and OCC returns them from a loft as BSplineSurface, not Plane.
-
-    The inertia tensor has neither problem: it is a property of the whole solid,
-    it does not care how OCC chose to represent a face, and a wrong rotation
-    axis would move it.
+    largest principal moment belongs to the axis NORMAL to the plate, i.e. the
+    thickness direction. Uncanted that direction is +X (tangential); canted by d
+    about the span it is (cos d, 0, -sin d). So the angle between the two is d.
     """
     import numpy as np
     M = shape.MatrixOfInertia
@@ -123,8 +137,17 @@ def measure_cant(shape):
                   [M.A21, M.A22, M.A23],
                   [M.A31, M.A32, M.A33]], dtype=float)
     vals, vecs = np.linalg.eigh(A)
-    thickness = vecs[:, int(np.argmax(vals))]          # largest moment = plate normal
-    return math.degrees(math.atan2(abs(thickness[0]), abs(thickness[2]))), thickness
+    thickness = vecs[:, int(np.argmax(vals))]
+    return math.degrees(math.atan2(abs(thickness[2]), abs(thickness[0]))), thickness
+
+
+def ring_for_check():
+    """The ring carrier, via its own macro, so the mounting check is against the
+    real part rather than a stand-in."""
+    import runpy
+    ns = runpy.run_path(os.path.join(HERE, "20_phase2_ring_and_machine.py"),
+                        run_name="phase2_for_canards")
+    return ns["ring_carrier"]()
 
 
 # ---------------------------------------------------------------------------
@@ -188,6 +211,39 @@ def gate4(shapes, fin_mass, measured_cant):
     ok &= good
     print("  2 cant %.4f deg vs spec %.2f +/- 0.10 ....... %s"
           % (measured_cant, P.p("CantSteer"), "PASS" if good else "FAIL"))
+
+    # 2b. ORIENTATION. The check whose absence let a fin be built lying in the
+    #     disc plane: chord radial, thickness axial. Every other check here is
+    #     radial and passed anyway, so this one asserts the axes explicitly.
+    bb = shapes["B5_Canard_Master"].BoundBox
+    ex, ey, ez = bb.XMax - bb.XMin, bb.YMax - bb.YMin, bb.ZMax - bb.ZMin
+    chord = P.p("CanardChordRoot")
+    # the bbox span includes the part of the root that is buried in the ring
+    span = P.p("CanardSpanExposed") + P.p("CanardEmbed")
+    thick = P.p("CanardRootThick")
+    good = (abs(ez - chord) < 1.0 and abs(ey - span) < 1.0 and ex < thick + 1.0)
+    ok &= good
+    print("  2b orientation: axial(chord) %.1f, radial(span) %.1f, "
+          "tangential(thick) %.1f" % (ez, ey, ex))
+    print("     want chord %.1f on Z, span %.1f on Y (exposed %.1f + embedded %.1f),"
+          % (chord, span, P.p("CanardSpanExposed"), P.p("CanardEmbed")))
+    print("     thickness <= %.1f on X .................... %s"
+          % (thick, "PASS" if good else "FAIL"))
+
+    # 2c. MOUNTING. Interference is not attachment: a part that touches nothing
+    #     overlaps nothing, so the grid in Phase 7 cannot see a floating fin.
+    ring = ring_for_check()
+    shared = 0.0
+    for name, _, _ in FINS:
+        shared += ring.common(shapes[name]).Volume
+    good = shared > 100.0
+    ok &= good
+    print("  2c mounting: shared volume with the ring %.1f mm^3 ....... %s"
+          % (shared, "PASS" if good else "FAIL"))
+    if not good:
+        print("      -> the fins are attached to NOTHING and would fall off.")
+        print("         Check ZCanardMid against the ring's bay %.1f .. %.1f."
+              % (P.p("ZRingAft"), P.p("ZRingFore")))
 
     # 3. in-bore clearance at four rotor phases
     bore_r = 155.0 / 2.0

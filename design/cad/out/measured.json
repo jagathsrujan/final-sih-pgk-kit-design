@@ -4,12 +4,12 @@
   "B1_Ring_Carrier": 1.519659,
   "B2_Rotor_Backiron": 0.283004,
   "B3_Magnets": 0.073745,
-  "B5_Canard_Ctrl_A": 0.133136,
-  "B5_Canard_Ctrl_B": 0.133136,
-  "B5_Canard_Steer_A": 0.133136,
-  "B5_Canard_Steer_B": 0.133136,
-  "KitTotal_Alu": 2.723335,
-  "KitTotal_Steel": 4.809807,
+  "B5_Canard_Ctrl_A": 0.148208,
+  "B5_Canard_Ctrl_B": 0.148208,
+  "B5_Canard_Steer_A": 0.148208,
+  "B5_Canard_Steer_B": 0.148208,
+  "KitTotal_Alu": 2.713374,
+  "KitTotal_Steel": 4.839397,
   "Machine": 1.018262,
   "RotatingAssembly": 1.876408
 }

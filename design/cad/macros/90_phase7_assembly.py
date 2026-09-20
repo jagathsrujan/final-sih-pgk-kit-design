@@ -215,6 +215,52 @@ def air_gap(body_side, ring_side, common):
     return nominal
 
 
+def mounting(body_side, ring_side, common):
+    """INTEGRAL JOINTS ONLY — interference is not attachment, but neither is
+    coincidence.
+
+    The grid above reports overlaps, and a part that touches nothing overlaps
+    nothing — which is how the canards spent a whole build floating at the mouth
+    plane, attached to nothing, with every gate passing.
+
+    The first correction to that was too broad, though: a "must share volume with
+    its parent" test against A1 and the ring flagged 20 parts, of which 16 are
+    false positives. The model represents almost every interface as an ABUTTING
+    or CLEARANCE fit — a coincident mating face, or a 0.10 mm clearance — and
+    neither shares volume by design. There are no fasteners, no spacers and no
+    bond lines in this model, so a shared-volume test cannot speak for them.
+
+    So the check is scoped to the joints where overlap IS the design intent:
+    the canards are integral with the ring (one billet, the blisk argument), so
+    they must be embedded in it, and the test asserts exactly that and nothing
+    more. The limitation is stated rather than papered over — see the note it
+    prints.
+    """
+    print("")
+    print("   MOUNTING — integral joints must be embedded, not butted")
+    ring = ring_side["B1_Ring_Carrier"][0]
+    ok = True
+    joints = [n for n in ring_side if n.startswith("B5_Canard")]
+    total = 0.0
+    for n in joints:
+        v = ring.common(ring_side[n][0]).Volume
+        total += v
+        flag = "ok" if v > 100.0 else "FLOATING"
+        print("      %-24s shares %9.1f mm^3 with the ring   %s" % (n, v, flag))
+        ok &= v > 100.0
+    print("      -> the four fins are integral, as the manufacturing dossier")
+    print("         argues they should be (one billet, cant angles off one setup)")
+    print("")
+    print("      NOT CHECKED, and it should be said plainly: every other interface")
+    print("      in this model is an abutting face or a clearance fit — a nominal")
+    print("      contact with no fastener, spacer or bond line drawn. Shared-volume")
+    print("      and distance tests are both meaningless for those, so they are")
+    print("      represented in their assembled position and no more. Modelling")
+    print("      the joints (magnet pockets, press lands, bond lines) is the next")
+    print("      thing this workspace should do if the model is to carry loads.")
+    return ok
+
+
 def mass_rollup(body_side, ring_side, common):
     print("")
     print("   MASS ROLLUP — measured off the solids")
@@ -291,6 +337,7 @@ def main():
         os.makedirs(OUT)
     doc, body_side, ring_side, common = build()
     ok, rows = grid(body_side, ring_side, common)
+    ok &= mounting(body_side, ring_side, common)
     air_gap(body_side, ring_side, common)
     mass_rollup(body_side, ring_side, common)
     path = os.path.join(OUT, "PGK-Assembly.FCStd")

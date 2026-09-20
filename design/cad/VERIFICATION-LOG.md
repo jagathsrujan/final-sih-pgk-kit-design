@@ -736,3 +736,100 @@ hand.
 - `out/PGK-Assembly.FCStd`
 - `out/screenshots/p7-assembly-iso.png`
 - `design/07-cad-evidence.md` — extended to T1–T10 with the rollup
+
+---
+
+## Defect fix — the canards were built lying in the disc plane · 2026-09-20
+
+**Found by eye, not by a gate: the fins were oriented wrong and attached to
+nothing.** Both defects had been present since Phase 4, with Gate 4 reporting
+PASS and Gate 7's eight-state grid clean.
+
+### What was wrong
+
+At azimuth 0 the fin occupied:
+
+| axis | as built | should have been |
+|---|---|---|
+| X | **±40 mm** — chord laid out RADIALLY | thickness (±6 mm) |
+| Y | 49 → 75.5 mm — span ✓ | span ✓ |
+| Z | **±6 mm** — thickness along the AXIS | chord (±40 mm) |
+
+**The chord and thickness axes were transposed.** Each canard was a flat paddle
+lying in the disc plane with its face into the airflow — a fan blade, not a fin.
+Four of them pinwheeling around the axis generate drag and no useful lateral
+force, which is precisely what it looks like on screen.
+
+And separately: the fin was never **translated to the ring**. It sat at z = −6…+6,
+below the ring's aft face at z = +6, sharing **0.0000 mm³** with anything. It would
+have fallen off.
+
+### Why every gate passed
+
+**Every check was radial.** Tip envelope Ø151, in-bore clearance, exposed span,
+cant angle — all of those are properties of the *radius*, and the radius was
+correct in both the broken and the fixed geometry. The chord direction, the
+thickness direction and the axial station were never asserted, so no gate could
+fail.
+
+And Gate 7 could not have caught the floating fin either, because **interference
+is not attachment**: a part that touches nothing overlaps nothing, so a
+shared-volume grid is blind to it. A floating part and a correctly-fitted part
+are indistinguishable to that test.
+
+Two gates now exist because of this:
+
+- **Gate 4 check 2b — orientation.** Asserts the bounding box explicitly:
+  chord on Z, span on Y, thickness ≤ `CanardRootThick` on X.
+- **Gate 4 check 2c / Gate 7 mounting — attachment.** The four fins must share
+  positive volume with the ring, and now do: **2 533.7 mm³ each**.
+
+### The fixes
+
+1. **Axes corrected** — the lofted rectangle moved from the XZ plane to the YZ
+   plane, so the chord runs axially and the thickness tangentially. The cant,
+   which is a rotation about the span axis, then tilts the chord correctly — that
+   part of the logic was already right, and the cant still measures **10.0000°**.
+2. **`ZCanardMid` = 46 mm** added — the fin's mid-chord station, the centre of the
+   ring's canard bay (6 → 86). The translation is a parameter, not a literal.
+3. **`CanardEmbed` = 3 mm** — the root is now *buried* in the ring rather than
+   butted against it. A root sitting exactly on the skin touches the ring and
+   shares no volume with it: a joint in name only.
+4. **`RetFaceOD` pulled in 48.8 → 45.5 mm.** Fixing the fins made them *real*, and
+   real fins then collided with the retention collar: the canted root corners
+   reach z = 5.57 over r 46–48.8, so a collar reaching r 48.8 is struck by all
+   four in the LAUNCH state — **5.2 mm³ of genuine clash**, which the grid caught
+   immediately once the fins existed. The collar must clear the canard root, not
+   reach the ring skin. **Cost: contact area 1318.8 → 1074.4 mm², and C32's stress
+   margin ×1.77 → ×1.44.**
+
+That last one is the useful part of the whole episode: **the defect was hiding a
+design conflict.** Un-attached fins float clear of everything; attached fins
+occupy space, and something had to give.
+
+### What this changes in the evidence pack
+
+- Gate 3's C32 margin is now **×1.44** (was ×1.77) — T6's row should quote the
+  new figure
+- the canards are 0.1482 kg each, **0.5928 kg for four** (was 0.5325) — the
+  embedded root is real material
+- the kit rolls up to **4.8394 kg** steel / **2.7134 kg** aluminium
+- **no criterion moves**: the span, tip envelope, cant and planform area were all
+  correct throughout, so C31's arithmetic, the in-bore clearance and the Ø151 cap
+  are untouched
+
+### The limitation this exposed, stated rather than papered over
+
+The first correction to the mounting check was too broad — "every part must share
+volume with its parent" flagged 20 parts, of which **16 are false positives**. This
+model represents almost every interface as an **abutting face or a clearance
+fit**: a coincident mating surface, or 0.10 mm of clearance. Neither shares volume
+by design. There are no fasteners, no spacers and no bond lines drawn anywhere.
+
+So the check is scoped to the joints where overlap *is* the design intent — the
+four integral fins — and the limitation is printed by the gate rather than left
+implicit. **Modelling the joints (magnet pockets, press lands, bond lines) is the
+next thing this workspace should do if the model is to carry loads rather than
+just occupy space.** In particular C38 requires mechanical magnet retention and
+the model currently shows the magnets butted against the backiron, which is not a
+retention feature.

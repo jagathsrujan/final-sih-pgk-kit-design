@@ -21,7 +21,7 @@
 | 1b | Solid verified by point membership (10 probes) + volume cross-check | **0 mismatches**; 179.2 cm³ against a hand integration's 178.8 cm³ (**0.2 %**) |
 | 2 | Ring and machine | air gap **0.400 mm** exactly; machine OD **91.90** against the Ø92 ceiling (0.10 mm margin); stack 28 mm in the 25–30 band; 14 poles / 12 slots; ring OD 98.00 |
 | 2b | Two independent cross-checks off the geometry | tooth width computes to the sizing's own **8.45 mm**; slotted stator core **0.296 kg** against C40's 210–250 g band |
-| 3 | The C32 launch path | thrust contact band **1318.8 mm²**, face stress **169.4 MPa** at 223.4 kN → **×1.77 margin**; axial travel 0.100 mm; every element monolithic steel (C35's prohibition held) |
+| 3 | The C32 launch path | thrust contact band **1074.4 mm²**, face stress **207.9 MPa** at 223.4 kN → **×1.44 margin**; axial travel 0.100 mm; every element monolithic steel (C35's prohibition held). *Margin revised down from ×1.77 when the canards became real geometry — see the defect note in the verification log* |
 | 4 | The canard set | tips **Ø151.00** against the cap; cant **10.0000° measured off the inertia tensor**; in-bore **2.000 mm/side**; exposed span 26.50 mm; area **2120.0 mm²** and AR **0.33** reproduce C31(d) |
 | 5 | Front end | Ø98 against Ø155 → **28.5 mm/side**; **0.0000 mm³** of metal in the aperture's forward bore; **0.0000 mm³** interference with the ring at 4 phases |
 | 6 | Internals, under F9's split | **0.0000 mm³** in the Ø30 reservation from every annular part; **0.0000 mm³** against A1; setter coil in A10's shoulder **0.0000 mm³**; both halves of the contactless link **0.0000 mm³**, 4.0 mm working gap |
@@ -37,13 +37,13 @@ Every value off a solid. Structural parts in steel; aluminium shown as the lever
 
 | group | steel | aluminium structure |
 |---|---:|---:|
-| body side | 2.262 kg | — |
-| ring side | 2.535 kg | — |
-| **kit total** | **4.810 kg** | **2.723 kg** |
+| body side | 2.231 kg | — |
+| ring side | 2.595 kg | — |
+| **kit total** | **4.839 kg** | **2.713 kg** |
 | machine alone (C40's own check) | | **1.018 kg** — +5 % over the band top |
 | rotating assembly (C26's load) | | **1.876 kg** |
 
-Against **P9's ≤ 1.4 kg**: **+244 %** as modelled, **+95 %** with an aluminium structure.
+Against **P9's ≤ 1.4 kg**: **+246 %** as modelled, **+94 %** with an aluminium structure.
 
 **The machine is fine — C40 was sound, within 5 %.** Everything else is not. Even with aluminium throughout, the kit is **roughly ×2 over P9**, and the remaining levers are material, ring diameter (T8) and the retention hardware (T6).
 
@@ -201,7 +201,7 @@ That matters most for **W4's 150–200 J buffer**, which is volume-limited:
 | 3 | T3 | C19, C42, C32/C35; then P6 | Absorb ×0.926 or buy it back; if absorbed, scale P6's requirement with C42 |
 | 4 | T4 | P9, C40 | Joint decision on the mass rollup: raise the limit, pay in material, or both |
 | 5 | **T5** | C7, C34/C44 | The ring's diameter is the lever for both T5 and T8 |
-| 6 | **T6** | C26, C32, C35 | **A decision, not analysis** — correct the ring mass and re-baseline three rows |
+| 6 | **T6** | C26, C32, C35 | **A decision, not analysis** — correct the ring mass and re-baseline three rows. C32's collar closed at **×1.44** once the canards were corrected |
 | 7 | **T7** | C1 | One word: `cos` → `sin` |
 | 8 | **T8** | C44, M10 | **A decision, not analysis** — open the C44 trade and link it to M10 |
 | 9 | **T9** | P9, P14 | Confirm `SpigotWall` against the ramming case |

@@ -168,6 +168,16 @@ CAA = [
        "C43's datum cant; C8 needs >= 10 deg, exactly 10.00 at the datum"),
     _p("CantCtrl",          10.0,  "deg", "C3", "PROVISIONAL",
        "control pair, opposite senses, sized by C3"),
+    _p("CanardEmbed",        3.0,  "mm", "CAD", "PROVISIONAL",
+       "how deep the fin's root is buried in the ring. A root sitting exactly ON "
+       "the skin touches the ring and shares no volume with it -- a butt joint "
+       "with no joint. 3 mm gives a real overlap and still leaves the exposed "
+       "span at 26.5 mm, which is what C31's arithmetic is about."),
+    _p("ZCanardMid",        46.0,  "mm", "CAD", "DERIVED",
+       "the canard's mid-chord station = the centre of the ring's canard bay. "
+       "The first build omitted this translation entirely and left the fins "
+       "floating at the mouth plane, unattached to anything -- see the Gate 7 "
+       "mounting check, which exists because of it."),
     _p("CanardRootThick",   12.0,  "mm", "C5", "PROVISIONAL",
        "root thickness where the fin blends into the ring skin"),
 ]
@@ -277,8 +287,12 @@ RETENTION = [
        "the ring's bore over the aft recess band, below the bearing. Opened "
        "from the bearing bore to widen the C32 thrust face — the one place the "
        "ring can afford a few grams because it buys contact area directly."),
-    _p("RetFaceOD",         48.8,  "mm", "C32", "PROVISIONAL",
-       "outer edge of the thrust contact band, just inside the ring's skin"),
+    _p("RetFaceOD",         45.5,  "mm", "C32", "PROVISIONAL",
+       "outer edge of the thrust contact band. Pulled in from 48.8: the canards' "
+       "canted root corners reach z = 5.57 over r 46-48.8, so a collar reaching "
+       "r 48.8 is struck by all four fins in the LAUNCH state -- 5.2 mm^3 of real "
+       "clash. The collar must clear the canard root, and 45.5 leaves 0.5 mm. "
+       "Cost: contact area 1318.8 -> 1074.4 mm^2, stress margin x1.77 -> x1.44."),
     _p("CollarID",          25.92, "mm", "C32", "PROVISIONAL",
        "the collar is a disc from the body's shoulder (r 25.9 + press fit) out "
        "to RetFaceOD, so the load reaches the body through a continuous "
@@ -540,6 +554,7 @@ def derived():
     d["ZFrontHubFore"] = d["ZRingFore"] + p("NoseWallThick") + p("NoseCapLen")
 
     d["RingLen"] = d["ZRingFore"] - d["ZRingAft"]
+    d["ZCanardMidCheck"] = (d["ZRingAft"] + d["ZRingFore"]) / 2.0
     d["BrgRowSeparation"] = d["ZBrgRow2"] - d["ZBrgRow1"]
     d["MachineSitsInRing"] = (
         d["ZMachineAft"] >= d["ZRingAft"] and d["ZMachineFore"] <= d["ZRingFore"])

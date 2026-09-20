@@ -9,9 +9,9 @@ Status vocabulary is the register's own. **PROVISIONAL** means the CAD adopted a
 | status | count |
 |---|---:|
 | DEFINED | 21 |
-| DERIVED | 113 |
+| DERIVED | 115 |
 | PARAMETRIC | 16 |
-| PROVISIONAL | 62 |
+| PROVISIONAL | 63 |
 
 
 ## REFERENCE
@@ -55,6 +55,8 @@ Status vocabulary is the register's own. **PROVISIONAL** means the CAD adopted a
 | `CanardThick` | 4 | mm | C6 | PROVISIONAL | section thickness at the root; C6 (section) is OPEN |
 | `CantSteer` | 10 | deg | C2 | PROVISIONAL | C43's datum cant; C8 needs >= 10 deg, exactly 10.00 at the datum |
 | `CantCtrl` | 10 | deg | C3 | PROVISIONAL | control pair, opposite senses, sized by C3 |
+| `CanardEmbed` | 3 | mm | CAD | PROVISIONAL | how deep the fin's root is buried in the ring. A root sitting exactly ON the skin touches the ring and shares no volume with it -- a butt joint with no joint. 3 mm gives a real overlap and still leaves the exposed span at 26.5 mm, which is what C31's arithmetic is about. |
+| `ZCanardMid` | 46 | mm | CAD | DERIVED | the canard's mid-chord station = the centre of the ring's canard bay. The first build omitted this translation entirely and left the fins floating at the mouth plane, unattached to anything -- see the Gate 7 mounting check, which exists because of it. |
 | `CanardRootThick` | 12 | mm | C5 | PROVISIONAL | root thickness where the fin blends into the ring skin |
 
 ## MACHINE
@@ -112,7 +114,7 @@ Status vocabulary is the register's own. **PROVISIONAL** means the CAD adopted a
 | `RingThrustBoreDia` | 91.9 | mm | C32 | PROVISIONAL | the ring's bore over the aft band. NOT opened beyond the bearing bore: the collar's thrust face has to sit UNDER the ring's aft face, so the two must share a radius band, and a narrow band at the skin radius costs 245 MPa of contact stress where a wide one costs 56 MPa. The 0.03 kg the opening would have saved is not worth that. |
 | `RetFaceID` | 26.5 | mm | C32 | DERIVED | inner edge of the thrust contact band. Set as low as the ring's aft recess allows, because contact stress falls directly with area: at 34.5 the margin is x1.3, at 26.5 it is x1.8. |
 | `RingAftBoreDia` | 53 | mm | C32 | PROVISIONAL | the ring's bore over the aft recess band, below the bearing. Opened from the bearing bore to widen the C32 thrust face — the one place the ring can afford a few grams because it buys contact area directly. |
-| `RetFaceOD` | 48.8 | mm | C32 | PROVISIONAL | outer edge of the thrust contact band, just inside the ring's skin |
+| `RetFaceOD` | 45.5 | mm | C32 | PROVISIONAL | outer edge of the thrust contact band. Pulled in from 48.8: the canards' canted root corners reach z = 5.57 over r 46-48.8, so a collar reaching r 48.8 is struck by all four fins in the LAUNCH state -- 5.2 mm^3 of real clash. The collar must clear the canard root, and 45.5 leaves 0.5 mm. Cost: contact area 1318.8 -> 1074.4 mm^2, stress margin x1.77 -> x1.44. |
 | `CollarID` | 25.92 | mm | C32 | PROVISIONAL | the collar is a disc from the body's shoulder (r 25.9 + press fit) out to RetFaceOD, so the load reaches the body through a continuous section rather than a ring on stilts |
 
 ## LOADS
@@ -235,10 +237,10 @@ Recomputed on every load from the table above — change an input and these move
 | `RTrainBore` | 15 |
 | `RYokeIn` | 16.5 |
 | `RYokeOut` | 21.2 |
-| `RetFaceArea` | 1318.8327 |
-| `RetFaceStress` | 169.3845 |
+| `RetFaceArea` | 1074.4247 |
+| `RetFaceStress` | 207.9158 |
 | `RetOverlapCheck` | true |
-| `RetStressMargin` | 1.7711 |
+| `RetStressMargin` | 1.4429 |
 | `RingLen` | 80 |
 | `RingMassAssumed_C26` | 0.5 |
 | `RingMassMeasured` | 1.5197 |
@@ -275,6 +277,7 @@ Recomputed on every load from the table above — change an input and these move
 | `WellSpigotID` | 20.4 |
 | `ZBrgRow1` | 16 |
 | `ZBrgRow2` | 76 |
+| `ZCanardMidCheck` | 46 |
 | `ZFrontHubAft` | 16 |
 | `ZFrontHubFore` | 106 |
 | `ZMachineAft` | 26 |
@@ -306,6 +309,7 @@ Recomputed on every load from the table above — change an input and these move
 | `BufferEnergyDensity` | W4 | see basis — criterion is OPEN in the register |
 | `CanardArea` | C4 | see basis — criterion is OPEN in the register |
 | `CanardChordRoot` | C4 | see basis — criterion is OPEN in the register |
+| `CanardEmbed` | CAD | see basis — criterion is OPEN in the register |
 | `CanardRootThick` | C5 | see basis — criterion is OPEN in the register |
 | `CanardThick` | C6 | see basis — criterion is OPEN in the register |
 | `CanardTransient` | C28 | see basis — criterion is OPEN in the register |

@@ -159,15 +159,22 @@ def gate3(shapes):
     ok &= good
     print("    %s" % ("PASS" if good else "FAIL"))
 
-    # the collar must be REACHABLE and must not graze the ring in flight
+    # the collar must be REACHABLE and must clear everything that moves past it.
+    # It is bounded NOT by the ring skin but by the CANARD ROOT radius: the fins'
+    # canted aft corners sweep down to z = 5.57 over r 46-49, so a collar
+    # reaching past r 46 is struck by all four of them in the LAUNCH state.
     collar = shapes["A11_Retention_Collar"]
     bb = collar.BoundBox
-    ring_skin = P.p("RingOD") / 2.0
-    gap = ring_skin - bb.XMax
-    good = 0.05 <= gap <= 0.30
+    root_r = P.p("RingR") - P.p("CanardEmbed")
+    gap = root_r - bb.XMax
+    good = gap >= 0.20
     ok &= good
-    print("  2 collar OD Ø%.2f inside the ring skin Ø%.2f, %.3f mm clear ... %s"
-          % (2 * bb.XMax, P.p("RingOD"), gap, "PASS" if good else "FAIL"))
+    print("  2 collar OD Ø%.2f clears the canard root r %.1f by %.3f mm ... %s"
+          % (2 * bb.XMax, root_r, gap, "PASS" if good else "FAIL"))
+    print("      (the binding constraint is the FINS, not the ring skin at r %.1f:"
+          % P.p("RingR"))
+    print("       the collar only has to reach the ring's aft face, which starts"
+          " at r %.1f)" % (P.p("RingAftBoreDia") / 2.0))
 
     # THE CHECK THAT MATTERS: a thrust face takes load only where it OVERLAPS
     # its partner. Getting this wrong is silent -- the faces both exist, the

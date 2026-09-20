@@ -36,6 +36,8 @@ DRISHTI-PGK — CAD parameter audit
   CanardThick                4.0000 mm         C6     PROVISIONAL 
   CantSteer                 10.0000 deg        C2     PROVISIONAL 
   CantCtrl                  10.0000 deg        C3     PROVISIONAL 
+  CanardEmbed                3.0000 mm         CAD    PROVISIONAL 
+  ZCanardMid                46.0000 mm         CAD    DERIVED     
   CanardRootThick           12.0000 mm         C5     PROVISIONAL 
 
 [MACHINE]
@@ -84,7 +86,7 @@ DRISHTI-PGK — CAD parameter audit
   RingThrustBoreDia         91.9000 mm         C32    PROVISIONAL 
   RetFaceID                 26.5000 mm         C32    DERIVED     
   RingAftBoreDia            53.0000 mm         C32    PROVISIONAL 
-  RetFaceOD                 48.8000 mm         C32    PROVISIONAL 
+  RetFaceOD                 45.5000 mm         C32    PROVISIONAL 
   CollarID                  25.9200 mm         C32    PROVISIONAL 
 
 [LOADS]
@@ -187,10 +189,10 @@ DRISHTI-PGK — CAD parameter audit
   RTrainBore                   15.00000
   RYokeIn                      16.50000
   RYokeOut                     21.20000
-  RetFaceArea                1318.83274
-  RetFaceStress               169.38454
+  RetFaceArea                1074.42469
+  RetFaceStress               207.91580
   RetOverlapCheck               1.00000
-  RetStressMargin               1.77112
+  RetStressMargin               1.44289
   RingLen                      80.00000
   RingMassAssumed_C26           0.50000
   RingMassMeasured              1.51966
@@ -227,6 +229,7 @@ DRISHTI-PGK — CAD parameter audit
   WellSpigotID                 20.40000
   ZBrgRow1                     16.00000
   ZBrgRow2                     76.00000
+  ZCanardMidCheck              46.00000
   ZFrontHubAft                 16.00000
   ZFrontHubFore               106.00000
   ZMachineAft                  26.00000
