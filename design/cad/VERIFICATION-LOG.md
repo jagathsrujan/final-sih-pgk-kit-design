@@ -645,3 +645,94 @@ will not fit.
 
 - `out/PGK-Internals.FCStd`
 - `out/screenshots/p6-internals-section.png`
+
+---
+
+## Phase 7 — the assembly, the eight-state grid, and the mass rollup · **PASS** · 2026-09-20
+
+Document `PGK-Assembly`. Macro `macros/90_phase7_assembly.py`.
+Screenshots `p7-assembly-iso.png`.
+
+24 parts, gathered by calling each phase's own part functions — never
+re-implemented here, so the assembly cannot drift from the parts.
+
+### Gate 7 — the eight-state interference grid
+
+Four rotor phases × two axial states. Four phases because the canard set is
+4-fold symmetric but the ring's apertures and the contactless link are not; two
+states because **C32 creates them** — in FLIGHT the ring rides the balls with
+`RetTravel` of clearance to the collar, in LAUNCH it has travelled that clearance
+and is seated on it.
+
+| rotor phase | FLIGHT | LAUNCH |
+|---:|---:|---:|
+| 0° | 0.0000 mm³ | 0.0000 mm³ |
+| 45° | 0.0000 mm³ | 0.0000 mm³ |
+| 90° | 0.0000 mm³ | 0.0000 mm³ |
+| 135° | 0.0000 mm³ | 0.0000 mm³ |
+
+**All eight clean.** And the C32 seat behaves exactly as designed:
+
+| state | axial gap to the collar | overlap |
+|---|---:|---:|
+| FLIGHT | **+0.1000 mm** | 0.0000 mm³ |
+| LAUNCH | **+0.0000 mm** | 0.0000 mm³ |
+
+The seat is *meant* to touch in LAUNCH and it closes to zero — a contact, not a
+clash, which is why the grid can distinguish them. The air gap is unaffected
+because the travel is **axial** and the gap is **radial**; that is the property
+that makes C32's clearance safe to take there, and it is now demonstrated rather
+than argued.
+
+### The measured mass rollup
+
+Every value off a solid. This is the first whole-kit mass the project has had.
+
+| group | steel | aluminium structure |
+|---|---:|---:|
+| body side | 2.262 kg | — |
+| ring side | 2.535 kg | — |
+| **KIT TOTAL** | **4.810 kg** | **2.723 kg** |
+| machine alone (C40's own check) | | **1.018 kg** |
+| rotating assembly (C26's load) | | **1.876 kg** |
+
+| against | limit | result |
+|---|---:|---|
+| **P9**, whole kit | ≤ 1.4 kg | **+244 %** steel, **+95 %** aluminium |
+| **C40**, machine | 0.81–0.97 kg | +5 % over the top of the band |
+| **C26**, rotating assembly | 0.5 kg assumed | 1.876 kg → **276 kN** vs 73.5 kN |
+
+**C40 was sound.** The machine is 1.018 kg against a 0.81–0.97 kg band — 5 % over,
+which is what a sizing pass is for. Everything else is not, and **even with an
+aluminium structure the kit is roughly ×2 over P9.** The remaining levers are
+material, ring diameter (T8) and the retention hardware (T6).
+
+Largest items, for the register's attention: ring carrier 1.520 kg, kit body
+0.696 kg, front hub 0.433 kg, windings 0.365 kg, stator core 0.296 kg, backiron
+0.283 kg, four canards 0.532 kg.
+
+### What Phase 7 adds to the findings
+
+Nothing new — it *confirms* T5 and T6 at whole-kit scale and prices T4. The
+register-facing summary is `design/07-cad-evidence.md`, extended in this pass from
+T1–T4 to **T1–T10** with the rollup above.
+
+Two of the ten need a **decision rather than analysis**:
+
+- **T6** — C26's setback is ×3 what it was sized on, and C32 and C35 inherit it.
+- **T8** — a 23.6 mm junction step against M10's >90 % range retention, with the
+  row that could fix it (C44, axial flux) OPEN and currently unconnected to it.
+
+### A note on the build method, which this phase is the proof of
+
+The assembly is not drawn, it is *gathered*: `load_phases()` calls the part
+functions from all six earlier macros. That is why a mid-session FreeCAD restart
+cost nothing, and why changing one parameter in `pgk_params.py` propagates through
+24 parts, eight states and a mass rollup without anything being repositioned by
+hand.
+
+### Phase 7 outputs
+
+- `out/PGK-Assembly.FCStd`
+- `out/screenshots/p7-assembly-iso.png`
+- `design/07-cad-evidence.md` — extended to T1–T10 with the rollup

@@ -7,5 +7,9 @@
   "B5_Canard_Ctrl_A": 0.133136,
   "B5_Canard_Ctrl_B": 0.133136,
   "B5_Canard_Steer_A": 0.133136,
-  "B5_Canard_Steer_B": 0.133136
+  "B5_Canard_Steer_B": 0.133136,
+  "KitTotal_Alu": 2.723335,
+  "KitTotal_Steel": 4.809807,
+  "Machine": 1.018262,
+  "RotatingAssembly": 1.876408
 }
