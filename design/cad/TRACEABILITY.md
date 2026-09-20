@@ -9,7 +9,7 @@ Status vocabulary is the register's own. **PROVISIONAL** means the CAD adopted a
 | status | count |
 |---|---:|
 | DEFINED | 18 |
-| DERIVED | 88 |
+| DERIVED | 92 |
 | PARAMETRIC | 16 |
 | PROVISIONAL | 45 |
 
@@ -170,12 +170,16 @@ Recomputed on every load from the table above — change an input and these move
 | `BrgRowSeparation` | 60 |
 | `CanardAspectRatio` | 0.3312 |
 | `CanardChordFitMax` | 69.25 |
+| `CanardFinForce` | 52.1169 |
 | `CanardMeanChord` | 80 |
 | `CanardSpanExposed` | 26.5 |
 | `CanardTipR` | 75.5 |
 | `CantCosSteer` | 0.9848 |
+| `CantForceRatio10to16` | 1.5873 |
 | `CantSinCtrl` | 0.1736 |
 | `ChordOverrun` | 10.75 |
+| `FSteerFromCos` | 102.6502 |
+| `FSteerFromSin` | 18.1 |
 | `KitVisibleOvershoot` | 10.75 |
 | `KitVisibleReq` | 106 |
 | `MachineODCheck` | 91.9 |

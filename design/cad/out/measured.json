@@ -3,5 +3,9 @@
   "A3_Windings": 0.36518,
   "B1_Ring_Carrier": 1.519659,
   "B2_Rotor_Backiron": 0.283004,
-  "B3_Magnets": 0.073745
+  "B3_Magnets": 0.073745,
+  "B5_Canard_Ctrl_A": 0.133136,
+  "B5_Canard_Ctrl_B": 0.133136,
+  "B5_Canard_Steer_A": 0.133136,
+  "B5_Canard_Steer_B": 0.133136
 }

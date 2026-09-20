@@ -362,3 +362,92 @@ both deliberately.
 
 - `out/PGK-Bearings.FCStd`
 - `out/screenshots/p3-retention-section.png`
+
+---
+
+## Phase 4 — the four fixed-incidence canards · **PASS** · 2026-09-20
+
+Document `PGK-Canards`. Macro `macros/40_phase4_canards.py`.
+Screenshots `p4-canards-front.png`, `p4-canards-iso.png`.
+
+`B5_Canard_Master` plus the four placed instances at 0 / 90 / 180 / 270°.
+
+### Gate 4 — the canard set
+
+| # | check | result |
+|---|---|---|
+| 1 | tip envelope | **Ø151.00** against the Ø151 cap → PASS |
+| 2 | **cant measured off the solid** | **10.0000°** from the inertia tensor → PASS |
+| 3 | in-bore clearance | **2.000 mm/side** at four rotor phases → PASS |
+| 4 | exposed span | 26.50 mm, matching C31's own arithmetic → PASS |
+
+Two of the register's numbers reproduce exactly off the geometry without being
+used to build it: the **planform area computes to 2120.0 mm²** and the **aspect
+ratio to 0.33** — which is what C31(d)'s "21.2 cm² per canard, AR 0.33" means,
+arrived at independently.
+
+The set is 4-fold symmetric, so a rotor phase rotation maps it onto itself and
+the in-bore envelope cannot change with phase. That is stated rather than
+assumed — the phase grid still earns its keep in Phases 5–7, where the front
+end and internals are *not* symmetric.
+
+### T7 — C1's canard sizing formula is a typo, and the register's own table proves it
+
+C1 states `F_steer = 2·F·cos δ_s`. **C43's own trade table says otherwise:**
+
+| cant | C43's table | `2·F·sin δ` | `2·F·cos δ` |
+|---:|---:|---:|---:|
+| 8° | 14.5 N | 14.51 ✓ | 103.2 ✗ |
+| 10° | 18.1 N | 18.10 ✓ | 102.7 ✗ |
+| 14° | 25.3 N | 25.22 ✓ | 101.1 ✗ |
+| 16° | 29.0 N | 28.73 ✓ | 100.2 ✗ |
+
+The sine form fits all four rows to **within 0.3 N**; the cosine form predicts
+~102 N throughout and is flat over the range. C43's textual claim — *"going from
+10° to 16° buys 60 % more guidance force"* — is `sin 16° / sin 10° = 1.587`, and
+is **impossible** under a cosine, which would give 0.976, i.e. *less* force for
+more cant and no coupling to C42 at all.
+
+The model uses the sine form. Two consequences worth stating:
+
+- **C8's requirement is unaffected.** F_steer ≥ 18.1 N is the datum that *pins*
+  the implied fin normal force at **F = 52.12 N**, and the sine form reproduces
+  the datum by construction. Nothing C8 claims moves.
+- **C42/C43's coupling depends on it.** The architecture's defining cost —
+  "cant buys force and costs dissipation in equal measure" — only holds under
+  sine. Under the register's stated cosine, the 2.92 kW / 121 kJ would not scale
+  with cant, and C43 would be describing a different machine.
+
+This is a one-word fix in the register, and it is the kind of error that would
+have been invisible without putting numbers through it.
+
+### Canard mass — another T4/T5-class item
+
+| | steel | titanium |
+|---|---:|---:|
+| one canard | 0.1331 kg | 0.0751 kg |
+| **four** | **0.5325 kg** | **0.3005 kg** |
+
+Four canards in steel are **38 % of P9's entire kit budget**, and they hang on the
+ring, so they also add to C26's setback (every 0.1 kg is ~11.9 kN at the measured
+scale). This is the third independent place the mass budget is being spent — body
+(1.37 kg), rotating assembly (1.88 kg), canards (0.53 kg) — and it is the same
+finding each time.
+
+### Modelling notes, stated rather than hidden
+
+- The fin is a **flat plate** with sharp edges. C6 (section / aerofoil) is OPEN, so
+  no section is claimed; a real fin would carry an aerofoil and shaped edges.
+- The planform is **rectangular**, because that is the only shape that yields the
+  register's own area of 2120 mm² at a constant 80 mm chord over 26.5 mm of span.
+  A swept or tapered planform would change the area, and area is not a free
+  parameter here.
+- The root is lofted from the 12 mm root thickness to the 4 mm tip. The register's
+  `CanardRootThick` is PROVISIONAL; the manufacturing intent is that the root
+  blends integrally into the ring carrier (the blisk argument), which is a Phase 7
+  assembly question.
+
+### Phase 4 outputs
+
+- `out/PGK-Canards.FCStd`
+- `out/screenshots/p4-canards-front.png`, `p4-canards-iso.png`

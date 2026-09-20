@@ -125,12 +125,16 @@ DRISHTI-PGK — CAD parameter audit
   BrgRowSeparation             60.00000
   CanardAspectRatio             0.33125
   CanardChordFitMax            69.25000
+  CanardFinForce               52.11687
   CanardMeanChord              80.00000
   CanardSpanExposed            26.50000
   CanardTipR                   75.50000
   CantCosSteer                  0.98481
+  CantForceRatio10to16          1.58733
   CantSinCtrl                   0.17365
   ChordOverrun                 10.75000
+  FSteerFromCos               102.65020
+  FSteerFromSin                18.10000
   KitVisibleOvershoot          10.75000
   KitVisibleReq               106.00000
   MachineODCheck               91.90000

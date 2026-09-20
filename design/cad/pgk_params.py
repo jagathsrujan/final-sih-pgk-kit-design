@@ -418,6 +418,19 @@ def derived():
     d["CantCosSteer"] = math.cos(math.radians(p("CantSteer")))
     d["CantSinCtrl"] = math.sin(math.radians(p("CantCtrl")))
 
+    # T7: C1 states F_steer = 2*F*cos(delta). C43's own trade table says
+    # otherwise -- 2*F*sin(delta) fits all four of its rows to within 0.3 N,
+    # while the cos form predicts ~102 N against the table's 14.5-29.0 N. The
+    # CAD uses the SIN form, because C42/C43's whole "cant buys force and pays
+    # for it in dissipation, in equal measure" coupling depends on it: cos is
+    # flat over this range and could not produce the +60 % for 10 deg -> 16 deg
+    # the register quotes. The implied fin normal force is pinned by the datum.
+    d["CanardFinForce"] = p("CanardSteady") / (2.0 * math.sin(math.radians(p("CantSteer"))))
+    d["FSteerFromSin"] = 2.0 * d["CanardFinForce"] * math.sin(math.radians(p("CantSteer")))
+    d["FSteerFromCos"] = 2.0 * d["CanardFinForce"] * math.cos(math.radians(p("CantSteer")))
+    d["CantForceRatio10to16"] = (math.sin(math.radians(16.0))
+                                 / math.sin(math.radians(10.0)))
+
     # --- machine radial build, outward from the axis ------------------------
     # T3 shapes this: F9 reserves a clear 30 mm bore through the machine
     # section, so the stator core cannot also be the train-bore wall. A spine
