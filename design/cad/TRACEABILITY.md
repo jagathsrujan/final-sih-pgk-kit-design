@@ -8,10 +8,10 @@ Status vocabulary is the register's own. **PROVISIONAL** means the CAD adopted a
 
 | status | count |
 |---|---:|
-| DEFINED | 18 |
-| DERIVED | 98 |
+| DEFINED | 21 |
+| DERIVED | 113 |
 | PARAMETRIC | 16 |
-| PROVISIONAL | 46 |
+| PROVISIONAL | 62 |
 
 
 ## REFERENCE
@@ -135,7 +135,32 @@ Status vocabulary is the register's own. **PROVISIONAL** means the CAD adopted a
 | `SpiderHoles` | 8 |  | CAD | PROVISIONAL | lightening holes per spider. T4: modelled solid, the body alone is 2.57 kg in steel against P9's 1.4 kg for the WHOLE kit, so every web that is not a load path gets a hole. |
 | `SpiderHoleDia` | 10 | mm | CAD | PROVISIONAL | lightening hole diameter |
 | `SpiderHolePCD` | 41 | mm | CAD | PROVISIONAL | hole pitch circle, midway between the train bore and the spider OD |
+| `SpigotWall` | 1.5 | mm | P6 | PROVISIONAL | T9: the spigot is a SHELL, not a solid annulus. Phase 1 modelled it solid and it displaced every internal in the kit -- there was no volume for the boards, dump, buffer or harness to occupy. A 1.5 mm wall frees the whole 105.65 mm of well length for them AND takes ~0.51 kg off A1. It is also the right answer thermally: P6 wants a CONTACTING path through the well bore, and a thin wall is a low-resistance one. |
 | `WebThickness` | 2 | mm | CAD | PROVISIONAL | stator end-plate thickness; a mounting face, not a structural member |
+
+## INTERNALS
+
+| alias | value | unit | criterion | status | basis |
+|---|---:|---|---|---|---|
+| `BoardCount` | 5 | mm | H5 | DEFINED | H5: one annular stack |
+| `BoardThick` | 1.6 | mm | H5 | PROVISIONAL | curved FR4 / flex layer |
+| `BoardGap` | 2 | mm | H5 | PROVISIONAL | inter-board spacing |
+| `AnnularClear` | 0.5 | mm | CAD | PROVISIONAL | assembly clearance to the train bore and to the spigot wall |
+| `BufferLen` | 55 | mm | W4 | DERIVED | T10: W4 asks for 150-200 J. At BufferEnergyDensity that needs more volume than the 36 mm first allocated, so the buffer takes most of the spare axial length -- the annulus is only 4.4 mm deep radially, so energy can only be bought in LENGTH. 55 mm is what closes W4. |
+| `BufferEnergyDensity` | 7 | J/cm^3 | W4 | PROVISIONAL | packaged supercapacitor energy density. This is a PACKAGING figure, not a cell figure: it already accounts for the case, the balancing and the interconnect, which is what the kit has to carry. |
+| `BufferEnergyMin` | 150 | J | W4 | DEFINED | W4's lower bound |
+| `BufferEnergyMax` | 200 | J | W4 | DEFINED | W4's upper bound |
+| `DumpLen` | 20 | mm | W12 | PROVISIONAL | dump resistors + spreader, bonded to the spigot wall because the shell IS the sink (W7) and the well bore IS the joint (P6) |
+| `HarnessLen` | 8 | mm | H7 | PROVISIONAL | harnessing and standoffs |
+| `SetterCoilLen` | 6 | mm | F11 | PROVISIONAL | AOP-22 inductive interface. Placed in the BODY-SIDE NOSE SHOULDER, not in the well: the setter is a gun-line head that approaches the round from the front, and a coil 19 mm down inside the well is a coupling question F11 has not answered. |
+| `SARotorDia` | 28 | mm | F6 | PROVISIONAL | out-of-line rotor, inside the Ø30 reservation as F9 requires |
+| `SARotorThick` | 6 | mm | F6 | PROVISIONAL | rotor thickness |
+| `DetonatorDia` | 16 | mm | F9 | PROVISIONAL | on the axis at the well bottom, reaching the booster on the centreline |
+| `DetonatorLen` | 10 | mm | F9 | PROVISIONAL | detonator length |
+| `ImpactSwitchDia` | 20 | mm | F5 | PROVISIONAL | impact switch on the axis |
+| `ImpactSwitchLen` | 6 | mm | F5 | PROVISIONAL | impact switch length |
+| `LinkBodyR` | 26 | mm | H7 | PROVISIONAL | ring-body link: rotary transformer primary on the body side |
+| `LinkRingR` | 36 | mm | H7 | PROVISIONAL | rotary transformer secondary on the ring side; the annular gap between them is where the contactless link lives |
 
 ## FRONT_END
 
@@ -168,7 +193,11 @@ Recomputed on every load from the table above — change an input and these move
 |---|---:|
 | `AxialPathStiffMeasured` | 1116.9494 |
 | `AxialPathStiffRatio` | 3.0435 |
+| `BoardStackLen` | 16 |
 | `BrgRowSeparation` | 60 |
+| `BufferEnergy` | 188.3938 |
+| `BufferEnergyOK` | true |
+| `BufferVolume` | 26.9134 |
 | `CanardAspectRatio` | 0.3312 |
 | `CanardChordFitMax` | 69.25 |
 | `CanardFinForce` | 52.1169 |
@@ -181,6 +210,11 @@ Recomputed on every load from the table above — change an input and these move
 | `ChordOverrun` | 10.75 |
 | `FSteerFromCos` | 102.6502 |
 | `FSteerFromSin` | 18.1 |
+| `InternalsAxialSpare` | 6.65 |
+| `InternalsDemand` | 99 |
+| `InternalsMargin` | 3.2541 |
+| `InternalsMarginPct` | 6.2944 |
+| `InternalsVolume` | 48.4441 |
 | `KitVisibleOvershoot` | 10.75 |
 | `KitVisibleReq` | 106 |
 | `MachineODCheck` | 91.9 |
@@ -224,6 +258,9 @@ Recomputed on every load from the table above — change an input and these move
 | `StepFraction` | 0.2928 |
 | `StepRingODForNoStep` | 50.8 |
 | `TorqueScaleFromT3` | 0.926 |
+| `WellAnnulusArea` | 489.3345 |
+| `WellAnnulusDepth` | 105.65 |
+| `WellAnnulusVolume` | 51.6982 |
 | `WellBoreArea` | 17237.2906 |
 | `WellBoreAreaP6` | 18800 |
 | `WellEngageLen` | 19.05 |
@@ -231,9 +268,11 @@ Recomputed on every load from the table above — change an input and these move
 | `WellFlankAreaP6` | 1120 |
 | `WellPitch` | 2.1167 |
 | `WellPitchDia` | 49.4252 |
+| `WellRadialSpace` | 4.4 |
 | `WellSeatArea` | 506.2991 |
 | `WellSeatAreaP6` | 500 |
 | `WellSeatIDImpliedByP6` | 44.091 |
+| `WellSpigotID` | 20.4 |
 | `ZBrgRow1` | 16 |
 | `ZBrgRow2` | 76 |
 | `ZFrontHubAft` | 16 |
@@ -248,7 +287,10 @@ Recomputed on every load from the table above — change an input and these move
 
 | alias | criterion | what closes it |
 |---|---|---|
+| `AnnularClear` | CAD | see basis — criterion is OPEN in the register |
 | `ApertureLandDia` | N3 | see basis — criterion is OPEN in the register |
+| `BoardGap` | H5 | see basis — criterion is OPEN in the register |
+| `BoardThick` | H5 | see basis — criterion is OPEN in the register |
 | `BrgBallDia` | C22 | see basis — criterion is OPEN in the register |
 | `BrgBallsPerRow` | C22 | see basis — criterion is OPEN in the register |
 | `BrgBoreDia` | C22 | see basis — criterion is OPEN in the register |
@@ -261,6 +303,7 @@ Recomputed on every load from the table above — change an input and these move
 | `BrgRow2Inset` | CAD | see basis — criterion is OPEN in the register |
 | `BrgRow2Z` | C35 | see basis — criterion is OPEN in the register |
 | `BrgRowWidth` | C22 | see basis — criterion is OPEN in the register |
+| `BufferEnergyDensity` | W4 | see basis — criterion is OPEN in the register |
 | `CanardArea` | C4 | see basis — criterion is OPEN in the register |
 | `CanardChordRoot` | C4 | see basis — criterion is OPEN in the register |
 | `CanardRootThick` | C5 | see basis — criterion is OPEN in the register |
@@ -269,8 +312,16 @@ Recomputed on every load from the table above — change an input and these move
 | `CantCtrl` | C3 | see basis — criterion is OPEN in the register |
 | `CantSteer` | C2 | see basis — criterion is OPEN in the register |
 | `CollarID` | C32 | see basis — criterion is OPEN in the register |
+| `DetonatorDia` | F9 | see basis — criterion is OPEN in the register |
+| `DetonatorLen` | F9 | see basis — criterion is OPEN in the register |
+| `DumpLen` | W12 | see basis — criterion is OPEN in the register |
 | `GnssApertureDia` | N3 | see basis — criterion is OPEN in the register |
+| `HarnessLen` | H7 | see basis — criterion is OPEN in the register |
 | `HubAftInset` | CAD | see basis — criterion is OPEN in the register |
+| `ImpactSwitchDia` | F5 | see basis — criterion is OPEN in the register |
+| `ImpactSwitchLen` | F5 | see basis — criterion is OPEN in the register |
+| `LinkBodyR` | H7 | see basis — criterion is OPEN in the register |
+| `LinkRingR` | H7 | see basis — criterion is OPEN in the register |
 | `MachineInRingAft` | CAD | see basis — criterion is OPEN in the register |
 | `NoseCapLen` | CAD | see basis — criterion is OPEN in the register |
 | `NoseWallThick` | CAD | see basis — criterion is OPEN in the register |
@@ -282,11 +333,15 @@ Recomputed on every load from the table above — change an input and these move
 | `RingAftBoreDia` | C32 | see basis — criterion is OPEN in the register |
 | `RingOD` | C7 | see basis — criterion is OPEN in the register |
 | `RingThrustBoreDia` | C32 | see basis — criterion is OPEN in the register |
+| `SARotorDia` | F6 | see basis — criterion is OPEN in the register |
+| `SARotorThick` | F6 | see basis — criterion is OPEN in the register |
+| `SetterCoilLen` | F11 | see basis — criterion is OPEN in the register |
 | `ShoulderLen` | CAD | see basis — criterion is OPEN in the register |
 | `SpiderHoleDia` | CAD | see basis — criterion is OPEN in the register |
 | `SpiderHolePCD` | CAD | see basis — criterion is OPEN in the register |
 | `SpiderHoles` | CAD | see basis — criterion is OPEN in the register |
 | `SpigotClearance` | P6 | see basis — criterion is OPEN in the register |
+| `SpigotWall` | P6 | see basis — criterion is OPEN in the register |
 | `SpineWall` | F9 | see basis — criterion is OPEN in the register |
 | `StackLen` | C40 | see basis — criterion is OPEN in the register |
 | `ThreadClearance` | P6 | see basis — criterion is OPEN in the register |

@@ -91,8 +91,12 @@ def build():
     z_mach_aft = P.p("ZMachineAft")      # 26.0
     z_mach_fore = P.p("ZMachineFore")    # 54.0
     z_plate_fore = z_mach_fore + P.p("WebThickness")
-    z_spider_fore_end = P.p("ZRingFore") + 4.0
-    z_hub_end = z_spider_fore_end + 10.0
+    # A1 ends where A10 begins. The kit body's hub must not run forward into the
+    # nose's territory: A10 starts at ZRingFore + 0.5, so A1 stops AT ZRingFore
+    # and the two meet at a 0.5 mm seam -- one body-side part handing over to
+    # the next, with the rotating ring's fore face between them radially.
+    z_spider_fore_end = P.p("ZRingFore") - 2.0
+    z_hub_end = P.p("ZRingFore")
 
     r_spider = r_thread + 0.6
     r_web = P.p("RGapIn") - 0.35         # stator end plate OD, clear of the magnets
@@ -102,7 +106,14 @@ def build():
     brg_half = P.p("BrgRowWidth") / 2.0
 
     outer = []
-    outer.append((r_train, z_aft))
+    # T9: the well section is a SHELL. Modelled solid, the spigot displaced
+    # every internal in the kit -- there was nowhere for the boards, dump,
+    # buffer or harness to go. A SpigotWall shell frees the whole well length
+    # and takes ~0.51 kg off the part, and a thin wall is also the right answer
+    # thermally: P6 wants a contacting path through the well bore, and thin is
+    # low-resistance.
+    r_shell = r_spigot - P.p("SpigotWall")
+    outer.append((r_shell, z_aft))
     outer.append((r_spigot, z_aft))
     outer.append((r_spigot, z_seat))
     outer += thread_sawtooth(z_seat, z_mouth, r_thread, P.p("WellPitch"),
@@ -128,7 +139,9 @@ def build():
     outer.append((r_spigot, z_spider_fore_end + 2.0))    # front hub begins (A10)
     outer.append((r_spigot, z_hub_end))
     outer.append((r_train, z_hub_end))                   # fore face
-    outer.append((r_train, z_aft))                       # train bore wall
+    outer.append((r_train, z_mouth))                     # train bore above the mouth
+    outer.append((r_shell, z_mouth))                     # step out at the mouth
+    # ...and the shell's inner surface closes back to the start point
 
     shape = make_revolve(outer)
 

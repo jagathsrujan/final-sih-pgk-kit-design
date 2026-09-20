@@ -101,7 +101,29 @@ DRISHTI-PGK — CAD parameter audit
   SpiderHoles                8.0000            CAD    PROVISIONAL 
   SpiderHoleDia             10.0000 mm         CAD    PROVISIONAL 
   SpiderHolePCD             41.0000 mm         CAD    PROVISIONAL 
+  SpigotWall                 1.5000 mm         P6     PROVISIONAL 
   WebThickness               2.0000 mm         CAD    PROVISIONAL 
+
+[INTERNALS]
+  BoardCount                 5.0000 mm         H5     DEFINED     
+  BoardThick                 1.6000 mm         H5     PROVISIONAL 
+  BoardGap                   2.0000 mm         H5     PROVISIONAL 
+  AnnularClear               0.5000 mm         CAD    PROVISIONAL 
+  BufferLen                 55.0000 mm         W4     DERIVED     
+  BufferEnergyDensity        7.0000 J/cm^3     W4     PROVISIONAL 
+  BufferEnergyMin          150.0000 J          W4     DEFINED     
+  BufferEnergyMax          200.0000 J          W4     DEFINED     
+  DumpLen                   20.0000 mm         W12    PROVISIONAL 
+  HarnessLen                 8.0000 mm         H7     PROVISIONAL 
+  SetterCoilLen              6.0000 mm         F11    PROVISIONAL 
+  SARotorDia                28.0000 mm         F6     PROVISIONAL 
+  SARotorThick               6.0000 mm         F6     PROVISIONAL 
+  DetonatorDia              16.0000 mm         F9     PROVISIONAL 
+  DetonatorLen              10.0000 mm         F9     PROVISIONAL 
+  ImpactSwitchDia           20.0000 mm         F5     PROVISIONAL 
+  ImpactSwitchLen            6.0000 mm         F5     PROVISIONAL 
+  LinkBodyR                 26.0000 mm         H7     PROVISIONAL 
+  LinkRingR                 36.0000 mm         H7     PROVISIONAL 
 
 [FRONT_END]
   RadarFreq                 24.0000 GHz        F2     DEFINED     
@@ -123,7 +145,11 @@ DRISHTI-PGK — CAD parameter audit
 [DERIVED]
   AxialPathStiffMeasured     1116.94936
   AxialPathStiffRatio           3.04346
+  BoardStackLen                16.00000
   BrgRowSeparation             60.00000
+  BufferEnergy                188.39377
+  BufferEnergyOK                1.00000
+  BufferVolume                 26.91340
   CanardAspectRatio             0.33125
   CanardChordFitMax            69.25000
   CanardFinForce               52.11687
@@ -136,6 +162,11 @@ DRISHTI-PGK — CAD parameter audit
   ChordOverrun                 10.75000
   FSteerFromCos               102.65020
   FSteerFromSin                18.10000
+  InternalsAxialSpare           6.65000
+  InternalsDemand              99.00000
+  InternalsMargin               3.25407
+  InternalsMarginPct            6.29437
+  InternalsVolume              48.44411
   KitVisibleOvershoot          10.75000
   KitVisibleReq               106.00000
   MachineODCheck               91.90000
@@ -179,6 +210,9 @@ DRISHTI-PGK — CAD parameter audit
   StepFraction                  0.29275
   StepRingODForNoStep          50.80000
   TorqueScaleFromT3             0.92602
+  WellAnnulusArea             489.33447
+  WellAnnulusDepth            105.65000
+  WellAnnulusVolume            51.69819
   WellBoreArea              17237.29057
   WellBoreAreaP6            18800.00000
   WellEngageLen                19.05000
@@ -186,9 +220,11 @@ DRISHTI-PGK — CAD parameter audit
   WellFlankAreaP6            1120.00000
   WellPitch                     2.11667
   WellPitchDia                 49.42518
+  WellRadialSpace               4.40000
   WellSeatArea                506.29907
   WellSeatAreaP6              500.00000
   WellSeatIDImpliedByP6        44.09104
+  WellSpigotID                 20.40000
   ZBrgRow1                     16.00000
   ZBrgRow2                     76.00000
   ZFrontHubAft                 16.00000

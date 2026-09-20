@@ -549,3 +549,99 @@ or wear-critical member).
 
 - `out/PGK-FrontEnd.FCStd`
 - `out/screenshots/p5-nose-section.png`
+
+---
+
+## Phase 6 — internals and F9's split · **PASS** · 2026-09-20
+
+Document `PGK-Internals`. Macro `macros/60_phase6_internals.py`.
+Screenshot `p6-internals-section.png`.
+
+### F9 is the organising principle, not a detail
+
+The kit replaces the fuze, so the initiation path has to reach the shell's booster
+on the centreline at the well bottom. F9 therefore reserves a clear Ø30 through the
+well **and** the machine section, with everything else built as rings about it.
+That splits this phase's parts into two groups that must never be confused:
+
+| | parts | rule |
+|---|---|---|
+| **annular** | boards, buffer, dump, harness | must NOT enter the Ø30, at any z |
+| **on axis** | impact switch, S&A rotor, detonator | lives IN the Ø30 — that is what it is for |
+
+Gate 6 is written on that distinction, because an annular part crossing the line is
+a real defect while the train crossing it is the design.
+
+### Gate 6
+
+| # | check | result |
+|---|---|---|
+| 1 | **F9 Ø30 reservation vs the annular parts** | **0.0000 mm³** → PASS |
+| 2 | the train's legitimate occupation | impact switch Ø20, rotor Ø28, detonator Ø16 — all inside Ø30 |
+| 3 | past the intrusion limit | 0.000 mm → PASS |
+| 4 | interference with A1's real geometry | **0.0000 mm³** → PASS |
+| 4b | A8 in A10's shoulder / C2 both sides | **0.0000 mm³** / **0.0000 mm³**, link gap 4.0 mm → PASS |
+| 5 | packaging budget | 51.70 cm³ available, 48.44 demanded → **+6.3 %**, 6.65 mm spare |
+
+The annular parts run the **same z band** as the train — the split is radial, not
+axial. Packing them end-to-end instead would have thrown away most of the length,
+and it is what "the fuze stack built as rings about it" means.
+
+### T9 — the spigot had to be hollowed, and it is the biggest mass win yet
+
+**Phase 1 modelled A1's well section as a solid annulus.** When the internals
+arrived there was nowhere for them to go: 8404 mm³ of interference with the very
+part they were supposed to live inside. A spigot is a **shell**, and modelling it
+as one changes the whole mass picture:
+
+| | solid spigot (Phase 1) | **shell, 1.5 mm wall** |
+|---|---:|---:|
+| A1 volume | 174.2 cm³ | **88.6 cm³** |
+| A1 mass, steel | 1.368 kg | **0.696 kg** |
+| A1 mass, aluminium | 0.470 kg | **0.239 kg** |
+
+**That is 0.586 kg off the kit in steel — the single largest mass saving the CAD
+has produced, and it revises T4.** The kit body is no longer the whole of P9's
+budget on its own. It is also the *right* answer thermally: P6 wants a contacting
+path through the well bore, and a thin wall is a low-resistance one.
+
+### T10 — the annulus is 4.4 mm deep, so buffer energy can only be bought in LENGTH
+
+With the shell hollowed, the usable annulus is bounded by the *shell's inner
+surface*, not the spigot's outer one — which is smaller than it first looked:
+
+| | value |
+|---|---:|
+| radial space for every internal | **4.40 mm** (r 15.5 → 19.9) |
+| annulus area | 489.3 mm² |
+| available volume over the full well | 51.70 cm³ |
+
+That is the binding constraint, not the 105.65 mm of length. It matters most for
+**W4's 150–200 J buffer**, which is a volume-limited item: W4's figure cannot be
+met radially, only axially.
+
+| buffer length | volume | energy at 7 J/cm³ | against W4 |
+|---:|---:|---:|---|
+| 36 mm | 17.6 cm³ | **123 J** | **short** |
+| **55 mm** | 26.9 cm³ | **188 J** | inside 150–200 J ✓ |
+
+55 mm closes W4 but consumes the axial spare, leaving **6.65 mm** across the whole
+stack. The kit is now genuinely full in the well, and the next item to be added
+will not fit.
+
+### Two integration bugs worth keeping
+
+1. **The internals were sized to the wrong radius.** `annulus()` was written before
+   `SpigotWall` existed, so it returned the spigot's *outer* radius — putting every
+   internal inside the wall meant to contain it. 8404 mm³ of interference. A
+   derived bound must be re-derived when the geometry it bounds changes.
+2. **A check compared against a shape that does not exist.** Phase 5's coil pocket
+   was cut in `build()`, so Phase 6's check — which calls `front_hub()` directly —
+   compared the coil against the *uncut* hub and reported 5202 mm³ of interference
+   on a part that was actually fine. The pocket now lives inside `front_hub()`.
+   A part function must return the part, not a pre-modification version of it.
+
+### Phase 6 outputs
+
+- `out/PGK-Internals.FCStd`
+- `out/screenshots/p6-internals-section.png`

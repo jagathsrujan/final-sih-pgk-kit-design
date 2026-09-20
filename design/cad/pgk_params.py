@@ -317,8 +317,65 @@ BODY = [
     _p("SpiderHoleDia",     10.0,  "mm", "CAD", "PROVISIONAL", "lightening hole diameter"),
     _p("SpiderHolePCD",     41.0,  "mm", "CAD", "PROVISIONAL",
        "hole pitch circle, midway between the train bore and the spider OD"),
+    _p("SpigotWall",         1.5,  "mm", "P6",  "PROVISIONAL",
+       "T9: the spigot is a SHELL, not a solid annulus. Phase 1 modelled it "
+       "solid and it displaced every internal in the kit -- there was no volume "
+       "for the boards, dump, buffer or harness to occupy. A 1.5 mm wall frees "
+       "the whole 105.65 mm of well length for them AND takes ~0.51 kg off A1. "
+       "It is also the right answer thermally: P6 wants a CONTACTING path "
+       "through the well bore, and a thin wall is a low-resistance one."),
     _p("WebThickness",       2.0,  "mm", "CAD", "PROVISIONAL",
        "stator end-plate thickness; a mounting face, not a structural member"),
+]
+
+# ---------------------------------------------------------------------------
+# 5c. Internals — what goes in the well annulus, and what goes on the axis
+#
+# F9 splits the kit's cross-section in two and nothing here may cross the line:
+# the explosive train runs ON the axis inside the Ø30 reservation, and every
+# other item in the kit is ANNULAR about it. The annulus is only 6.9 mm of
+# radial space, which is the real packaging constraint -- not the length.
+# ---------------------------------------------------------------------------
+
+INTERNALS = [
+    _p("BoardCount",         5.0,  "mm", "H5",  "DEFINED", "H5: one annular stack"),
+    _p("BoardThick",         1.6,  "mm", "H5",  "PROVISIONAL", "curved FR4 / flex layer"),
+    _p("BoardGap",           2.0,  "mm", "H5",  "PROVISIONAL", "inter-board spacing"),
+    _p("AnnularClear",       0.5,  "mm", "CAD", "PROVISIONAL",
+       "assembly clearance to the train bore and to the spigot wall"),
+    _p("BufferLen",         55.0,  "mm", "W4",  "DERIVED",
+       "T10: W4 asks for 150-200 J. At BufferEnergyDensity that needs more "
+       "volume than the 36 mm first allocated, so the buffer takes most of the "
+       "spare axial length -- the annulus is only 4.4 mm deep radially, so "
+       "energy can only be bought in LENGTH. 55 mm is what closes W4."),
+    _p("BufferEnergyDensity", 7.0, "J/cm^3", "W4", "PROVISIONAL",
+       "packaged supercapacitor energy density. This is a PACKAGING figure, not "
+       "a cell figure: it already accounts for the case, the balancing and the "
+       "interconnect, which is what the kit has to carry."),
+    _p("BufferEnergyMin",  150.0,  "J",  "W4",  "DEFINED", "W4's lower bound"),
+    _p("BufferEnergyMax",  200.0,  "J",  "W4",  "DEFINED", "W4's upper bound"),
+    _p("DumpLen",           20.0,  "mm", "W12", "PROVISIONAL",
+       "dump resistors + spreader, bonded to the spigot wall because the shell "
+       "IS the sink (W7) and the well bore IS the joint (P6)"),
+    _p("HarnessLen",         8.0,  "mm", "H7",  "PROVISIONAL", "harnessing and standoffs"),
+    _p("SetterCoilLen",      6.0,  "mm", "F11", "PROVISIONAL",
+       "AOP-22 inductive interface. Placed in the BODY-SIDE NOSE SHOULDER, not "
+       "in the well: the setter is a gun-line head that approaches the round "
+       "from the front, and a coil 19 mm down inside the well is a coupling "
+       "question F11 has not answered."),
+    _p("SARotorDia",        28.0,  "mm", "F6",  "PROVISIONAL",
+       "out-of-line rotor, inside the Ø30 reservation as F9 requires"),
+    _p("SARotorThick",       6.0,  "mm", "F6",  "PROVISIONAL", "rotor thickness"),
+    _p("DetonatorDia",      16.0,  "mm", "F9",  "PROVISIONAL",
+       "on the axis at the well bottom, reaching the booster on the centreline"),
+    _p("DetonatorLen",      10.0,  "mm", "F9",  "PROVISIONAL", "detonator length"),
+    _p("ImpactSwitchDia",   20.0,  "mm", "F5",  "PROVISIONAL", "impact switch on the axis"),
+    _p("ImpactSwitchLen",    6.0,  "mm", "F5",  "PROVISIONAL", "impact switch length"),
+    _p("LinkBodyR",         26.0,  "mm", "H7",  "PROVISIONAL",
+       "ring-body link: rotary transformer primary on the body side"),
+    _p("LinkRingR",         36.0,  "mm", "H7",  "PROVISIONAL",
+       "rotary transformer secondary on the ring side; the annular gap between "
+       "them is where the contactless link lives"),
 ]
 
 # ---------------------------------------------------------------------------
@@ -559,6 +616,36 @@ def derived():
            (p("CanardTipDiaMax") - d0) / 2.0)
         for d0 in (98, 90, 80, 70))
 
+    # --- internals packaging budget ----------------------------------------
+    # F9's split: the train on the axis, everything else annular about it.
+    r_tr = d["RTrainBore"]
+    # the shell's INNER surface, not the spigot's outer one: T9 hollowed the
+    # spigot, so the usable annulus is bounded by the wall the internals sit in
+    r_sp = (p("WellBoreDia") / 2.0 - p("SpigotClearance") - p("SpigotWall"))
+    d["WellSpigotID"] = r_sp
+    r_ann_in = r_tr + p("AnnularClear")
+    r_ann_out = r_sp - p("AnnularClear")
+    d["WellAnnulusArea"] = math.pi * (r_ann_out ** 2 - r_ann_in ** 2)
+    d["WellAnnulusDepth"] = (p("ZThreadRoot") - p("ZWellBottom"))
+    d["WellAnnulusVolume"] = d["WellAnnulusArea"] * d["WellAnnulusDepth"] / 1000.0
+    d["WellRadialSpace"] = r_ann_out - r_ann_in
+    _stack = (p("BoardCount") * p("BoardThick")
+              + (p("BoardCount") - 1.0) * p("BoardGap"))
+    d["BoardStackLen"] = _stack
+    d["InternalsDemand"] = sum([
+        _stack, p("DumpLen"), p("BufferLen"), p("HarnessLen"),
+    ])
+    d["InternalsVolume"] = (d["InternalsDemand"] * d["WellAnnulusArea"] / 1000.0)
+    d["InternalsMargin"] = d["WellAnnulusVolume"] - d["InternalsVolume"]
+    d["InternalsMarginPct"] = 100.0 * d["InternalsMargin"] / d["WellAnnulusVolume"]
+    d["InternalsAxialSpare"] = d["WellAnnulusDepth"] - d["InternalsDemand"]
+
+    # T10: the buffer's energy follows from the volume the annulus can give it
+    d["BufferVolume"] = p("BufferLen") * d["WellAnnulusArea"] / 1000.0
+    d["BufferEnergy"] = d["BufferVolume"] * p("BufferEnergyDensity")
+    d["BufferEnergyOK"] = (p("BufferEnergyMin")
+                           <= d["BufferEnergy"] <= p("BufferEnergyMax"))
+
     return d
 
 
@@ -568,7 +655,7 @@ _TABLE = {}
 def _load():
     _TABLE.clear()
     for group in (REFERENCE, CAA, MACHINE, BEARING, RETENTION, LOADS, BODY,
-                  FRONT_END, STATIONS):
+                  INTERNALS, FRONT_END, STATIONS):
         for prm in group:
             if prm.alias in _TABLE:
                 raise ValueError("duplicate alias: %s" % prm.alias)
@@ -633,6 +720,7 @@ def groups():
         ("RETENTION", RETENTION),
         ("LOADS", LOADS),
         ("BODY", BODY),
+        ("INTERNALS", INTERNALS),
         ("FRONT_END", FRONT_END),
         ("STATIONS", STATIONS),
     ]

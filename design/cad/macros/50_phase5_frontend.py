@@ -82,7 +82,18 @@ def front_hub():
         (r_train, z_aft + 7.5),             # step back to the train bore
         (r_train, z_aft),
     ]
-    return C.make_revolve(prof), r_land, r_cav, z_land, z_fore
+    hub = C.make_revolve(prof)
+
+    # A pocket in the shoulder for F11's inductive setter coil. A coil buried in
+    # solid metal is not a coil, so the pocket is what makes the interface real
+    # -- and it belongs INSIDE this function, not in build(): a caller that
+    # rebuilds the hub directly must get the pocketed part, or a downstream
+    # interference check silently compares against a shape that does not exist.
+    coil_z = P.p("ZRingFore") + 2.0
+    pocket = C.make_tube(19.5, 26.5, coil_z - 0.5,
+                         coil_z + P.p("SetterCoilLen") + 0.5)
+    hub = C.boolean_cut(hub, [pocket])
+    return hub, r_land, r_cav, z_land, z_fore
 
 
 def radome():
