@@ -107,6 +107,7 @@ DRISHTI-PGK — CAD parameter audit
   RadarFreq                 24.0000 GHz        F2     DEFINED     
   GnssApertureDia           48.0000 mm         N3     PROVISIONAL 
   NoseWallThick              2.0000 mm         CAD    PROVISIONAL 
+  ApertureLandDia           56.0000 mm         N3     PROVISIONAL 
   NoseCapLen                18.0000 mm         CAD    PROVISIONAL 
 
 [STATIONS]
@@ -163,14 +164,20 @@ DRISHTI-PGK — CAD parameter audit
   RingMassAssumed_C26           0.50000
   RingMassMeasured              1.51966
   RingMassScaling               3.03932
+  RingOD_Variants        Ø98: step 23.6 mm, span 26.5 mm | Ø90: step 19.6 mm, span 30.5 mm | Ø80: step 14.6 mm, span 35.5 mm | Ø70: step 9.6 mm, span 40.5 mm
   RingR                        49.00000
   RingRotatingMeasured          1.87641
   RingWallThick                 3.05000
   SetbackMeasured             223.38987
   SetbackRotating             275.83198
+  ShellCrossSection         18842.41830
   SlotAreaRatio                 0.92602
   SlotDepth                    18.15000
   SlotDepthLost                 1.45000
+  StepArea                   5516.13404
+  StepDepth                    23.60000
+  StepFraction                  0.29275
+  StepRingODForNoStep          50.80000
   TorqueScaleFromT3             0.92602
   WellBoreArea              17237.29057
   WellBoreAreaP6            18800.00000

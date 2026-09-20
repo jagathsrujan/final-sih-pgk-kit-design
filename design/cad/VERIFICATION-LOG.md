@@ -451,3 +451,101 @@ finding each time.
 
 - `out/PGK-Canards.FCStd`
 - `out/screenshots/p4-canards-front.png`, `p4-canards-iso.png`
+
+---
+
+## Phase 5 — the front end, and the nose-ownership decision · **PASS** · 2026-09-20
+
+Document `PGK-FrontEnd`. Macro `macros/50_phase5_frontend.py`.
+Screenshot `p5-nose-section.png`.
+`A10_Front_Hub`, `D1_Radome`, `D2_Gnss_Aperture`, `D3_Radar_Keepout`.
+
+### The decision the plan flagged, now taken and defended
+
+The CAA interface visualisation draws the nose as part of the roll-controlled
+group with the fuze cavity inside it. **F9 and H5 cannot both hold with that
+reading**, so the model takes the other one:
+
+> the RF front end, the radome and the spin-axis aperture ride a **body-side
+> axial hub** forward through the ring's bore; the ring ends at its fore face and
+> keeps no nose of its own.
+
+F2 says the radar is *"body-mounted in the nose tip ahead of the canard ring"*
+and N3 makes the aperture rotationally symmetric on the spin axis *so that spin
+cannot modulate it* — both statements about the body side. So the whole nose
+turns with the shell, and the ring is exactly the canard bay. This is the
+reading that satisfies F2 + N3 + F9 together.
+
+### Gate 5
+
+| # | check | result |
+|---|---|---|
+| 1 | in-bore | front end Ø98.0 against Ø155 → **28.5 mm/side** → PASS |
+| 2 | forward bore clear of metal | **0.0000 mm³** in the Ø48 bore → PASS |
+| 3 | interference with the ring, 4 phases | **0.0000 mm³** → PASS |
+
+### A design error this gate caught, worth keeping
+
+The aperture was **first drawn as a circumferential band looking radially
+outward** at Ø48. That is wrong: N3's aperture has to see the *sky*, and the
+round's nose points up throughout the ascent, so a band looking at the horizon
+would be the wrong geometry — and the check that caught it was reading
+450.8 mm³ of metal "in front of" the aperture, which turned out to be the hub's
+own forward rim at a *larger* radius that blocks nothing.
+
+The corrected geometry is what the physics wanted anyway: a **ring of elements
+around the spin axis inside the cavity, looking forward through the radome.**
+That has N3's symmetry *exactly* — the array maps onto itself under any rotation
+— and it puts both antennas (radar on the axis, GNSS ring around it) inside one
+dielectric window, which is the only version that fits a nose with no volume to
+spare (risk 27). The check was then rewritten to test the **forward bore** rather
+than a plane, because that is the geometry that actually matters.
+
+### T8 — the junction step, and it connects two criteria nobody had linked
+
+The register truncates the shell's ogive at the standard fuze diameter, **Ø50.8,
+at the seat**. The kit's ring is **Ø98** and its aft face sits *above* the seat.
+So the kit overhangs the shell's nose:
+
+| | value |
+|---|---:|
+| rearward-facing step depth | **23.6 mm** |
+| step frontal area | **5516 mm²** |
+| as a fraction of the body cross-section | **29.3 %** |
+
+**M10 requires >90 % range retention, and this is a drag source that has never
+been priced against it.** The chain that produces it is not obvious:
+
+> the machine's radial build closes at **Ø91.9** against C34's Ø92 ceiling
+> → the ring must wrap it plus a wall → **RingOD ≈ 98**
+> → and RingOD is what sets the step.
+
+**The lever is C44 (radial vs axial flux), which is OPEN** — a pancake axial-flux
+machine is the one change that shrinks the machine, the ring and the step
+together, and the register's own note on C44 already observes that this annulus
+("short and wide, ≤95.25 mm above the seat, Ø92 mm") is exactly the case where it
+wins. **Nothing currently links C44 to M10.**
+
+The trade, priced by the model:
+
+| ring OD | junction step | exposed canard span |
+|---:|---:|---:|
+| **98** | 23.6 mm | 26.5 mm |
+| 90 | 19.6 mm | 30.5 mm |
+| 80 | 14.6 mm | 35.5 mm |
+| 70 | 9.6 mm | 40.5 mm |
+
+A smaller ring buys exposed span *as well as* step, which is a second reason to
+want one — but the machine stops fitting below about Ø96, so this is a C34/C40
+trade and not a free choice.
+
+### Mass
+
+`A10_Front_Hub` is **0.486 kg** in steel on its own — a fourth T4/T5-class item,
+and the nose is a place aluminium is entirely defensible (it is not a magnetic
+or wear-critical member).
+
+### Phase 5 outputs
+
+- `out/PGK-FrontEnd.FCStd`
+- `out/screenshots/p5-nose-section.png`

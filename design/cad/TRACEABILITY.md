@@ -9,9 +9,9 @@ Status vocabulary is the register's own. **PROVISIONAL** means the CAD adopted a
 | status | count |
 |---|---:|
 | DEFINED | 18 |
-| DERIVED | 92 |
+| DERIVED | 98 |
 | PARAMETRIC | 16 |
-| PROVISIONAL | 45 |
+| PROVISIONAL | 46 |
 
 
 ## REFERENCE
@@ -144,6 +144,7 @@ Status vocabulary is the register's own. **PROVISIONAL** means the CAD adopted a
 | `RadarFreq` | 24 | GHz | F2 | DEFINED | ISM, RF Doppler proximity |
 | `GnssApertureDia` | 48 | mm | N3 | PROVISIONAL | rotationally symmetric aperture on the spin axis, elements combined |
 | `NoseWallThick` | 2 | mm | CAD | PROVISIONAL | radome / fairing wall |
+| `ApertureLandDia` | 56 | mm | N3 | PROVISIONAL | the nose land the GNSS aperture sits in. GnssApertureDia (48) is the ELEMENT RING diameter, inside the cavity; the land is 4 mm larger so there is metal around the cavity mouth to close the radome onto. |
 | `NoseCapLen` | 18 | mm | CAD | PROVISIONAL | length of the nose cap forward of the canard bay — the CAD computes the SHORTFALL against KitVisibleMax and reports it |
 
 ## STATIONS
@@ -208,14 +209,20 @@ Recomputed on every load from the table above — change an input and these move
 | `RingMassAssumed_C26` | 0.5 |
 | `RingMassMeasured` | 1.5197 |
 | `RingMassScaling` | 3.0393 |
+| `RingOD_Variants` | Ø98: step 23.6 mm, span 26.5 mm | Ø90: step 19.6 mm, span 30.5 mm | Ø80: step 14.6 mm, span 35.5 mm | Ø70: step 9.6 mm, span 40.5 mm |
 | `RingR` | 49 |
 | `RingRotatingMeasured` | 1.8764 |
 | `RingWallThick` | 3.05 |
 | `SetbackMeasured` | 223.3899 |
 | `SetbackRotating` | 275.832 |
+| `ShellCrossSection` | 18842.4183 |
 | `SlotAreaRatio` | 0.926 |
 | `SlotDepth` | 18.15 |
 | `SlotDepthLost` | 1.45 |
+| `StepArea` | 5516.134 |
+| `StepDepth` | 23.6 |
+| `StepFraction` | 0.2928 |
+| `StepRingODForNoStep` | 50.8 |
 | `TorqueScaleFromT3` | 0.926 |
 | `WellBoreArea` | 17237.2906 |
 | `WellBoreAreaP6` | 18800 |
@@ -241,6 +248,7 @@ Recomputed on every load from the table above — change an input and these move
 
 | alias | criterion | what closes it |
 |---|---|---|
+| `ApertureLandDia` | N3 | see basis — criterion is OPEN in the register |
 | `BrgBallDia` | C22 | see basis — criterion is OPEN in the register |
 | `BrgBallsPerRow` | C22 | see basis — criterion is OPEN in the register |
 | `BrgBoreDia` | C22 | see basis — criterion is OPEN in the register |

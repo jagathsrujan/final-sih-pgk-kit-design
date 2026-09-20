@@ -330,6 +330,10 @@ FRONT_END = [
     _p("GnssApertureDia",   48.0,  "mm", "N3", "PROVISIONAL",
        "rotationally symmetric aperture on the spin axis, elements combined"),
     _p("NoseWallThick",      2.0,  "mm", "CAD", "PROVISIONAL", "radome / fairing wall"),
+    _p("ApertureLandDia",   56.0,  "mm", "N3",  "PROVISIONAL",
+       "the nose land the GNSS aperture sits in. GnssApertureDia (48) is the "
+       "ELEMENT RING diameter, inside the cavity; the land is 4 mm larger so "
+       "there is metal around the cavity mouth to close the radome onto."),
     _p("NoseCapLen",        18.0,  "mm", "CAD", "PROVISIONAL",
        "length of the nose cap forward of the canard bay — the CAD computes "
        "the SHORTFALL against KitVisibleMax and reports it"),
@@ -530,6 +534,31 @@ def derived():
     d["RetFaceStress"] = d["SetbackMeasured"] * 1000.0 / d["RetFaceArea"]
     d["RetStressMargin"] = p("RetBearingStress") / d["RetFaceStress"]
 
+    # --- the junction step (T8) --------------------------------------------
+    # The register truncates the shell's ogive at the standard fuze diameter,
+    # Ø50.8, at the seat. The kit's working diameter is RingOD, and its aft face
+    # sits ABOVE the seat. So the kit overhangs the shell's nose by a
+    # rearward-facing annular step, and that step is a drag source in a design
+    # whose M10 requires >90 % range retention.
+    #
+    # The chain is not obvious and is worth stating: the machine's radial build
+    # closes to Ø91.9 against C34's Ø92 ceiling, the ring must wrap it plus a
+    # wall, so RingOD >= ~98 -- and RingOD is what sets the step. C44 (radial vs
+    # axial flux, OPEN) is the lever that could shrink the machine and therefore
+    # the step, and nothing currently connects C44 to M10.
+    d["StepDepth"] = (p("RingOD") - p("OgiveTruncDia")) / 2.0
+    d["StepArea"] = (math.pi / 4.0
+                     * (p("RingOD") ** 2 - p("OgiveTruncDia") ** 2))
+    d["ShellCrossSection"] = math.pi / 4.0 * p("ShellBodyDia") ** 2
+    d["StepFraction"] = d["StepArea"] / d["ShellCrossSection"]
+    d["StepRingODForNoStep"] = p("OgiveTruncDia")
+    # what a smaller ring would buy, and what it would cost the canard span
+    d["RingOD_Variants"] = " | ".join(
+        "Ø%d: step %.1f mm, span %.1f mm"
+        % (d0, (d0 - p("OgiveTruncDia")) / 2.0,
+           (p("CanardTipDiaMax") - d0) / 2.0)
+        for d0 in (98, 90, 80, 70))
+
     return d
 
 
@@ -670,7 +699,13 @@ def report():
     lines.append("[DERIVED]")
     d = derived()
     for k in sorted(d):
-        lines.append("  %-22s %14.5f" % (k, d[k]))
+        v = d[k]
+        # a few derived entries are descriptions rather than numbers
+        # (RingOD_Variants is a priced list of options); print them as text
+        if isinstance(v, str):
+            lines.append("  %-22s %s" % (k, v))
+        else:
+            lines.append("  %-22s %14.5f" % (k, v))
 
     lines.append("")
     lines.append("-" * 78)
