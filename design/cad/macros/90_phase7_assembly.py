@@ -35,6 +35,7 @@ if CAD not in sys.path:
 
 sys.modules.pop("cadlib", None)
 import cadlib as C  # noqa: E402
+import part_index  # noqa: E402
 
 P = C.params()
 
@@ -144,11 +145,22 @@ def build():
     P.to_sheet(doc)
 
     body_side, ring_side, common = load_phases()
+    everything = {}
+    everything.update(body_side)
+    everything.update(ring_side)
+    everything.update(common)
+
+    # The tree is the first thing anyone reads, so it is grouped the way the
+    # architecture is: the body side that turns with the shell, the ring side
+    # that is de-spun, and what lies between them. Groups are created first so
+    # they head the tree rather than trailing it.
+    keys = [k for k in part_index.GROUP_ORDER
+            if any(part_index.group(n) == k for n in everything)]
+    groups = {k: C.new_group(doc, k) for k in keys}
 
     # the assembly as modelled: FLIGHT state, phase 0
-    for name, (sh, _, _) in list(body_side.items()) + list(ring_side.items()) \
-            + list(common.items()):
-        C.add_part(doc, name, sh)
+    for name, (sh, _, _) in everything.items():
+        groups[part_index.group(name)].addObject(C.add_part(doc, name, sh))
     doc.recompute()
     return doc, body_side, ring_side, common
 
@@ -328,7 +340,8 @@ def mass_rollup(body_side, ring_side, common):
           % P.p("SetbackRing"))
 
     C.publish_measured({"KitTotal_Steel": kit_steel, "KitTotal_Alu": kit_alu,
-                        "Machine": machine, "RotatingAssembly": c26})
+                        "Machine": machine, "RotatingAssembly": c26,
+                        "Parts_Kg": dict(bs, **dict(rs, **cs))})
     return kit_steel, kit_alu, machine
 
 

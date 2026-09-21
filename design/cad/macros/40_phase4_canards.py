@@ -178,8 +178,7 @@ def build():
     shapes = {"B5_Canard_Master": master}
     for name, az, sign in FINS:
         shapes[name] = place(master, az, sign)
-        C.add_part(doc, name, shapes[name], color=(0.2, 0.45, 1.0) if "Steer" in name
-                   else (1.0, 0.67, 0.18))
+        C.add_part(doc, name, shapes[name])
     C.add_part(doc, "B5_Canard_Master", master)
 
     C.publish_measured({n: fin_mass for n, _, _ in FINS})

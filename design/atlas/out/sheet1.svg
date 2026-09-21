@@ -1,0 +1,197 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1560 660" role="img" aria-label="System architecture over the flight" style="display:block;font-family:var(--font,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif)">
+<title>System architecture over the flight</title>
+<defs>
+<marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#0b5cad"/></marker>
+<marker id="ah-f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#a4551a"/></marker>
+<marker id="ah-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#7b8794"/></marker>
+</defs>
+  <rect x="1004" y="8" width="20" height="12" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="1004" y="26" width="20" height="12" rx="1.5" style="fill:var(--f-paper, #ffffff);stroke:var(--f-ink3, #7b8794);stroke-width:1.4;stroke-dasharray:4 3" />
+  <rect x="1004" y="44" width="20" height="12" rx="1.5" style="fill:var(--f-flagt, rgba(164,85,26,.13));stroke:var(--f-flag, #a4551a);stroke-width:1.4" />
+  <rect x="12" y="68" width="1536" height="80" rx="1.5" style="fill:var(--f-band, #f2f5f8);stroke:var(--f-rule, #d9dee4);stroke-width:1" />
+  <rect x="12" y="154" width="1536" height="66" rx="1.5" style="fill:var(--f-band, #f2f5f8);stroke:var(--f-rule, #d9dee4);stroke-width:1" />
+  <rect x="12" y="226" width="1536" height="66" rx="1.5" style="fill:var(--f-band, #f2f5f8);stroke:var(--f-rule, #d9dee4);stroke-width:1" />
+  <rect x="12" y="298" width="1536" height="66" rx="1.5" style="fill:var(--f-band, #f2f5f8);stroke:var(--f-rule, #d9dee4);stroke-width:1" />
+  <rect x="12" y="370" width="1536" height="66" rx="1.5" style="fill:var(--f-band, #f2f5f8);stroke:var(--f-rule, #d9dee4);stroke-width:1" />
+  <rect x="12" y="442" width="1536" height="74" rx="1.5" style="fill:var(--f-band, #f2f5f8);stroke:var(--f-rule, #d9dee4);stroke-width:1" />
+  <rect x="12" y="522" width="1536" height="66" rx="1.5" style="fill:var(--f-band, #f2f5f8);stroke:var(--f-rule, #d9dee4);stroke-width:1" />
+  <rect x="12" y="594" width="1536" height="66" rx="1.5" style="fill:var(--f-band, #f2f5f8);stroke:var(--f-rule, #d9dee4);stroke-width:1" />
+  <rect x="150" y="88" width="213" height="16" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="150" y="107" width="2" height="10" rx="1.5" style="fill:var(--f-accent, #0b5cad);stroke:var(--f-accent, #0b5cad);stroke-width:1" />
+  <rect x="363" y="88" width="284" height="16" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="363" y="107" width="2" height="10" rx="1.5" style="fill:var(--f-accent, #0b5cad);stroke:var(--f-accent, #0b5cad);stroke-width:1" />
+  <rect x="647" y="88" width="284" height="16" rx="1.5" style="fill:var(--f-flagt, rgba(164,85,26,.13));stroke:var(--f-flag, #a4551a);stroke-width:1.4;stroke-dasharray:4 3" />
+  <rect x="647" y="107" width="2" height="10" rx="1.5" style="fill:var(--f-flag, #a4551a);stroke:var(--f-flag, #a4551a);stroke-width:1" />
+  <rect x="931" y="88" width="447" height="16" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="931" y="107" width="2" height="10" rx="1.5" style="fill:var(--f-accent, #0b5cad);stroke:var(--f-accent, #0b5cad);stroke-width:1" />
+  <rect x="150" y="112" width="1278" height="2" rx="1.5" style="fill:var(--f-accent, #0b5cad);stroke:var(--f-accent, #0b5cad);stroke-width:1" />
+  <rect x="1428" y="107" width="2" height="10" rx="1.5" style="fill:var(--f-accent, #0b5cad);stroke:var(--f-accent, #0b5cad);stroke-width:1" />
+  <rect x="116" y="163" width="188" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="320" y="163" width="188" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="524" y="163" width="188" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="728" y="163" width="188" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="932" y="163" width="188" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="1136" y="163" width="188" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="1340" y="163" width="188" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="116" y="235" width="222" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="354" y="235" width="222" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="592" y="235" width="222" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="830" y="235" width="222" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="1068" y="235" width="222" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="1306" y="235" width="222" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="116" y="307" width="188" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="320" y="307" width="188" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="524" y="307" width="188" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="728" y="307" width="188" height="48" rx="1.5" style="fill:var(--f-paper, #ffffff);stroke:var(--f-ink3, #7b8794);stroke-width:1.4;stroke-dasharray:4 3" />
+  <rect x="932" y="307" width="188" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="1136" y="307" width="188" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="1340" y="307" width="188" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="116" y="379" width="188" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="320" y="379" width="188" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="524" y="379" width="188" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="728" y="379" width="188" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="932" y="379" width="188" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="1136" y="379" width="188" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="1340" y="379" width="188" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="116" y="455" width="222" height="56" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="354" y="455" width="222" height="56" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="592" y="455" width="222" height="56" rx="1.5" style="fill:var(--f-paper, #ffffff);stroke:var(--f-ink3, #7b8794);stroke-width:1.4;stroke-dasharray:4 3" />
+  <rect x="830" y="455" width="222" height="56" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="1068" y="455" width="222" height="56" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="1306" y="455" width="222" height="56" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="116" y="531" width="269.6" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="401.6" y="531" width="269.6" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="687.2" y="531" width="269.6" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="972.8" y="531" width="269.6" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="1258.4" y="531" width="269.6" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="116" y="603" width="188" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="320" y="603" width="188" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="524" y="603" width="188" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="728" y="603" width="188" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="932" y="603" width="188" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="1136" y="603" width="188" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="1340" y="603" width="188" height="48" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <text x="22" y="20" font-size="20" text-anchor="start" style="fill:var(--f-ink, #10151b)">DRISHTI-PGK — system architecture over the flight</text>
+  <text x="22" y="40.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">155 mm · de-spun ring and fixed canards · four fins, no actuator · the machine is both actuator and generator</text>
+  <text x="22" y="56.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">Read the bands downwards as one chain: the flight, then what we sense, decide, drive and shed — and what the fuze will not do.</text>
+  <text x="1032" y="13.6" font-size="12" text-anchor="start" style="fill:var(--f-ink2, #46525f)">decided or derived — ours</text>
+  <text x="1032" y="31.6" font-size="12" text-anchor="start" style="fill:var(--f-ink2, #46525f)">carried from the reference work</text>
+  <text x="1032" y="49.6" font-size="12" text-anchor="start" style="fill:var(--f-ink2, #46525f)">open — not yet ruled</text>
+  <text x="24" y="97.2" font-size="14" text-anchor="start" style="fill:var(--f-ink2, #46525f)">FLIGHT</text>
+  <text x="24" y="113.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">timeline (s)</text>
+  <text x="24" y="183.2" font-size="14" text-anchor="start" style="fill:var(--f-ink2, #46525f)">SENSE</text>
+  <text x="24" y="199.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">on board</text>
+  <text x="24" y="255.2" font-size="14" text-anchor="start" style="fill:var(--f-ink2, #46525f)">NAV</text>
+  <text x="24" y="271.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">state</text>
+  <text x="24" y="327.2" font-size="14" text-anchor="start" style="fill:var(--f-ink2, #46525f)">GUIDE</text>
+  <text x="24" y="343.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">the law</text>
+  <text x="24" y="399.2" font-size="14" text-anchor="start" style="fill:var(--f-ink2, #46525f)">CONTROL</text>
+  <text x="24" y="415.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">the loop</text>
+  <text x="24" y="471.2" font-size="14" text-anchor="start" style="fill:var(--f-ink2, #46525f)">RING</text>
+  <text x="24" y="487.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">and machine</text>
+  <text x="24" y="551.2" font-size="14" text-anchor="start" style="fill:var(--f-ink2, #46525f)">POWER</text>
+  <text x="24" y="567.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">and heat</text>
+  <text x="24" y="623.2" font-size="14" text-anchor="start" style="fill:var(--f-ink2, #46525f)">FUZE</text>
+  <text x="24" y="639.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">and safety</text>
+  <text x="150" y="79.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">muzzle 546–943 m/s · body spin 1 108–1 913 rad/s (176–304 Hz) · ring rate ±31.42 rad/s · authority Δv 19.0 m/s</text>
+  <text x="156" y="96.6" font-size="12" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">pre-nav   0–15 s</text>
+  <text x="369" y="96.6" font-size="12" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">guided   15–35 s</text>
+  <text x="653" y="96.6" font-size="12" text-anchor="start" style="fill:var(--f-flag, #a4551a)">inhibited   35–55 s</text>
+  <text x="937" y="96.6" font-size="12" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">guided   55–86.5 s</text>
+  <text x="150" y="127.6" font-size="12" text-anchor="start" style="fill:var(--f-ink2, #46525f)">t = 0  muzzle exit</text>
+  <text x="363" y="127.6" font-size="12" text-anchor="start" style="fill:var(--f-ink2, #46525f)">15 s  nav open</text>
+  <text x="647" y="127.6" font-size="12" text-anchor="start" style="fill:var(--f-flag, #a4551a)">35 s  gated</text>
+  <text x="759" y="127.6" font-size="12" text-anchor="start" style="fill:var(--f-ink2, #46525f)">41.2 s  apogee</text>
+  <text x="931" y="127.6" font-size="12" text-anchor="start" style="fill:var(--f-ink2, #46525f)">55 s  re-open</text>
+  <text x="1390" y="127.6" font-size="12" text-anchor="start" style="fill:var(--f-ink2, #46525f)">86.5 s  impact</text>
+  <text x="124" y="179.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">IMU rides the ring</text>
+  <text x="124" y="196.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">spin off mechanically</text>
+  <text x="328" y="179.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">GNSS on spin axis</text>
+  <text x="328" y="196.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">symmetric, no mod</text>
+  <text x="532" y="179.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Magnetometer ≤50 Hz</text>
+  <text x="532" y="196.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">earth ref for θ</text>
+  <text x="736" y="179.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Ring angle pickoff</text>
+  <text x="736" y="196.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">0.8° body, 1.0° abs</text>
+  <text x="940" y="179.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Relative speed</text>
+  <text x="940" y="196.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">body-side, ω_rel</text>
+  <text x="1144" y="179.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Coil current</text>
+  <text x="1144" y="196.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">in-flight cal input</text>
+  <text x="1348" y="179.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">24 GHz proximity</text>
+  <text x="1348" y="196.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">burst 2–15 m</text>
+  <text x="124" y="251.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">One hardware time base</text>
+  <text x="124" y="268.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">GNSS = epoch label only</text>
+  <text x="362" y="251.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Stamp at conversion</text>
+  <text x="362" y="268.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">≤100 µs, mission set</text>
+  <text x="600" y="251.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Nav filter</text>
+  <text x="600" y="268.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">GNSS 3.0 + IMU 2.0</text>
+  <text x="838" y="251.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">RSS 3.7 m at impact</text>
+  <text x="838" y="268.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">against 5 m allocation</text>
+  <text x="1076" y="251.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">In-flight mag cal</text>
+  <text x="1076" y="268.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">rejects 1234–2131 Hz</text>
+  <text x="1314" y="251.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">IMU on the de-spun ring</text>
+  <text x="1314" y="268.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">±2 000 °/s, ≥100 Hz</text>
+  <text x="124" y="323.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Propagate to impact</text>
+  <text x="124" y="340.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">state → impact point</text>
+  <text x="328" y="323.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Compare to target</text>
+  <text x="328" y="340.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">uploaded pre-flight</text>
+  <text x="532" y="323.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Command θ_gk only</text>
+  <text x="532" y="340.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">magnitude is fixed</text>
+  <text x="736" y="323.2" font-size="14" text-anchor="start" style="fill:var(--f-ink2, #46525f)">Authority gate</text>
+  <text x="736" y="340.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">15 s open, 35 s shut</text>
+  <text x="940" y="323.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Dwell-fraction phasor</text>
+  <text x="940" y="340.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">d = a_cmd / a_auth(t)</text>
+  <text x="1144" y="323.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Parks at ±90°</text>
+  <text x="1144" y="340.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">cycle mean = command</text>
+  <text x="1348" y="323.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">≈6 Hz, 300 props</text>
+  <text x="1348" y="340.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">every flight</text>
+  <text x="124" y="395.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Outer P, 6.2 Hz</text>
+  <text x="124" y="412.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">settling 0.103 s</text>
+  <text x="328" y="395.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Inner PI, 33.6 Hz</text>
+  <text x="328" y="412.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">0.29 + 7.82/s</text>
+  <text x="532" y="395.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Disturbance observer</text>
+  <text x="532" y="412.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">Q = 1/(0.5s + 1)</text>
+  <text x="736" y="395.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Limit is a minimum</text>
+  <text x="736" y="412.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">2·Î_dist, I_avail(ω)</text>
+  <text x="940" y="395.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">V_lim 26 rad/s per A</text>
+  <text x="940" y="412.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">both state-dependent</text>
+  <text x="1144" y="395.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Clamping anti-windup</text>
+  <text x="1144" y="412.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">live limit, 1 ms</text>
+  <text x="1348" y="395.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Guard band 18°</text>
+  <text x="1348" y="412.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">no runaway, no wrap</text>
+  <text x="124" y="471.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">12 slots / 14 poles</text>
+  <text x="124" y="488.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">Ø91.9 mm · 0.40 mm gap</text>
+  <text x="362" y="471.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Talt 5.76 N·m peak</text>
+  <text x="362" y="488.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">0.362 N·m/A · 15.9 A</text>
+  <text x="600" y="471.2" font-size="14" text-anchor="start" style="fill:var(--f-ink2, #46525f)">Taero 0.171 → 2.12 N·m</text>
+  <text x="600" y="488.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">min at apogee, max late</text>
+  <text x="838" y="471.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Tf ≤ 0.10 N·m, flat</text>
+  <text x="838" y="488.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">gate 0.1567 N·m</text>
+  <text x="1076" y="471.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">4 fixed fins, 10° cant</text>
+  <text x="1076" y="488.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">F_steer ≥ 18.1 N</text>
+  <text x="1314" y="471.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">276 kN setback</text>
+  <text x="1314" y="488.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">seats past the bearings</text>
+  <text x="124" y="547.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">2.92 kW peak</text>
+  <text x="124" y="564.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">121 kJ per flight, not storable</text>
+  <text x="409.6" y="547.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Demand ≈12 W</text>
+  <text x="409.6" y="564.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">≈20:1 at the apogee floor</text>
+  <text x="695.2" y="547.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Bus 180 V nominal</text>
+  <text x="695.2" y="564.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">below flight-min EMF 231 V</text>
+  <text x="980.8" y="547.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Dump + 150–200 J buffer</text>
+  <text x="980.8" y="564.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">derates authority, then trips</text>
+  <text x="1266.4" y="547.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">≥58 W/K interface</text>
+  <text x="1266.4" y="564.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">into the shell body → 5.8 K</text>
+  <text x="124" y="619.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Three modes</text>
+  <text x="124" y="636.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">prox · time · impact</text>
+  <text x="328" y="619.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Out-of-line rotor</text>
+  <text x="328" y="636.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">setback + spin + cmd</text>
+  <text x="532" y="619.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">No in-bore function</text>
+  <text x="532" y="636.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">by construction</text>
+  <text x="736" y="619.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Time re-sync in flight</text>
+  <text x="736" y="636.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">bounded, one-way</text>
+  <text x="940" y="619.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Predicted-miss failsafe</text>
+  <text x="940" y="636.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">&gt;150 m → latch, dud</text>
+  <text x="1144" y="619.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">BIT: hold / derate</text>
+  <text x="1144" y="636.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">third tier: fuze-alone</text>
+  <text x="1348" y="619.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Fuze keeps its own MCU</text>
+  <text x="1348" y="636.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">one bounded crossing</text>
+</svg>

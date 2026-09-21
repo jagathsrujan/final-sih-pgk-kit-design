@@ -21,6 +21,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path:
     sys.path.insert(0, HERE)
 
+import part_index  # noqa: E402  (the naming, grouping and colour vocabulary)
+
 EPS = 1e-9
 
 
@@ -96,11 +98,42 @@ def new_doc(name):
 
 
 def add_part(doc, name, shape, color=None):
+    """Add a solid, named and coloured from the parts index.
+
+    Every part in the workspace is created through here, so `part_index.py` is
+    what the FreeCAD tree shows and what the renders use. A part with no entry
+    is reported rather than silently grey: an unnamed box is how a model stops
+    being readable.
+    """
     obj = doc.addObject("Part::Feature", name)
     obj.Shape = shape
-    if color is not None and hasattr(obj, "ViewObject"):
-        obj.ViewObject.ShapeColor = color
+    if part_index.entry(name) is None:
+        print("      note: %s has no entry in part_index.py — it keeps its code "
+              "as its name and the default grey" % name)
+    else:
+        obj.Label = part_index.label(name)
+    view = getattr(obj, "ViewObject", None)
+    if view is not None and hasattr(view, "ShapeColor"):
+        view.ShapeColor = color if color is not None else part_index.colour(name)
+        view.Transparency = part_index.transparency(name)
     return obj
+
+
+def new_group(doc, key):
+    """A labelled group node for one band of the architecture.
+
+    The tree is the first thing anyone reads, so it is grouped the way the
+    architecture is: body side, ring side, what lies between them, and the
+    reference geometry that is not a kit part.
+    """
+    grp = doc.addObject("App::DocumentObjectGroup", "G_" + key)
+    grp.Label = part_index.GROUP_NAMES.get(key, key)
+    return grp
+
+
+def part_group(code):
+    """The group key a part belongs in, per the index."""
+    return part_index.group(code)
 
 
 def report_shape(label, shape, density=None):
@@ -128,7 +161,8 @@ def publish_measured(values):
     This is the loop that makes T6 automatic: Phase 2 measures the ring, the
     file records it, and pgk_params reads it back to size C32's collar against
     the real load instead of C26's 0.5 kg assumption. Values are merged, so a
-    phase only has to publish what it owns.
+    phase only has to publish what it owns. A dict value (Phase 7 publishes one
+    mass per part) is merged as a nested block.
     """
     import json
     os.makedirs(os.path.dirname(MEASURED_JSON), exist_ok=True)
@@ -139,7 +173,13 @@ def publish_measured(values):
                 data = json.load(f)
         except Exception:
             data = {}
-    data.update({k: round(float(v), 6) for k, v in values.items()})
+    for k, v in values.items():
+        if isinstance(v, dict):
+            block = dict(data.get(k) or {})
+            block.update({kk: round(float(vv), 6) for kk, vv in v.items()})
+            data[k] = block
+        else:
+            data[k] = round(float(v), 6)
     with open(MEASURED_JSON, "w") as f:
         json.dump(data, f, indent=2, sort_keys=True)
         f.write("\n")

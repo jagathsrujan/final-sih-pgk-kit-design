@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1560 488" role="img" aria-label="Power, energy and heat — the architecture&#x27;s defining cost" style="display:block;font-family:var(--font,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif)">
+<title>Power, energy and heat — the architecture&#x27;s defining cost</title>
+<defs>
+<marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#0b5cad"/></marker>
+<marker id="ah-f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#a4551a"/></marker>
+<marker id="ah-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#7b8794"/></marker>
+</defs>
+  <rect x="12" y="62" width="1536" height="74" rx="1.5" style="fill:var(--f-band, #f2f5f8);stroke:var(--f-rule, #d9dee4);stroke-width:1" />
+  <rect x="176" y="72" width="257.6" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="449.6" y="72" width="257.6" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="723.2" y="72" width="257.6" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="996.8" y="72" width="257.6" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="1270.4" y="72" width="257.6" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="12" y="146" width="1536" height="74" rx="1.5" style="fill:var(--f-band, #f2f5f8);stroke:var(--f-rule, #d9dee4);stroke-width:1" />
+  <rect x="176" y="156" width="326" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="518" y="156" width="326" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="860" y="156" width="326" height="54" rx="1.5" style="fill:var(--f-flagt, rgba(164,85,26,.13));stroke:var(--f-flag, #a4551a);stroke-width:1.4" />
+  <rect x="1202" y="156" width="326" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="12" y="230" width="1536" height="74" rx="1.5" style="fill:var(--f-band, #f2f5f8);stroke:var(--f-rule, #d9dee4);stroke-width:1" />
+  <rect x="176" y="240" width="257.6" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="449.6" y="240" width="257.6" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="723.2" y="240" width="257.6" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="996.8" y="240" width="257.6" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="1270.4" y="240" width="257.6" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="12" y="314" width="1536" height="74" rx="1.5" style="fill:var(--f-band, #f2f5f8);stroke:var(--f-rule, #d9dee4);stroke-width:1" />
+  <rect x="176" y="324" width="257.6" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="449.6" y="324" width="257.6" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="723.2" y="324" width="257.6" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="996.8" y="324" width="257.6" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="1270.4" y="324" width="257.6" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="12" y="398" width="1536" height="74" rx="1.5" style="fill:var(--f-band, #f2f5f8);stroke:var(--f-rule, #d9dee4);stroke-width:1" />
+  <rect x="176" y="408" width="440" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="632" y="408" width="440" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="1088" y="408" width="440" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <text x="22" y="22" font-size="20" text-anchor="start" style="fill:var(--f-ink, #10151b)">Power, energy and heat — the architecture&#x27;s defining cost</text>
+  <text x="22" y="42.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">121 kJ per flight that cannot be stored, cannot be held in the kit, and leaves through the face the kit seats on. This is the price of the de-spun architecture, stated rather than hidden.</text>
+  <text x="24" y="87.2" font-size="14" text-anchor="start" style="fill:var(--f-ink2, #46525f)">GENERATED</text>
+  <text x="24" y="103.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">Taero × body spin</text>
+  <text x="184" y="89.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">2.92 kW peak</text>
+  <text x="184" y="109.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">at the launch condition</text>
+  <text x="457.6" y="89.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">121 kJ per flight</text>
+  <text x="457.6" y="109.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">cannot be stored</text>
+  <text x="731.2" y="89.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Loaded generator</text>
+  <text x="731.2" y="109.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">×2.4 the reference rating</text>
+  <text x="1004.8" y="89.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Rectifier to bus</text>
+  <text x="1004.8" y="109.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">180 V nominal</text>
+  <text x="1278.4" y="89.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">E_min 231 V</text>
+  <text x="1278.4" y="109.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">at the 1 108 rad/s floor</text>
+  <text x="24" y="171.2" font-size="14" text-anchor="start" style="fill:var(--f-ink2, #46525f)">CONVERTER</text>
+  <text x="24" y="187.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">the W8 condition</text>
+  <text x="184" y="173.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Four-quadrant stage</text>
+  <text x="184" y="193.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">never crosses buck↔boost</text>
+  <text x="526" y="173.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">W8 route A</text>
+  <text x="526" y="193.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">winding kept, bus lowered</text>
+  <text x="868" y="173.2" font-size="14" text-anchor="start" style="fill:var(--f-ink2, #46525f)">E = V_bus at launch</text>
+  <text x="868" y="193.4" font-size="13" text-anchor="start" style="fill:var(--f-flag, #a4551a)">no current headroom at peak</text>
+  <text x="1210" y="173.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">R ∝ Kt² at fixed slots</text>
+  <text x="1210" y="193.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">the bus is a free choice</text>
+  <text x="24" y="255.2" font-size="14" text-anchor="start" style="fill:var(--f-ink2, #46525f)">CONSUMED</text>
+  <text x="24" y="271.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">the demand</text>
+  <text x="184" y="257.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">≈12 W peak</text>
+  <text x="184" y="277.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">≈10 W average</text>
+  <text x="457.6" y="257.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">≈0.9 kJ per flight</text>
+  <text x="457.6" y="277.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">avionics is ≈0.8% of it</text>
+  <text x="731.2" y="257.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">≈20:1 at apogee</text>
+  <text x="731.2" y="277.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">the demand never binds</text>
+  <text x="1004.8" y="257.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Supercap buffer</text>
+  <text x="1004.8" y="277.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">150–200 J · 55 mm long</text>
+  <text x="1278.4" y="257.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">≥2 s hold-up</text>
+  <text x="1278.4" y="277.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">fireset + actuator bursts</text>
+  <text x="24" y="339.2" font-size="14" text-anchor="start" style="fill:var(--f-ink2, #46525f)">DISPOSED</text>
+  <text x="24" y="355.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">where the 121 kJ goes</text>
+  <text x="184" y="341.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Chopper dump</text>
+  <text x="184" y="361.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">first action derates G15</text>
+  <text x="457.6" y="341.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Then it trips</text>
+  <text x="457.6" y="361.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">authority traded, then shed</text>
+  <text x="731.2" y="341.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">≥58 W/K peak</text>
+  <text x="731.2" y="361.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">P6 thermal interface</text>
+  <text x="1004.8" y="341.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">≥20–27 W/K average</text>
+  <text x="1004.8" y="361.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">sized on the flight average</text>
+  <text x="1278.4" y="341.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Shell body +5.8 K</text>
+  <text x="1278.4" y="361.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">asymptote, reached in minutes</text>
+  <text x="24" y="423.2" font-size="14" text-anchor="start" style="fill:var(--f-ink2, #46525f)">NOT FREE</text>
+  <text x="24" y="439.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">what it costs</text>
+  <text x="184" y="425.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Friction heat 140–190 W</text>
+  <text x="184" y="445.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">12–17 kJ in the bearings</text>
+  <text x="640" y="425.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">≈26% rejectable</text>
+  <text x="640" y="445.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">the rest must enter the shell</text>
+  <text x="1096" y="425.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Cant 10° → 16°</text>
+  <text x="1096" y="445.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">+60% force and +60% heat</text>
+</svg>

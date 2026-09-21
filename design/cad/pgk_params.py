@@ -756,7 +756,7 @@ def to_sheet(doc, name="Params"):
         sheet = doc.getObject(name)
         doc.removeObject(name)
     sheet = doc.addObject("Spreadsheet::Sheet", name)
-    sheet.Label = "Params"
+    sheet.Label = "Parameters — pgk_params.py (source of truth)"
 
     hdr = ["alias", "value", "unit", "criterion", "status", "basis"]
     for c, text in enumerate(hdr):

@@ -80,18 +80,62 @@ real face rather than a radius picked to give the right area.
 
 ```
 pgk_params.py          THE SOURCE OF TRUTH — every dimension + criterion + status
-write_traceability.py  regenerates TRACEABILITY.md and PARAMETERS.txt
+part_index.py          THE VOCABULARY — every part's name, group, material,
+                       colour and one-line purpose; what the tree shows
+write_traceability.py  regenerates TRACEABILITY.md, PARAMETERS.txt, PARTS.md
 TRACEABILITY.md        generated: every dimension against its criterion
 PARAMETERS.txt         generated: the audit listing + closure checks
+PARTS.md               generated: every part, named, grouped and measured
 VERIFICATION-LOG.md    hand-kept: what each gate proved, and when
 macros/
   00_phase0_envelope.py      reference shell, well, bore, train-bore, ogive bound
   10_phase1_kit_body.py      (Phase 1)
   ...
+  95_render_deck_images.py   presentation renders for the submission deck
 out/
   PGK-Envelope.FCStd         the envelope document
   screenshots/               visual evidence, one per gate
+  deck-renders/              the raw 2560x1440 frames the deck images come from
+deck_render_trim.py          trims those frames and publishes them to
+                             submission/deck/figures/cad/
 ```
+
+`95_render_deck_images.py` is **not a phase**: it builds nothing and decides
+nothing, it only draws what the phases already built, in a colour per functional
+group, with staged and sectioned views. Its destination folder carries the
+colour key and the list of views.
+
+---
+
+## How to read the model
+
+Open `out/PGK-Assembly.FCStd`. The tree is the first thing anyone reads, so it
+is arranged the way the architecture is:
+
+```
+1 Body side — turns with the shell        17 parts
+2 Ring side — de-spun, carries the fins    9 parts
+3 Between the two bodies                   1 part
+Parameters — pgk_params.py (source of truth)
+```
+
+- **Every part is named in words**, not just in codes: the tree shows
+  `A1 Kit body`, `B1 Ring carrier`, `B5 Fin, control A`. The code is still the
+  object's internal name, so nothing in the scripts moved.
+- **Every part is coloured by what it is**, and it is the same colour it has in
+  the deck renders — the board stack, the copper, the magnets, the bearing path
+  and the fuze train each read as themselves. The steering and control fins are
+  two shades of one blue because they are one part made twice, mounted at two
+  cants.
+- **The groups are the claim.** Body side and ring side are the two bodies in
+  relative rotation; what lies between them is the bearings. That split is the
+  same one the interference grid and the mass rollup use.
+
+`PARTS.md` is the same information in writing: one row per part with its group,
+material, measured mass and what it does, generated from `part_index.py` so it
+cannot drift from the model. **`part_index.py` is where a part's entry lives** —
+adding a part without adding it there still builds, but the build says so out
+loud rather than letting another grey box into the tree.
 
 ---
 

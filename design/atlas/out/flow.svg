@@ -1,0 +1,327 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1560 710" role="img" aria-label="System architecture — connections and activation by flight phase" style="display:block;font-family:var(--font,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif)">
+<title>System architecture — connections and activation by flight phase</title>
+<defs>
+<marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#0b5cad"/></marker>
+<marker id="ah-f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#a4551a"/></marker>
+<marker id="ah-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#7b8794"/></marker>
+</defs>
+  <path d="M 1112 56 L 1130 56" style="fill:none;stroke:var(--f-flag, #a4551a);stroke-width:1.4;stroke-linejoin:round;stroke-dasharray:5 3" marker-end="url(#ah-f)"/>
+  <path d="M 1330 56 L 1348 56" style="fill:none;stroke:var(--f-accent, #0b5cad);stroke-width:1.4;stroke-linejoin:round" marker-end="url(#ah-a)"/>
+  <path d="M 306 94 L 322 94" style="fill:none;stroke:var(--f-accent, #0b5cad);stroke-width:1.4;stroke-linejoin:round" marker-end="url(#ah-a)"/>
+  <path d="M 616 94 L 632 94" style="fill:none;stroke:var(--f-accent, #0b5cad);stroke-width:1.4;stroke-linejoin:round" marker-end="url(#ah-a)"/>
+  <path d="M 926 94 L 942 94" style="fill:none;stroke:var(--f-accent, #0b5cad);stroke-width:1.4;stroke-linejoin:round" marker-end="url(#ah-a)"/>
+  <path d="M 1236 94 L 1252 94" style="fill:none;stroke:var(--f-accent, #0b5cad);stroke-width:1.4;stroke-linejoin:round" marker-end="url(#ah-a)"/>
+  <path d="M 1399 122 L 1399 130 L 198 130 L 198 138" style="fill:none;stroke:var(--f-accent, #0b5cad);stroke-width:1.4;stroke-linejoin:round" marker-end="url(#ah-a)"/>
+  <path d="M 384 166 L 400 166" style="fill:none;stroke:var(--f-accent, #0b5cad);stroke-width:1.4;stroke-linejoin:round" marker-end="url(#ah-a)"/>
+  <path d="M 772 166 L 788 166" style="fill:none;stroke:var(--f-accent, #0b5cad);stroke-width:1.4;stroke-linejoin:round" marker-end="url(#ah-a)"/>
+  <path d="M 1160 166 L 1176 166" style="fill:none;stroke:var(--f-accent, #0b5cad);stroke-width:1.4;stroke-linejoin:round" marker-end="url(#ah-a)"/>
+  <path d="M 198 210 L 198 194" style="fill:none;stroke:var(--f-accent, #0b5cad);stroke-width:1.4;stroke-linejoin:round" marker-end="url(#ah-a)"/>
+  <path d="M 586 194 L 586 210" style="fill:none;stroke:var(--f-accent, #0b5cad);stroke-width:1.4;stroke-linejoin:round" marker-end="url(#ah-a)"/>
+  <path d="M 772 238 L 788 238" style="fill:none;stroke:var(--f-accent, #0b5cad);stroke-width:1.4;stroke-linejoin:round" marker-end="url(#ah-a)"/>
+  <path d="M 1160 238 L 1176 238" style="fill:none;stroke:var(--f-accent, #0b5cad);stroke-width:1.4;stroke-linejoin:round" marker-end="url(#ah-a)"/>
+  <path d="M 384 310 L 400 310" style="fill:none;stroke:var(--f-accent, #0b5cad);stroke-width:1.4;stroke-linejoin:round" marker-end="url(#ah-a)"/>
+  <path d="M 772 310 L 788 310" style="fill:none;stroke:var(--f-accent, #0b5cad);stroke-width:1.4;stroke-linejoin:round" marker-end="url(#ah-a)"/>
+  <path d="M 1168 122 L 1168 310 L 1176 310" style="fill:none;stroke:var(--f-flag, #a4551a);stroke-width:1.4;stroke-linejoin:round;stroke-dasharray:5 3" marker-end="url(#ah-f)"/>
+  <path d="M 1362 282 L 1362 272 L 586 272 L 586 282" style="fill:none;stroke:var(--f-flag, #a4551a);stroke-width:1.4;stroke-linejoin:round;stroke-dasharray:5 3" marker-end="url(#ah-f)"/>
+  <rect x="22" y="50" width="13" height="13" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="22" y="50" width="13" height="13" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="240" y="50" width="13" height="13" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="240" y="50" width="5.85" height="13" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="458" y="50" width="13" height="13" rx="2" fill="none" style="stroke:var(--f-ink3, #7b8794);stroke-width:1;opacity:.55"/>
+  <rect x="676" y="50" width="13" height="13" rx="2" fill="none" style="stroke:var(--f-flag, #a4551a);stroke-width:1.2"/>
+  <rect x="894" y="50" width="13" height="13" rx="2" fill="none" style="stroke:var(--f-flag, #a4551a);stroke-width:1.2"/>
+<rect x="894" y="50" width="13" height="13" rx="2" style="fill:var(--f-flag, #a4551a)" stroke="none"/>
+  <rect x="12" y="66" width="294" height="56" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="322" y="66" width="294" height="56" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="632" y="66" width="294" height="56" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="942" y="66" width="294" height="56" rx="1.5" style="fill:var(--f-paper, #ffffff);stroke:var(--f-ink3, #7b8794);stroke-width:1.4;stroke-dasharray:4 3" />
+  <rect x="1252" y="66" width="294" height="56" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="12" y="138" width="372" height="56" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="400" y="138" width="372" height="56" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="788" y="138" width="372" height="56" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="1176" y="138" width="372" height="56" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="12" y="210" width="372" height="56" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="400" y="210" width="372" height="56" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="788" y="210" width="372" height="56" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="1176" y="210" width="372" height="56" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="12" y="282" width="372" height="56" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="400" y="282" width="372" height="56" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="788" y="282" width="372" height="56" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="1176" y="282" width="372" height="56" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="386.286" y="350" width="1" height="349" rx="1.5" style="fill:var(--f-rule, #d9dee4);stroke:var(--f-rule, #d9dee4);stroke-width:1" />
+  <rect x="450.571" y="350" width="1" height="349" rx="1.5" style="fill:var(--f-rule, #d9dee4);stroke:var(--f-rule, #d9dee4);stroke-width:1" />
+  <rect x="514.857" y="350" width="1" height="349" rx="1.5" style="fill:var(--f-rule, #d9dee4);stroke:var(--f-rule, #d9dee4);stroke-width:1" />
+  <rect x="579.143" y="350" width="1" height="349" rx="1.5" style="fill:var(--f-rule, #d9dee4);stroke:var(--f-rule, #d9dee4);stroke-width:1" />
+  <rect x="643.429" y="350" width="1" height="349" rx="1.5" style="fill:var(--f-rule, #d9dee4);stroke:var(--f-rule, #d9dee4);stroke-width:1" />
+  <rect x="707.714" y="350" width="1" height="349" rx="1.5" style="fill:var(--f-rule, #d9dee4);stroke:var(--f-rule, #d9dee4);stroke-width:1" />
+  <rect x="344.143" y="386" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-ink3, #7b8794);stroke-width:1;opacity:.55"/>
+  <rect x="408.429" y="386" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-ink3, #7b8794);stroke-width:1;opacity:.55"/>
+  <rect x="472.714" y="386" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="472.714" y="386" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="537" y="386" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="537" y="386" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="601.286" y="386" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="601.286" y="386" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="665.571" y="386" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="665.571" y="386" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="729.857" y="386" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="729.857" y="386" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="344.143" y="427" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-ink3, #7b8794);stroke-width:1;opacity:.55"/>
+  <rect x="408.429" y="427" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-ink3, #7b8794);stroke-width:1;opacity:.55"/>
+  <rect x="472.714" y="427" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="472.714" y="427" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="537" y="427" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="537" y="427" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="601.286" y="427" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="601.286" y="427" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="665.571" y="427" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="665.571" y="427" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="729.857" y="427" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="729.857" y="427" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="344.143" y="468" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-ink3, #7b8794);stroke-width:1;opacity:.55"/>
+  <rect x="408.429" y="468" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-ink3, #7b8794);stroke-width:1;opacity:.55"/>
+  <rect x="472.714" y="468" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="472.714" y="468" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="537" y="468" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="537" y="468" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="601.286" y="468" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="601.286" y="468" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="665.571" y="468" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="665.571" y="468" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="729.857" y="468" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="729.857" y="468" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="344.143" y="509" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-ink3, #7b8794);stroke-width:1;opacity:.55"/>
+  <rect x="408.429" y="509" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-ink3, #7b8794);stroke-width:1;opacity:.55"/>
+  <rect x="472.714" y="509" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="472.714" y="509" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="537" y="509" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="537" y="509" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="601.286" y="509" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="601.286" y="509" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="665.571" y="509" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="665.571" y="509" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="729.857" y="509" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="729.857" y="509" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="344.143" y="550" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-ink3, #7b8794);stroke-width:1;opacity:.55"/>
+  <rect x="408.429" y="550" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-ink3, #7b8794);stroke-width:1;opacity:.55"/>
+  <rect x="472.714" y="550" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="472.714" y="550" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="537" y="550" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="537" y="550" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="601.286" y="550" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="601.286" y="550" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="665.571" y="550" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="665.571" y="550" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="729.857" y="550" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="729.857" y="550" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="344.143" y="591" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-ink3, #7b8794);stroke-width:1;opacity:.55"/>
+  <rect x="408.429" y="591" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-ink3, #7b8794);stroke-width:1;opacity:.55"/>
+  <rect x="472.714" y="591" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-ink3, #7b8794);stroke-width:1;opacity:.55"/>
+  <rect x="537" y="591" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="537" y="591" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="601.286" y="591" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-flag, #a4551a);stroke-width:1.2"/>
+  <rect x="665.571" y="591" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="665.571" y="591" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="729.857" y="591" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="729.857" y="591" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="344.143" y="632" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-ink3, #7b8794);stroke-width:1;opacity:.55"/>
+  <rect x="408.429" y="632" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-ink3, #7b8794);stroke-width:1;opacity:.55"/>
+  <rect x="472.714" y="632" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-ink3, #7b8794);stroke-width:1;opacity:.55"/>
+  <rect x="537" y="632" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="537" y="632" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="601.286" y="632" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-flag, #a4551a);stroke-width:1.2"/>
+  <rect x="665.571" y="632" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="665.571" y="632" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="729.857" y="632" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="729.857" y="632" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="344.143" y="673" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-ink3, #7b8794);stroke-width:1;opacity:.55"/>
+  <rect x="408.429" y="673" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-ink3, #7b8794);stroke-width:1;opacity:.55"/>
+  <rect x="472.714" y="673" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-ink3, #7b8794);stroke-width:1;opacity:.55"/>
+  <rect x="537" y="673" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="537" y="673" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="601.286" y="673" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="601.286" y="673" width="9" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="665.571" y="673" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="665.571" y="673" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="729.857" y="673" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="729.857" y="673" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1160.29" y="350" width="1" height="349" rx="1.5" style="fill:var(--f-rule, #d9dee4);stroke:var(--f-rule, #d9dee4);stroke-width:1" />
+  <rect x="1224.57" y="350" width="1" height="349" rx="1.5" style="fill:var(--f-rule, #d9dee4);stroke:var(--f-rule, #d9dee4);stroke-width:1" />
+  <rect x="1288.86" y="350" width="1" height="349" rx="1.5" style="fill:var(--f-rule, #d9dee4);stroke:var(--f-rule, #d9dee4);stroke-width:1" />
+  <rect x="1353.14" y="350" width="1" height="349" rx="1.5" style="fill:var(--f-rule, #d9dee4);stroke:var(--f-rule, #d9dee4);stroke-width:1" />
+  <rect x="1417.43" y="350" width="1" height="349" rx="1.5" style="fill:var(--f-rule, #d9dee4);stroke:var(--f-rule, #d9dee4);stroke-width:1" />
+  <rect x="1481.71" y="350" width="1" height="349" rx="1.5" style="fill:var(--f-rule, #d9dee4);stroke:var(--f-rule, #d9dee4);stroke-width:1" />
+  <rect x="1118.14" y="386" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-ink3, #7b8794);stroke-width:1;opacity:.55"/>
+  <rect x="1182.43" y="386" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-ink3, #7b8794);stroke-width:1;opacity:.55"/>
+  <rect x="1246.71" y="386" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1246.71" y="386" width="9" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1311" y="386" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1311" y="386" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1375.29" y="386" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1375.29" y="386" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1439.57" y="386" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1439.57" y="386" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1503.86" y="386" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1503.86" y="386" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1118.14" y="427" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-ink3, #7b8794);stroke-width:1;opacity:.55"/>
+  <rect x="1182.43" y="427" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-ink3, #7b8794);stroke-width:1;opacity:.55"/>
+  <rect x="1246.71" y="427" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1246.71" y="427" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1311" y="427" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1311" y="427" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1375.29" y="427" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1375.29" y="427" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1439.57" y="427" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1439.57" y="427" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1503.86" y="427" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1503.86" y="427" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1118.14" y="468" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-ink3, #7b8794);stroke-width:1;opacity:.55"/>
+  <rect x="1182.43" y="468" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1182.43" y="468" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1246.71" y="468" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1246.71" y="468" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1311" y="468" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1311" y="468" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1375.29" y="468" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1375.29" y="468" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1439.57" y="468" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1439.57" y="468" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1503.86" y="468" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1503.86" y="468" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1118.14" y="509" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-ink3, #7b8794);stroke-width:1;opacity:.55"/>
+  <rect x="1182.43" y="509" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1182.43" y="509" width="9" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1246.71" y="509" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1246.71" y="509" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1311" y="509" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1311" y="509" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1375.29" y="509" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1375.29" y="509" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1439.57" y="509" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1439.57" y="509" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1503.86" y="509" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1503.86" y="509" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1118.14" y="550" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-ink3, #7b8794);stroke-width:1;opacity:.55"/>
+  <rect x="1182.43" y="550" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1182.43" y="550" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1246.71" y="550" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1246.71" y="550" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1311" y="550" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1311" y="550" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1375.29" y="550" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1375.29" y="550" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1439.57" y="550" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1439.57" y="550" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1503.86" y="550" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1503.86" y="550" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1118.14" y="591" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-ink3, #7b8794);stroke-width:1;opacity:.55"/>
+  <rect x="1182.43" y="591" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1182.43" y="591" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1246.71" y="591" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1246.71" y="591" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1311" y="591" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1311" y="591" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1375.29" y="591" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1375.29" y="591" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1439.57" y="591" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1439.57" y="591" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1503.86" y="591" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1503.86" y="591" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1118.14" y="632" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-ink3, #7b8794);stroke-width:1;opacity:.55"/>
+  <rect x="1182.43" y="632" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1182.43" y="632" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1246.71" y="632" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1246.71" y="632" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1311" y="632" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1311" y="632" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1375.29" y="632" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1375.29" y="632" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1439.57" y="632" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1439.57" y="632" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1503.86" y="632" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-accent, #0b5cad);stroke-width:1.2"/>
+<rect x="1503.86" y="632" width="20" height="20" rx="2" style="fill:var(--f-accent, #0b5cad)" stroke="none"/>
+  <rect x="1118.14" y="673" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-flag, #a4551a);stroke-width:1.2"/>
+  <rect x="1182.43" y="673" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-flag, #a4551a);stroke-width:1.2"/>
+  <rect x="1246.71" y="673" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-flag, #a4551a);stroke-width:1.2"/>
+  <rect x="1311" y="673" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-flag, #a4551a);stroke-width:1.2"/>
+  <rect x="1375.29" y="673" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-flag, #a4551a);stroke-width:1.2"/>
+  <rect x="1439.57" y="673" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-flag, #a4551a);stroke-width:1.2"/>
+  <rect x="1503.86" y="673" width="20" height="20" rx="2" fill="none" style="stroke:var(--f-flag, #a4551a);stroke-width:1.2"/>
+<rect x="1503.86" y="673" width="20" height="20" rx="2" style="fill:var(--f-flag, #a4551a)" stroke="none"/>
+  <text x="22" y="20" font-size="20" text-anchor="start" style="fill:var(--f-ink, #10151b)">DRISHTI-PGK — what is connected to what, and what is live when</text>
+  <text x="22" y="39.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">Left to right is signal flow; the arrows are the real interfaces. The table below says which block is acting in each phase of the flight.</text>
+  <text x="46" y="54.8" font-size="11" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">acting</text>
+  <text x="264" y="54.8" font-size="11" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">holding</text>
+  <text x="482" y="54.8" font-size="11" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">off</text>
+  <text x="700" y="54.8" font-size="11" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">inhibited</text>
+  <text x="918" y="54.8" font-size="11" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">armed</text>
+  <text x="1136" y="54.8" font-size="11" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">one-way, gated</text>
+  <text x="1354" y="54.8" font-size="11" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">signal or power</text>
+  <text x="22" y="84.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Sensing</text>
+  <text x="22" y="103.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">IMU on the ring · GNSS on the axis ·</text>
+  <text x="22" y="117.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">magnetometer · ring pickup</text>
+  <text x="332" y="84.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">NAV filter</text>
+  <text x="332" y="103.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">GNSS 3.0 + IMU 2.0 · RSS 3.7 m</text>
+  <text x="642" y="84.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">IPP law</text>
+  <text x="642" y="103.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">propagate to impact · ≈6 Hz</text>
+  <text x="952" y="84.2" font-size="14" text-anchor="start" style="fill:var(--f-ink2, #46525f)">Authority gate</text>
+  <text x="952" y="103.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">15 s open · 35–55 s shut</text>
+  <text x="1262" y="84.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Phasor → θ_gk</text>
+  <text x="1262" y="103.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">d = a_cmd/a_auth · parks ±90°</text>
+  <text x="22" y="156.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Cascade: P then PI</text>
+  <text x="22" y="175.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">6.2 Hz / 33.6 Hz · 1 kHz loop</text>
+  <text x="410" y="156.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Machine 12 / 14</text>
+  <text x="410" y="175.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">Talt 5.76 N·m · 0.40 mm gap</text>
+  <text x="798" y="156.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Ring, de-spun</text>
+  <text x="798" y="175.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">Tf ≤ 0.10 N·m · Taero → 2.12 N·m</text>
+  <text x="1186" y="156.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">4 fins, 10° cant</text>
+  <text x="1186" y="175.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">F_steer ≥ 18.1 N</text>
+  <text x="22" y="228.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">DOB + limits</text>
+  <text x="22" y="247.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">min(2·Î_dist, I_avail(ω))</text>
+  <text x="410" y="228.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Rectifier → bus</text>
+  <text x="410" y="247.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">180 V nominal · E_min 231 V</text>
+  <text x="798" y="228.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Dump + buffer</text>
+  <text x="798" y="247.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">2.92 kW · 121 kJ · 150–200 J</text>
+  <text x="1186" y="228.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Thermal joint</text>
+  <text x="1186" y="247.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">≥58 W/K into the shell → 5.8 K</text>
+  <text x="22" y="300.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Setter → package</text>
+  <text x="22" y="319.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">275 ms window · read-back</text>
+  <text x="410" y="300.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">S/A rotor</text>
+  <text x="410" y="319.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">setback + spin + arm command</text>
+  <text x="798" y="300.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Fireset</text>
+  <text x="798" y="319.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">prox 2–15 m · time · impact</text>
+  <text x="1186" y="300.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Predicted-miss veto</text>
+  <text x="1186" y="319.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">&gt;150 m → latch, withhold arm</text>
+  <text x="16" y="353.6" font-size="12" text-anchor="start" style="fill:var(--f-ink2, #46525f)">GUIDANCE CHAIN — phases: in-bore · 0 s · 0–15 s · 15–35 s · 35–55 s · 55–86.5 s · impact</text>
+  <text x="354.143" y="368.8" font-size="11" text-anchor="middle" style="fill:var(--f-ink3, #7b8794)">IN-BORE</text>
+  <text x="418.429" y="368.8" font-size="11" text-anchor="middle" style="fill:var(--f-ink3, #7b8794)">LAUNCH</text>
+  <text x="482.714" y="368.8" font-size="11" text-anchor="middle" style="fill:var(--f-ink3, #7b8794)">PRE-NAV</text>
+  <text x="547" y="368.8" font-size="11" text-anchor="middle" style="fill:var(--f-ink3, #7b8794)">GUID-A</text>
+  <text x="611.286" y="368.8" font-size="11" text-anchor="middle" style="fill:var(--f-ink3, #7b8794)">INHIB</text>
+  <text x="675.571" y="368.8" font-size="11" text-anchor="middle" style="fill:var(--f-ink3, #7b8794)">GUID-B</text>
+  <text x="739.857" y="368.8" font-size="11" text-anchor="middle" style="fill:var(--f-ink3, #7b8794)">IMPACT</text>
+  <text x="22" y="396.6" font-size="12" text-anchor="start" style="fill:var(--f-ink2, #46525f)">IMU on the ring</text>
+  <text x="22" y="437.6" font-size="12" text-anchor="start" style="fill:var(--f-ink2, #46525f)">GNSS on the spin axis</text>
+  <text x="22" y="478.6" font-size="12" text-anchor="start" style="fill:var(--f-ink2, #46525f)">Magnetometer</text>
+  <text x="22" y="519.6" font-size="12" text-anchor="start" style="fill:var(--f-ink2, #46525f)">Ring angle pickup</text>
+  <text x="22" y="560.6" font-size="12" text-anchor="start" style="fill:var(--f-ink2, #46525f)">NAV filter and time base</text>
+  <text x="22" y="601.6" font-size="12" text-anchor="start" style="fill:var(--f-ink2, #46525f)">IPP guidance law</text>
+  <text x="22" y="642.6" font-size="12" text-anchor="start" style="fill:var(--f-ink2, #46525f)">Authority gate</text>
+  <text x="22" y="683.6" font-size="12" text-anchor="start" style="fill:var(--f-ink2, #46525f)">Phasor → θ_gk</text>
+  <text x="790" y="353.6" font-size="12" text-anchor="start" style="fill:var(--f-ink2, #46525f)">SUPPORTING CHAINS — power, thermal and fuze</text>
+  <text x="1128.14" y="368.8" font-size="11" text-anchor="middle" style="fill:var(--f-ink3, #7b8794)">IN-BORE</text>
+  <text x="1192.43" y="368.8" font-size="11" text-anchor="middle" style="fill:var(--f-ink3, #7b8794)">LAUNCH</text>
+  <text x="1256.71" y="368.8" font-size="11" text-anchor="middle" style="fill:var(--f-ink3, #7b8794)">PRE-NAV</text>
+  <text x="1321" y="368.8" font-size="11" text-anchor="middle" style="fill:var(--f-ink3, #7b8794)">GUID-A</text>
+  <text x="1385.29" y="368.8" font-size="11" text-anchor="middle" style="fill:var(--f-ink3, #7b8794)">INHIB</text>
+  <text x="1449.57" y="368.8" font-size="11" text-anchor="middle" style="fill:var(--f-ink3, #7b8794)">GUID-B</text>
+  <text x="1513.86" y="368.8" font-size="11" text-anchor="middle" style="fill:var(--f-ink3, #7b8794)">IMPACT</text>
+  <text x="796" y="396.6" font-size="12" text-anchor="start" style="fill:var(--f-ink2, #46525f)">Cascade: P then PI</text>
+  <text x="796" y="437.6" font-size="12" text-anchor="start" style="fill:var(--f-ink2, #46525f)">Observer and limits</text>
+  <text x="796" y="478.6" font-size="12" text-anchor="start" style="fill:var(--f-ink2, #46525f)">Machine (alternator)</text>
+  <text x="796" y="519.6" font-size="12" text-anchor="start" style="fill:var(--f-ink2, #46525f)">Ring and four fins</text>
+  <text x="796" y="560.6" font-size="12" text-anchor="start" style="fill:var(--f-ink2, #46525f)">Bus and dump</text>
+  <text x="796" y="601.6" font-size="12" text-anchor="start" style="fill:var(--f-ink2, #46525f)">Supercap buffer</text>
+  <text x="796" y="642.6" font-size="12" text-anchor="start" style="fill:var(--f-ink2, #46525f)">Thermal joint</text>
+  <text x="796" y="683.6" font-size="12" text-anchor="start" style="fill:var(--f-ink2, #46525f)">Fuze S/A and fireset</text>
+</svg>

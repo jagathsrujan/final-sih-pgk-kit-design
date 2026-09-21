@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1560 488" role="img" aria-label="Guidance, control and the error budget" style="display:block;font-family:var(--font,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif)">
+<title>Guidance, control and the error budget</title>
+<defs>
+<marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#0b5cad"/></marker>
+<marker id="ah-f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#a4551a"/></marker>
+<marker id="ah-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#7b8794"/></marker>
+</defs>
+  <rect x="12" y="62" width="1536" height="74" rx="1.5" style="fill:var(--f-band, #f2f5f8);stroke:var(--f-rule, #d9dee4);stroke-width:1" />
+  <rect x="176" y="72" width="212" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="404" y="72" width="212" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="632" y="72" width="212" height="54" rx="1.5" style="fill:var(--f-paper, #ffffff);stroke:var(--f-ink3, #7b8794);stroke-width:1.4;stroke-dasharray:4 3" />
+  <rect x="860" y="72" width="212" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="1088" y="72" width="212" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="1316" y="72" width="212" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="12" y="146" width="1536" height="74" rx="1.5" style="fill:var(--f-band, #f2f5f8);stroke:var(--f-rule, #d9dee4);stroke-width:1" />
+  <rect x="176" y="156" width="212" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="404" y="156" width="212" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="632" y="156" width="212" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="860" y="156" width="212" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="1088" y="156" width="212" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="1316" y="156" width="212" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="12" y="230" width="1536" height="74" rx="1.5" style="fill:var(--f-band, #f2f5f8);stroke:var(--f-rule, #d9dee4);stroke-width:1" />
+  <rect x="176" y="240" width="257.6" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="449.6" y="240" width="257.6" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="723.2" y="240" width="257.6" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="996.8" y="240" width="257.6" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="1270.4" y="240" width="257.6" height="54" rx="1.5" style="fill:var(--f-flagt, rgba(164,85,26,.13));stroke:var(--f-flag, #a4551a);stroke-width:1.4" />
+  <rect x="12" y="314" width="1536" height="74" rx="1.5" style="fill:var(--f-band, #f2f5f8);stroke:var(--f-rule, #d9dee4);stroke-width:1" />
+  <rect x="176" y="324" width="326" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="518" y="324" width="326" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="860" y="324" width="326" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="1202" y="324" width="326" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="12" y="398" width="1536" height="74" rx="1.5" style="fill:var(--f-band, #f2f5f8);stroke:var(--f-rule, #d9dee4);stroke-width:1" />
+  <rect x="176" y="408" width="212" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="404" y="408" width="212" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="632" y="408" width="212" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="860" y="408" width="212" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="1088" y="408" width="212" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <rect x="1316" y="408" width="212" height="54" rx="1.5" style="fill:var(--f-tint, rgba(11,92,173,.13));stroke:var(--f-accent, #0b5cad);stroke-width:1.4" />
+  <text x="22" y="22" font-size="20" text-anchor="start" style="fill:var(--f-ink, #10151b)">Guidance, control and the error budget</text>
+  <text x="22" y="42.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">The reference work contains no guidance law at all — it is an actuation study. The law is ours; the cascade, the observer and the state-dependent limits are retained from it, and the criterion that put each block here is named.</text>
+  <text x="24" y="87.2" font-size="14" text-anchor="start" style="fill:var(--f-ink2, #46525f)">THE LAW</text>
+  <text x="24" y="103.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">impact-point prediction</text>
+  <text x="184" y="89.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Propagate to impact</text>
+  <text x="184" y="109.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">G1 · every cycle</text>
+  <text x="412" y="89.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Command only θ_gk</text>
+  <text x="412" y="109.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">G2 · magnitude is not a command</text>
+  <text x="640" y="89.2" font-size="14" text-anchor="start" style="fill:var(--f-ink2, #46525f)">Authority gate</text>
+  <text x="640" y="109.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">G3 · opens ≈15 s, shut 35–55</text>
+  <text x="868" y="89.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Dwell-fraction phasor</text>
+  <text x="868" y="109.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">G2 · d = a_cmd / a_auth(t)</text>
+  <text x="1096" y="89.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Parks at ±90°</text>
+  <text x="1096" y="109.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">G2 · cycle mean is the command</text>
+  <text x="1324" y="89.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">≈6 Hz, 300 props</text>
+  <text x="1324" y="109.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">G2 · ≤10 Hz is a ceiling</text>
+  <text x="24" y="171.2" font-size="14" text-anchor="start" style="fill:var(--f-ink2, #46525f)">THE LOOP</text>
+  <text x="24" y="187.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">the retained cascade</text>
+  <text x="184" y="173.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Outer P, 6.2 Hz</text>
+  <text x="184" y="193.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">G8 · requirement was 4 Hz</text>
+  <text x="412" y="173.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Inner PI, 33.6 Hz</text>
+  <text x="412" y="193.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">G9 · 0.29 + 7.82/s</text>
+  <text x="640" y="173.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Settling 0.103 s</text>
+  <text x="640" y="193.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">G10 · bounds the guidance rate</text>
+  <text x="868" y="173.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Loop rate 1 kHz</text>
+  <text x="868" y="193.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">G13 · 30× the inner bandwidth</text>
+  <text x="1096" y="173.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">M4F runs the loop</text>
+  <text x="1096" y="193.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">H1 · HW-triggered sampling</text>
+  <text x="1324" y="173.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">M7 runs law and nav</text>
+  <text x="1324" y="193.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">H1 · double precision</text>
+  <text x="24" y="255.2" font-size="14" text-anchor="start" style="fill:var(--f-ink2, #46525f)">DISTURBANCE</text>
+  <text x="24" y="271.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">and the limits</text>
+  <text x="184" y="257.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Observer Q = 1/(0.5s+1)</text>
+  <text x="184" y="277.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">G14 · corner ≈0.32 Hz</text>
+  <text x="457.6" y="257.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Limit is a minimum</text>
+  <text x="457.6" y="277.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">G15 · DOB floor + capability</text>
+  <text x="731.2" y="257.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Clamping anti-windup</text>
+  <text x="731.2" y="277.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">G12 · live limit every 1 ms</text>
+  <text x="1004.8" y="257.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Guard band δ ≈ 18°</text>
+  <text x="1004.8" y="277.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">G11 · no runaway, no wrap</text>
+  <text x="1278.4" y="257.2" font-size="14" text-anchor="start" style="fill:var(--f-ink2, #46525f)">Cogging vs 0.171 N·m</text>
+  <text x="1278.4" y="277.4" font-size="13" text-anchor="start" style="fill:var(--f-flag, #a4551a)">C37 · budget not yet set</text>
+  <text x="24" y="339.2" font-size="14" text-anchor="start" style="fill:var(--f-ink2, #46525f)">TIMING</text>
+  <text x="24" y="355.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">the H4 compute budget</text>
+  <text x="184" y="341.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Loop ≤100 µs budget</text>
+  <text x="184" y="361.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">≈5–15 µs used, ~10× margin</text>
+  <text x="526" y="341.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Propagation ≤100 ms</text>
+  <text x="526" y="361.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">≈5–20 ms in a 0.17 s interval</text>
+  <text x="868" y="341.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">The log is the limit</text>
+  <text x="868" y="361.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">8–9 MB at IMU rate vs 2 MB</text>
+  <text x="1210" y="341.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">≈300 propagations</text>
+  <text x="1210" y="361.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">per flight, each to impact</text>
+  <text x="24" y="423.2" font-size="14" text-anchor="start" style="fill:var(--f-ink2, #46525f)">ERROR BUDGET</text>
+  <text x="24" y="439.6" font-size="12" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">to the CEP claim</text>
+  <text x="184" y="425.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Navigation 5 m</text>
+  <text x="184" y="445.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">G4 · now derived at 3.7 m</text>
+  <text x="412" y="425.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Guidance 17 m</text>
+  <text x="412" y="445.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">IPP 13 + ring 9 + lag 6</text>
+  <text x="640" y="425.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Meteo 5 m</text>
+  <text x="640" y="445.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">residual over the flight</text>
+  <text x="868" y="425.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Aero model 8 m</text>
+  <text x="868" y="445.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">coefficient uncertainty</text>
+  <text x="1096" y="425.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">Fuze 3 m</text>
+  <text x="1096" y="445.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">detonation dispersion</text>
+  <text x="1324" y="425.2" font-size="14" text-anchor="start" style="fill:var(--f-accent, #0b5cad)">RSS 20.3 → CEP 23.9 m</text>
+  <text x="1324" y="445.4" font-size="13" text-anchor="start" style="fill:var(--f-ink3, #7b8794)">≈20% margin under 30 m</text>
+</svg>
