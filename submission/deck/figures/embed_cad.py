@@ -43,13 +43,20 @@ SLOTS = {
         "magnets and backiron on the ring, bearings either side",
     )], 268),
 
-    # Slide 4 — the fit claim: the hardware is drawn against the well.
-    "s4-fit": ([(
-        "05-shell-kit-section.png",
-        "The kit in the well, cut on the axis. 124.70 mm inside, nothing "
-        "touching, and the whole 121 kJ leaves through the face it seats on.",
-        "Half-section of the kit installed in the reference shell's fuze well",
-    )], 200),
+    # Slide 4 — the fit claim.  The render that used to sit in a fourth column
+    # here is deliberately not embedded any more: slide 4 carries three text
+    # columns and they cannot hold its copy at a readable size with an image
+    # taking a quarter of the row.  The 124.70 mm fit it proves is stated in
+    # the sentence above those columns, and the render is on slides 3 and 5.
+    # To put it back, restore this entry and the matching marker pair in
+    # deck.html (see the note left in its place):
+    #
+    # "s4-fit": ([(
+    #     "05-shell-kit-section.png",
+    #     "The kit in the well, cut on the axis. 124.70 mm inside, nothing "
+    #     "touching, and the whole 121 kJ leaves through the face it seats on.",
+    #     "Half-section of the kit installed in the reference shell's fuze well",
+    # )], 200),
 
     # Slide 5 — the gun-line column: the same shell, the same gun.
     "s5-gunline": ([(
