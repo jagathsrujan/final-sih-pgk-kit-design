@@ -373,10 +373,12 @@
         <b>90° / −90° control</b> (C1). Same architecture, rotated for framing.
       </span>
       <span class="pill c" style="font-size:10px">
-        <b>Torque reference for the power readouts.</b> The readouts multiply the duty torque by the
-        <i>launch</i> spin, 1 623 rad/s, which is the machine-sizing case — so holding shows ≈3.8 kW and
-        braking ≈3.9 kW. <b>C42's published peak is 2.92 kW</b>, referenced to a different point in the spin
-        decay. The two are the same physics at two speeds; reconciling the reference is a P2 item (risk 37).
+        <b>Torque reference for the power readouts — resolved 2026-09-23.</b> The readouts multiply the
+        duty torque by the <i>launch</i> spin, 1 623 rad/s. Holding therefore shows ≈3.7 kW, and
+        <b>that figure is an artefact, not the load</b>: it pairs a duty torque with the launch spin, where
+        the flight's <i>maximum</i> torque (2.119 N·m) occurs on descent at t ≈ 86.5 s. The load is the
+        pointwise product, which peaks at <b>2.92 kW at t = 0</b> — so <b>C42's 2.92 kW stands and is the
+        number that governs W7/W12 and P6</b>. Register risk 46 is closed on this resolution.
         <b>Do not quote the on-screen figure as C42's value.</b>
       </span>
       <span class="pill c" style="font-size:10px">
@@ -540,10 +542,10 @@ const N_POLES        =  14;
 const SPIN_REAL_HZ     = 250;              // ~250 rev/s = 15 000 rpm
 const SPIN_REAL_RADS   = SPIN_REAL_HZ * 2 * Math.PI;
 const SPIN_LAUNCH_RADS = 1623;             // [ref] launch spin — the sizing case
-const TORQUE_HOLD      = 2.36;             // N·m, holding duty (Taero 2.2 + Tf 0.157)
+const TORQUE_HOLD      = 2.28;             // N·m, holding duty Taero_max 2.119 + Tf 0.157 (re-baselined 2026-09-23; was 2.36 on a rounded Taero_max of 2.2)
 const TORQUE_BRAKE     = 2.40;             // N·m, transient retarding torque
 const TORQUE_GEN       = 0.80;             // N·m, extraction duty
-const SETBACK_KN       = 73.5;             // kN, ring setback at 15 000 g — C26
+const SETBACK_KN       = 381.9;            // kN, ring-side setback at 15 000 g — C26 re-baselined 2026-09-23 on the CAD's measured 2.595 kg (was 73.5 kN on a 0.5 kg assumption)
 
 const lerp = THREE.MathUtils.lerp;
 const wrapPi = a => { const t = (a + Math.PI) % (2 * Math.PI); return (t < 0 ? t + 2 * Math.PI : t) - Math.PI; };

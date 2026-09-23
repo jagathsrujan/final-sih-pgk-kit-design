@@ -4,7 +4,7 @@
 
 **Status:** sizing result, 2026-09-18 — **confirmed by the team 2026-09-18** (C14–C16, C34, C36, C41 `DEFINED`; C18–C20, C35, C40, C42, C43 `DERIVED`). Every value marked **[derived]** comes from the model in §2–§5; **[ref]** values are carried from the thesis.
 
-> **Superseded in part, 2026-09-19 — read this before quoting a bus voltage from this file.** The **400 V** recommendation in §4 was taken before the H block existed. **H8 (2026-09-19) keeps the winding and sets the bus at ≈150–200 V, with H12 fixing 180 V nominal** — below the flight-minimum EMF, so the four-quadrant stage never crosses the buck↔boost boundary. The machine sizing itself stands unchanged, and so do the currents (they are torque-set by `Kt`, not bus-set): **15.9 A rms peak, 6.5 A rms holding.** The **1 400 V row and the 400 V row in §4's table are therefore a historical trade record, not the recommendation** — keep them as the record of how the choice was made, and do not quote either as the design value. The voltage-dependent figures elsewhere in the file (the 800 V filter capacitor and 1 400 V rectifier on the `[ref]` machine, the "~1.5 F at 400 V" storage argument) are correspondingly historical. Two further reconciliations carried from the same pass: the **power readouts in `04-caa-dual-spin-interface.html` reference the duty torque to launch spin (1 623 rad/s)**, giving ≈3.8 kW hold against **C42's published 2.92 kW peak** — the same physics at a different point in the spin decay, to be reconciled at P2 under risk 37; and **C42's 2.92 kW is the figure that governs W7/W12 and P6**, not anything in this file.
+> **Superseded in part, 2026-09-19 — read this before quoting a bus voltage from this file.** The **400 V** recommendation in §4 was taken before the H block existed. **H8 (2026-09-19) keeps the winding and sets the bus at ≈150–200 V, with H12 fixing 180 V nominal** — below the flight-minimum EMF, so the four-quadrant stage never crosses the buck↔boost boundary. The machine sizing itself stands unchanged, and so do the currents (they are torque-set by `Kt`, not bus-set): **15.9 A rms peak, 6.5 A rms holding.** The **1 400 V row and the 400 V row in §4's table are therefore a historical trade record, not the recommendation** — keep them as the record of how the choice was made, and do not quote either as the design value. The voltage-dependent figures elsewhere in the file (the 800 V filter capacitor and 1 400 V rectifier on the `[ref]` machine, the "~1.5 F at 400 V" storage argument) are correspondingly historical. Two further reconciliations carried from the same pass: the **power readouts in `04-caa-dual-spin-interface.html` reference the duty torque to launch spin (1 623 rad/s)**, giving ≈3.8 kW hold against **C42's published 2.92 kW peak** — the same physics at a different point in the spin decay, to be reconciled at P2 under risk 37; and **C42's 2.92 kW is the figure that governs W7/W12 and P6**, not anything in this file. **Reconciled 2026-09-23 (register, reconciliation pass): the ≈3.8 kW hold readout is the error, not C42.** It multiplies the flight's *maximum* torque (2.119 N·m, which occurs on **descent** at t ≈ 86.5 s) by the **launch** spin of 1 623 rad/s — a combination the trajectory never presents. The load is the pointwise product and it peaks at **2.92 kW at t = 0**; register **risk 46 is closed** on that resolution, and the "reconcile at P2" instruction above is discharged. **Two consequences for this file: the hold duty is `Taero_max` + `Tf` = 2.119 + 0.157 = 2.28 N·m, not 2.36** (§1 and §4 corrected in place; §4's current table is left as the historical trade record it is, so its "I at 2.36 N·m" column is ≈3.5 % high), and **the reference machine's `Kt` = 0.716 must not be used in any torque-authority calculation for this design** — the register's C9 and C12 were carrying it and have been corrected to **C14's 0.362**.
 
 **Companion:** feeds C14–C21 (alternator constants) and the new machine criteria C34–C42 in `00-design-criteria-register.md`.
 
@@ -14,7 +14,7 @@
 
 | Duty | Requirement | Source |
 |---|---|---|
-| Hold the ring against `Taero` | continuous torque ≈ **2.36 N·m** (Taero_max 2.2 + Tf 0.157) | C11, C13 |
+| Hold the ring against `Taero` | continuous torque ≈ **2.28 N·m** (Taero_max 2.119 + Tf 0.157 — *was 2.36 on a rounded 2.2; corrected 2026-09-23*) | C11, C13 |
 | Slew the ring | peak torque **5.76 N·m**, transient | C19 |
 | Satisfy the symmetric authority criterion | `Talt_max ≥ 2(Taero − Tf)` = 4.09 N·m minimum | C9 |
 | Spin | relative speed **1108–1912 rad/s** (body spin) | S6 |
@@ -85,7 +85,7 @@ Higher pole count thins the yoke (more slot room) but raises electrical frequenc
 | Tooth flux density | 1.80 T | sets tooth width |
 | Magnet | NdFeB, 1.5 mm radial, **high-coercivity grade (SH/UH)** | W9 nose temperature |
 | **Peak current density** | **≈7.5 A/mm²** at 5.76 N·m | transient slew |
-| **Continuous current density** | **≈3 A/mm²** at 2.36 N·m | holding duty |
+| **Continuous current density** | **≈3 A/mm²** at 2.28 N·m | holding duty |
 | Copper loss, continuous | **≈6 W** | [derived] |
 | Copper loss, peak | ≈40 W, transient | [derived] |
 | Electrical frequency at 1912 rad/s | **2 130 Hz** | needs 0.1–0.2 mm laminations or SMC |
