@@ -1,0 +1,2168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DRISHTI-PGK — Deep-Dive Design Review</title>
+
+<!--
+  ===========================================================================
+  DRISHTI-PGK · SIH26098 · DEEP-DIVE DESIGN REVIEW DECK (for the professor)
+  ===========================================================================
+
+  WHAT THIS FILE IS
+  One self-contained HTML file. A long-form slide deck that explains the whole
+  design: physics, components, the full flight trajectory with its sensor
+  activation timeline, the flight algorithm and the GNC stack, the novelty
+  position, the exclusions, and the edit list for the project itself.
+  It is NOT the six-slide SIH submission (that stays in deck.html); this one
+  is deliberately dense and carries criterion IDs so every number traces back
+  to design/00-design-criteria-register.md.
+
+  HOW TO VIEW
+  Open in any browser. Scroll, or use arrow keys / space to move between
+  slides, and press "t" for the contents list. Print (Cmd+P) gives one slide
+  per page.
+
+  FIGURE PROVENANCE (all inlined below as data URIs so the file travels alone)
+    CAD renders      design/cad/out/deck-renders/*.png   (Phases 0-7, all gates
+                     PASS — interface facts only; see design/07-cad-evidence.md)
+    Atlas sheets     design/atlas/out/{flow,sheet3,sheet4,sheet5}.svg
+                     (design/atlas/atlas_scene.py is their source of truth;
+                      numbers audited in design/08-atlas.md)
+    Thesis figures   notes/figures/*.jpg  (Günay, METU 2022 — our [ref] source;
+                     every [ref] value is provisional per the register)
+
+  STATUS DISCIPLINE (same as the register)
+    Claimed     our requirement or design decision
+    Derived     computed from givens, arithmetic in the register
+    PARAMETRIC  sized over a declared envelope (public data), re-baselines at P6
+    [ref]       carried from published 155 mm class work, provisional
+  Orange (--flag) is used exactly as in deck.html: open items and decisions
+  the team still owes. Nothing orange is a claim.
+-->
+
+<style>
+  :root{
+    --ink:#12171d; --ink-2:#3f4a56; --meta:#59646f;
+    --rule:#d9dee4; --band:#f2f5f8; --paper:#ffffff;
+    --accent:#0b5cad; --tint:rgba(11,92,173,.13); --tint-2:rgba(11,92,173,.30);
+    --flag:#a4551a; --flag-tint:rgba(164,85,26,.13);
+    --good:#1c6b3f; --good-tint:rgba(28,107,63,.12);
+    --font:"Avenir Next",Avenir,"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;
+    --font-display:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+    --mono:"SF Mono",SFMono-Regular,ui-monospace,Menlo,Consolas,monospace;
+    --pad-x:clamp(20px,4.4vw,64px); --pad-y:clamp(18px,3vh,40px);
+    --measure:70ch;
+  }
+  *{box-sizing:border-box}
+  html{scroll-snap-type:y proximity; scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--band); color:var(--ink);
+    font-family:var(--font); font-size:15.5px; line-height:1.5;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  }
+  ::selection{background:var(--tint-2); color:var(--ink)}
+  a{color:var(--accent); text-underline-offset:2px}
+  ::-webkit-scrollbar{width:11px;height:11px}
+  ::-webkit-scrollbar-track{background:var(--band)}
+  ::-webkit-scrollbar-thumb{background:#c3ccd6; border:3px solid var(--band); border-radius:8px}
+  ::-webkit-scrollbar-thumb:hover{background:#a8b4c1}
+  :focus-visible{outline:2px solid var(--accent); outline-offset:3px}
+
+  /* ---------- slide shell ---------- */
+  .slide{
+    scroll-snap-align:start;
+    background:var(--paper); border-bottom:1px solid var(--rule);
+    padding:var(--pad-y) var(--pad-x) calc(var(--pad-y) + 8px);
+    min-height:100vh; display:flex; flex-direction:column;
+    position:relative;
+  }
+  .inner{width:100%; max-width:1280px; margin:0 auto; display:flex; flex-direction:column; flex:1}
+  .head{border-top:3px solid var(--ink); padding-top:14px; margin-bottom:20px}
+  .head h2{
+    font-family:var(--font-display); font-weight:700; letter-spacing:-.015em;
+    font-size:clamp(24px,2.6vw,34px); line-height:1.12; margin:0; text-wrap:balance;
+  }
+  .head .sub{margin:7px 0 0; color:var(--ink-2); font-size:15px; max-width:var(--measure)}
+  .body{flex:1}
+  .foot{
+    display:flex; justify-content:space-between; align-items:baseline; gap:16px;
+    border-top:1px solid var(--rule); margin-top:26px; padding-top:9px;
+    font-size:11.5px; color:var(--meta); letter-spacing:.02em;
+  }
+  .foot .num{font-variant-numeric:tabular-nums; font-family:var(--mono); font-size:11px}
+
+  /* ---------- type ---------- */
+  h3{font-family:var(--font-display); font-size:19px; margin:26px 0 8px; letter-spacing:-.01em; text-wrap:balance}
+  h3:first-child{margin-top:0}
+  h4{font-size:14.5px; margin:18px 0 6px; letter-spacing:-.005em}
+  p{margin:0 0 11px; max-width:var(--measure)}
+  ul,ol{margin:0 0 12px; padding-left:1.15em; max-width:var(--measure)}
+  li{margin:0 0 6px}
+  li::marker{color:var(--meta)}
+  strong{font-weight:650}
+  em{font-style:italic}
+  .small{font-size:13px; color:var(--ink-2)}
+  .meta{font-size:12px; color:var(--meta)}
+
+  /* ---------- chips ---------- */
+  .k{
+    font-family:var(--mono); font-size:10.5px; color:var(--accent);
+    background:var(--tint); border-radius:3px; padding:1px 5px;
+    white-space:nowrap; letter-spacing:.01em;
+  }
+  .chip{
+    display:inline-block; font-size:11px; font-weight:600; letter-spacing:.03em;
+    border-radius:3px; padding:2px 7px; vertical-align:1px;
+  }
+  .chip.cl{background:var(--tint); color:var(--accent)}
+  .chip.de{background:var(--good-tint); color:var(--good)}
+  .chip.pa{background:#eceff3; color:var(--ink-2)}
+  .chip.rf{background:#f3efe9; color:#6b5a44}
+  .chip.open{background:var(--flag-tint); color:var(--flag)}
+  .flagtxt{color:var(--flag); font-weight:600}
+
+  /* ---------- layout helpers ---------- */
+  .cols{display:grid; gap:22px 30px; align-items:start}
+  .c2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .c-side{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .wide{max-width:none}
+  .rule{border:0; border-top:1px solid var(--rule); margin:22px 0}
+  .band{background:var(--band); border:1px solid var(--rule); border-radius:6px; padding:14px 16px}
+  .band h4{margin-top:0}
+  .flush{max-width:none}
+
+  /* ---------- tables ---------- */
+  table.data{
+    border-collapse:collapse; width:100%; font-size:13.5px;
+    font-variant-numeric:tabular-nums; margin:0 0 14px;
+  }
+  table.data th{
+    text-align:left; font-weight:650; font-size:11.5px; letter-spacing:.05em;
+    text-transform:uppercase; color:var(--meta);
+    border-bottom:1.5px solid var(--ink); padding:6px 10px 6px 0; vertical-align:bottom;
+  }
+  table.data td{border-bottom:1px solid var(--rule); padding:7px 10px 7px 0; vertical-align:top}
+  table.data tr:last-child td{border-bottom:0}
+  table.data td.n{font-family:var(--mono); font-size:12.5px; white-space:nowrap}
+  table.data .tot td{border-top:1.5px solid var(--ink); font-weight:650}
+  table.tight td,table.tight th{padding:5px 8px 5px 0; font-size:12.5px}
+
+  /* ---------- figures ---------- */
+  figure{margin:0 0 16px}
+  figure img{display:block; width:100%; height:auto; border:1px solid var(--rule); border-radius:4px; background:#fbfcfd}
+  figure.plain img{border:0; background:none}
+  figcaption{
+    font-size:12px; color:var(--meta); margin-top:7px; line-height:1.45; max-width:var(--measure);
+  }
+  .eq{
+    font-family:var(--font-display); font-size:17px; text-align:center;
+    background:var(--band); border:1px solid var(--rule); border-radius:6px;
+    padding:13px 16px; margin:0 0 14px; overflow-x:auto;
+  }
+  .eq small{display:block; font-family:var(--font); font-size:11.5px; color:var(--meta); margin-top:6px; text-align:center}
+
+  /* ---------- misc components ---------- */
+  .kv{display:grid; grid-template-columns:auto 1fr; gap:3px 14px; font-size:13.5px; margin:0 0 12px}
+  .kv dt{color:var(--meta); white-space:nowrap}
+  .kv dd{margin:0}
+  .pill-row{display:flex; flex-wrap:wrap; gap:7px; margin:0 0 12px}
+  .callout{
+    border-left:2px solid var(--flag); background:var(--flag-tint);
+    padding:11px 15px; border-radius:0 5px 5px 0; margin:0 0 14px;
+  }
+  .callout.blue{border-left-color:var(--accent); background:var(--tint)}
+  .callout p:last-child{margin-bottom:0}
+  .callout strong:first-child{letter-spacing:.01em}
+
+  /* ---------- nav chrome ---------- */
+  #toc{
+    position:fixed; inset:0; z-index:40; background:rgba(255,255,255,.97);
+    overflow:auto; padding:56px var(--pad-x); display:none;
+  }
+  #toc.open{display:block}
+  #toc ol{columns:2; column-gap:44px; max-width:1080px; margin:0 auto; padding-left:1.3em}
+  #toc li{margin:0 0 5px; font-size:14px; break-inside:avoid}
+  #toc a{color:var(--ink); text-decoration:none; border-bottom:1px solid transparent}
+  #toc a:hover{border-bottom-color:var(--accent); color:var(--accent)}
+  #toc .toc-title{font-family:var(--font-display); font-size:26px; margin:0 auto 22px; max-width:1080px}
+  #bar{
+    position:fixed; top:0; left:0; height:3px; background:var(--accent);
+    width:0; z-index:50; transition:width .12s linear;
+  }
+  #hint{
+    position:fixed; right:14px; bottom:12px; z-index:30; font-size:11px; color:var(--meta);
+    background:rgba(255,255,255,.9); border:1px solid var(--rule); border-radius:20px; padding:5px 12px;
+  }
+  #hint b{font-family:var(--mono); font-weight:600; color:var(--ink-2)}
+  @media (max-width:860px){
+    #toc ol{columns:1}
+    #hint{display:none}
+  }
+
+  /* ---------- cover ---------- */
+  #s-cover{padding-top:clamp(28px,6vh,64px)}
+  .cover-grid{display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,1fr); gap:38px; align-items:center; flex:1}
+  .cover-title{
+    font-family:var(--font-display); font-weight:700; letter-spacing:-.02em;
+    font-size:clamp(38px,5vw,64px); line-height:1.02; margin:0 0 16px; text-wrap:balance;
+  }
+  .cover-sub{font-size:17px; color:var(--ink-2); margin:0 0 8px}
+  .cover-meta{font-size:13px; color:var(--meta); margin-top:22px; line-height:1.6}
+  .draw path{stroke-dasharray:var(--len,1200); stroke-dashoffset:var(--len,1200); animation:draw 2.4s cubic-bezier(.16,.84,.34,1) .25s forwards}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  @media (prefers-reduced-motion:reduce){
+    .draw path{animation:none; stroke-dashoffset:0}
+    html{scroll-behavior:auto}
+  }
+
+  @media (max-width:980px){
+    .c2,.c3,.c-side,.cover-grid{grid-template-columns:minmax(0,1fr)}
+    body{font-size:15px}
+  }
+
+  /* ---------- print ---------- */
+  @page{size:13.333in 7.5in; margin:0}
+  @media print{
+    html{scroll-snap-type:none}
+    body{background:var(--paper); font-size:11.5px}
+    .slide{
+      min-height:auto; height:7.5in; width:13.333in; overflow:hidden;
+      page-break-after:always; break-after:page; border-bottom:0; padding:0.42in 0.55in 0.3in;
+    }
+    .slide:last-child{page-break-after:auto}
+    #toc,#bar,#hint{display:none !important}
+    .head h2{font-size:22px}
+    figure img{max-height:3.1in; object-fit:contain; object-position:left center}
+    .draw path{animation:none; stroke-dashoffset:0}
+  }
+</style>
+</head>
+<body>
+
+<!-- THESIS: a design-review dossier, not a pitch: every number carries its
+  provenance and every open item stays orange. It refuses the hero-metric
+  landing page and the six-slide summary format. OWN-WORLD: inherited from
+  deck.html — paper ground, ink #12171d, one accent #0b5cad for measured
+  things, orange #a4551a reserved for decisions still owed; Iowan display
+  serif over Avenir; hairline rules and tabular data instead of cards.
+  STORY: the professor leaves able to explain the physics of every component,
+  walk the 86 s flight phase by phase, recite the GNC stack, and say honestly
+  what is novel, what is credited, and what is excluded. FIRST VIEWPORT: the
+  cover names the artifact and draws the flight arc once, the only motion in
+  the deck. FORM: established-world extension of the project's own deck
+  (no direction roll run; the brief was complete). FINISH: unreviewed and
+  undocumented is unfinished; this build ends with the finish review, the
+  verdict, DESIGN.md, and every shipping raster carrying its provenance. -->
+
+<div id="bar"></div>
+<div id="hint"><b>←</b> <b>→</b> slides · <b>t</b> contents</div>
+
+<nav id="toc" aria-label="Contents">
+  <p class="toc-title">Contents</p>
+  <ol>
+    <li><a href="#s1">Cover</a></li>
+    <li><a href="#s2">How to read this deck</a></li>
+    <li><a href="#s3">The problem, in numbers</a></li>
+    <li><a href="#s4">The requirement and our claim</a></li>
+    <li><a href="#s5">What the kit is</a></li>
+    <li><a href="#s6">System architecture and packing</a></li>
+    <li><a href="#s7">The physics this design stands on</a></li>
+    <li><a href="#s8">Spin and gyroscopic stability</a></li>
+    <li><a href="#s9">Component: the canard set</a></li>
+    <li><a href="#s10">Component: the machine</a></li>
+    <li><a href="#s11">Component: bearings and the friction gate</a></li>
+    <li><a href="#s12">Component: the sensor suite</a></li>
+    <li><a href="#s13">Component: the multi-mode fuze</a></li>
+    <li><a href="#s14">Power chain and electronics</a></li>
+    <li><a href="#s15">The whole trajectory, 0 to 86 s</a></li>
+    <li><a href="#s16">Activation matrix: what runs when</a></li>
+    <li><a href="#s17">Timeline: action to reaction</a></li>
+    <li><a href="#s18">Phase detail: bore, launch, boost</a></li>
+    <li><a href="#s19">Phase detail: midcourse and the opening edge</a></li>
+    <li><a href="#s20">Phase detail: the apogee blackout</a></li>
+    <li><a href="#s21">Phase detail: descent, endgame, function</a></li>
+    <li><a href="#s22">Sensor activation and duty</a></li>
+    <li><a href="#s23">Flight logic: modes and the fault ladder</a></li>
+    <li><a href="#s24">The GNC stack</a></li>
+    <li><a href="#s25">Guidance deep dive</a></li>
+    <li><a href="#s26">Control deep dive</a></li>
+    <li><a href="#s27">Navigation deep dive</a></li>
+    <li><a href="#s28">The error budget to CEP 23.9 m</a></li>
+    <li><a href="#s29">Where the margins are thin</a></li>
+    <li><a href="#s30">Energy and thermal: 121 kJ</a></li>
+    <li><a href="#s31">Novelty: ours versus credited</a></li>
+    <li><a href="#s32">Positioning against fielded systems</a></li>
+    <li><a href="#s33">Exclusions and what we must not say</a></li>
+    <li><a href="#s34">Open findings from the CAD</a></li>
+    <li><a href="#s35">The edit list for the project</a></li>
+    <li><a href="#s36">Risks at a glance</a></li>
+    <li><a href="#s37">Validation plan</a></li>
+    <li><a href="#s38">What we want your judgment on</a></li>
+    <li><a href="#s39">Master number sheet</a></li>
+    <li><a href="#s40">Sources</a></li>
+  </ol>
+</nav>
+
+<!-- ================================================================ 01 -->
+<section class="slide" id="s1">
+  <div class="inner">
+    <div class="cover-grid">
+      <div>
+        <p class="cover-sub">SIH26098 · Yantra India Limited · design review for the professor</p>
+        <h1 class="cover-title">DRISHTI-PGK:<br>a fuze-well guidance kit for the 155 mm shell</h1>
+        <p class="cover-sub">The whole design, end to end. The physics behind each component, every
+        component itself, the 86-second flight with its sensor timeline and ballistic phases,
+        the flight algorithm, the guidance-navigation-control stack, then honestly:
+        what is novel, what we credit to others, and what we deliberately exclude.</p>
+        <p class="cover-meta">
+          Claim: <strong>CEP ≤ 30 m</strong> at maximum-range full charge, against a
+          267 m unguided baseline.<br>
+          Register state: 195 criteria · 47 defined · 37 derived · 25 parametric · 86 open.<br>
+          Prepared 2026-09-23 · every number on these slides carries the criterion ID that owns it.
+        </p>
+      </div>
+      <figure class="plain">
+        <svg class="draw" viewBox="0 0 620 420" role="img" aria-label="Schematic ballistic arc of a 155 mm shell from muzzle exit to impact, with the guided phases marked" style="width:100%;height:auto">
+          <defs>
+            <linearGradient id="arcfade" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#0b5cad" stop-opacity=".25"/>
+              <stop offset=".5" stop-color="#0b5cad"/>
+              <stop offset="1" stop-color="#0b5cad" stop-opacity=".55"/>
+            </linearGradient>
+          </defs>
+          <line x1="40" y1="378" x2="600" y2="378" stroke="#d9dee4" stroke-width="1.5"/>
+          <!-- arc -->
+          <path style="--len:1300" d="M52 372 C 150 120, 300 70, 360 78 C 450 90, 540 230, 588 372"
+                fill="none" stroke="url(#arcfade)" stroke-width="2.6" stroke-linecap="round"/>
+          <!-- phase markers -->
+          <g font-family="'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#3f4a56">
+            <circle cx="52" cy="372" r="4" fill="#12171d"/>
+            <text x="44" y="398">muzzle exit · t = 0</text>
+            <circle cx="168" cy="132" r="3.5" fill="#0b5cad"/>
+            <text x="96" y="112">guidance opens ≈ 15 s<tspan x="96" dy="15" fill="#6d7987" font-size="11">nav converged, gate computed</tspan></text>
+            <circle cx="360" cy="78" r="3.5" fill="#a4551a"/>
+            <text x="330" y="52">apogee 41 s · blackout<tspan x="330" dy="15" fill="#6d7987" font-size="11">q collapses, no command</tspan></text>
+            <circle cx="522" cy="268" r="3.5" fill="#0b5cad"/>
+            <text x="392" y="262">endgame ≈ 66–86 s<tspan x="392" dy="15" fill="#6d7987" font-size="11">gate reopens, fuze decides</tspan></text>
+            <circle cx="588" cy="372" r="4" fill="#12171d"/>
+            <text x="524" y="398">impact · 86 s</text>
+          </g>
+          <!-- spin hint -->
+          <g stroke="#6d7987" stroke-width="1.2" fill="none">
+            <path d="M52 372 l-24 -22"/><path d="M28 350 l0 8 l8 -2"/>
+          </g>
+          <text x="14" y="336" font-size="11" fill="#6d7987" font-family="Avenir Next,Avenir,sans-serif">176–304 Hz spin</text>
+        </svg>
+        <figcaption>Schematic arc. Times are the design trajectory's anchors
+        (apogee t ≈ 41 s, impact t ≈ 86 s) taken from the reference flight profile
+        <span class="k">M4</span> <span class="k">G3</span>.</figcaption>
+      </figure>
+    </div>
+    <div class="foot"><span>DRISHTI-PGK · deep-dive design review</span><span class="num">01</span></div>
+  </div>
+</section>
+
+<!-- ================================================================ 02 -->
+<section class="slide" id="s2">
+  <div class="inner">
+    <header class="head">
+      <h2>How to read this deck</h2>
+      <p class="sub">Four status words, one authority order, and a map of the forty slides.</p>
+    </header>
+    <div class="body cols c2">
+      <div>
+        <h3>Status words</h3>
+        <table class="data tight">
+          <tr><td><span class="chip cl">Claimed</span></td><td>A requirement or design decision we own.</td></tr>
+          <tr><td><span class="chip de">Derived</span></td><td>Computed from the givens. The arithmetic lives in the register row.</td></tr>
+          <tr><td><span class="chip pa">Parametric</span></td><td>Sized over a declared envelope from public data, because YIL releases
+            drawings only after shortlisting. Every such value re-baselines at P6.</td></tr>
+          <tr><td><span class="chip rf">[ref]</span></td><td>Carried from published work on the 155 mm class (Günay 2022 and its sources).
+            Provisional until confirmed on our shell.</td></tr>
+          <tr><td><span class="chip open">Open</span></td><td><span class="flagtxt">Orange everywhere in this deck means a decision or
+            measurement still owed.</span> Never a claim.</td></tr>
+        </table>
+        <h3>Authority order</h3>
+        <p class="small">The criteria register is authoritative. The CAD and the architecture
+        atlas are evidence; where they disagree with the register, the register wins and the
+        drawing is wrong. Slide 34 shows exactly that happening: the CAD measured masses
+        three times the register's assumption and nothing was silently resolved.</p>
+      </div>
+      <div>
+        <h3>The map</h3>
+        <table class="data tight">
+          <tr><td class="n">03–04</td><td>The problem and the claim</td></tr>
+          <tr><td class="n">05–06</td><td>What the kit is, and what fits where</td></tr>
+          <tr><td class="n">07–14</td><td>Physics and components, one slide each: principles, canards,
+            machine, bearings, sensors, fuze, power and electronics</td></tr>
+          <tr><td class="n">15–22</td><td>The whole trajectory: phases, activation timeline,
+            what each phase changes</td></tr>
+          <tr><td class="n">23–27</td><td>Flight logic and the GNC stack, then guidance,
+            control and navigation in depth</td></tr>
+          <tr><td class="n">28–30</td><td>Error budget, thin margins, and the 121 kJ thermal story</td></tr>
+          <tr><td class="n">31–33</td><td>Novelty, competitors, exclusions</td></tr>
+          <tr><td class="n">34–38</td><td>Open findings, the edit list, risks, validation,
+            and the questions we want your judgment on</td></tr>
+          <tr><td class="n">39–40</td><td>Number sheet and sources</td></tr>
+        </table>
+        <p class="small">Criterion IDs in mono blue, like <span class="k">C42</span>, point at
+        the row in <span class="meta">design/00-design-criteria-register.md</span> that owns the
+        number. The register is 195 rows deep; this deck is its argument, not its proof.</p>
+      </div>
+    </div>
+    <div class="foot"><span>How to read this deck</span><span class="num">02</span></div>
+  </div>
+</section>
+
+<!-- ================================================================ 03 -->
+<section class="slide" id="s3">
+  <div class="inner">
+    <header class="head">
+      <h2>The problem, in numbers</h2>
+      <p class="sub">Unguided 155 mm fire is a volume problem, and the volume is set by how
+        dispersion grows with range.</p>
+    </header>
+    <div class="body cols c-side">
+      <div>
+        <h3>The anchor</h3>
+        <p>A conventional unguided round at maximum range lands with a
+        <strong>circular error probable of 267 m</strong> <span class="k">M6</span>. Two
+        independent public citations bracket it at 259 m and 139 m, the lower figure being
+        the shorter-range M795. Convert to the 1-D sigma the budgets use and
+        σ = 267 / 1.1774 = <strong>227 m</strong>.</p>
+        <h3>Why it is this bad</h3>
+        <ul class="small">
+          <li>Spin-stabilised shells disperse through launch initial conditions: muzzle
+          velocity spread, tip-off yaw, jump, wind and density errors at departure.</li>
+          <li>Those initial errors integrate along the trajectory, and the integration time
+          grows with range. The longest shots are the least accurate.</li>
+          <li>Dispersion is strongly range-dependent: 139 m at 22.5 km against 267 m at
+          30.1 km for the same class of round <span class="k">M6</span>.</li>
+        </ul>
+        <h3>What it costs the battery</h3>
+        <p>For a 90 % probability of defeating a 30 m effective-radius target from one
+        aimpoint: <strong>≈ 264 unguided rounds against 4 guided ones</strong>
+        <span class="k">M8</span>. The fielded kit's own published comparison is
+        301 → 77 rounds, a 74 % expenditure reduction; we quote our figure beside it,
+        never instead of it.</p>
+      </div>
+      <div>
+        <figure>
+          <svg viewBox="0 0 560 330" role="img" aria-label="Impact patterns: a 267 metre CEP unguided cluster against a 30 metre CEP guided cluster, at the same scale" style="width:100%;height:auto;font-family:var(--font)">
+            <rect x="0" y="0" width="560" height="330" fill="#fbfcfd" stroke="#d9dee4"/>
+            <!-- scale: 1 m = 0.62 px -->
+            <g transform="translate(178,168)">
+              <circle r="166" fill="rgba(164,85,26,.06)" stroke="#a4551a" stroke-width="1.4" stroke-dasharray="5 4"/>
+              <circle r="83" fill="none" stroke="#a4551a" stroke-width=".8" stroke-dasharray="3 4" opacity=".55"/>
+              <circle r="18.6" fill="rgba(11,92,173,.14)" stroke="#0b5cad" stroke-width="1.4"/>
+              <circle r="2.6" fill="#12171d"/>
+            </g>
+            <g font-size="11.5" fill="#3f4a56">
+              <line x1="178" y1="168" x2="344" y2="168" stroke="#a4551a" stroke-width="1"/>
+              <text x="238" y="160" fill="#a4551a">CEP 267 m</text>
+              <line x1="178" y1="168" x2="178" y2="149" stroke="#0b5cad" stroke-width="1"/>
+              <text x="188" y="143" fill="#0b5cad">CEP 30 m</text>
+              <text x="12" y="318" fill="#6d7987">Outer dashed circle: unguided 50 % radius at maximum range. Inner: the requirement.</text>
+            </g>
+          </svg>
+          <figcaption>Both clusters at the same scale. Half of all unguided rounds land
+          inside 267 m of the aimpoint; the requirement is 30 m <span class="k">M4</span>.</figcaption>
+        </figure>
+        <div class="callout blue">
+          <p><strong>What is missing.</strong> YIL makes the shell. The shell is accurate to
+          nothing in particular at 30 km. The missing capability is the kit that screws into
+          its fuze well and corrects the trajectory, which is what this project builds.</p>
+        </div>
+      </div>
+    </div>
+    <div class="foot"><span>The problem</span><span class="num">03</span></div>
+  </div>
+</section>
+
+<!-- ================================================================ 04 -->
+<section class="slide" id="s4">
+  <div class="inner">
+    <header class="head">
+      <h2>The requirement and our claim</h2>
+      <p class="sub">Stated so it can be tested, with its dependencies published instead of hidden.</p>
+    </header>
+    <div class="body cols c-side">
+      <div>
+        <table class="data">
+          <tr><th>Element</th><th>Statement</th><th>ID</th></tr>
+          <tr><td>Claim</td><td><strong>CEP ≤ 30 m</strong>, and the fraction of rounds within 30 m
+            published alongside it</td><td><span class="k">M4</span> <span class="k">M5</span></td></tr>
+          <tr><td>Condition</td><td>Maximum-range, full charge (6M), 30 km class from a 39-calibre tube.
+            Mid-band results are supporting data, not a second claim</td><td><span class="k">M4</span></td></tr>
+          <tr><td>Definition</td><td>2-D circular 50 % radius, CEP = 1.1774 σ, measured against the
+            loaded aimpoint</td><td><span class="k">M5</span></td></tr>
+          <tr><td>Excluded</td><td><span class="flagtxt">Target-location error is outside the claim</span>
+            and published as a separate sensitivity (0 / 10 / 25 m). The kit does not get to assume the
+            crew's coordinates are right</td><td><span class="k">M5</span> <span class="k">R5</span></td></tr>
+          <tr><td>Charge envelope</td><td>Safe, stable and functional across charges 3M–6M,
+            546–943 m/s. Outside the claim band accuracy degrades but never below unguided</td><td><span class="k">M3</span></td></tr>
+          <tr><td>Range retention</td><td><strong>&gt; 90 %</strong> of the conventional round's
+            maximum range. Accuracy may not be bought with range</td><td><span class="k">M10</span></td></tr>
+          <tr class="tot"><td>Derived design point</td><td>CEP <strong>23.9 m</strong> — a 20 % margin
+            under the claim</td><td><span class="k">G4</span></td></tr>
+        </table>
+      </div>
+      <div>
+        <h3>How the authority requirement was derived</h3>
+        <p>The kit cannot correct every round, so the requirement is written as a
+        <em>capture fraction</em>: how much correction captures 80 % of the unguided
+        population. For a Rayleigh radial distribution,</p>
+        <div class="eq">A = σ · √( −2 · ln(1 − P) )<small>σ = 227 m (M6 anchor) · P = 0.80 → A = 407 m</small></div>
+        <p>407 m of impact-point correction, equivalent to 19.0 m/s of velocity change.
+        The 50 % population would need only 267 m and buys nothing over unguided; 90 % would
+        need 487 m, beyond what the hardware can deliver <span class="k">M7</span>.</p>
+        <div class="callout">
+          <p><strong>Honesty rule for this deck.</strong> A 30 m CEP with no condition attached
+          is the first thing a reviewer discounts. The claim carries its engagement condition,
+          its definition, and the term it excludes. The requirement is a 30 m figure, so we
+          publish the tail — the fraction of rounds breaching 30 m — not just a median inside it.</p>
+        </div>
+      </div>
+    </div>
+    <div class="foot"><span>Requirement and claim</span><span class="num">04</span></div>
+  </div>
+</section>
+
+<!-- ================================================================ 05 -->
+<section class="slide" id="s5">
+  <div class="inner">
+    <header class="head">
+      <h2>What the kit is: a fuze-well retrofit</h2>
+      <p class="sub">It replaces the fuze and the ogive forward of it. Nothing else on the round
+        is touched, which is the whole compatibility argument.</p>
+    </header>
+    <div class="body cols c-side">
+      <div>
+        <figure>
+          <img src="../../design/cad/out/deck-renders/05-shell-kit-section.png" alt="Half-section render of the kit installed in the shell's fuze well">
+          <figcaption>Half-section of the kit in the well. Rendered from the Phase 1 CAD
+          (all gates PASS); interface facts only, no unriled numbers
+          <span class="meta">design/07-cad-evidence.md</span>.</figcaption>
+        </figure>
+      </div>
+      <div>
+        <h3>The interface</h3>
+        <ul>
+          <li>Standard <strong>MIL-STD-333B</strong> nose fuze well, thread 2″-12 UNS-2A
+          <span class="k">P6</span>.</li>
+          <li>Intrusion <strong>≤ 124.7 mm</strong> into the well plus <strong>≤ 95.25 mm</strong>
+          of visible length — the fielded kit's published envelope, used as evidence of how much
+          axial room the standard well offers <span class="k">P7</span> <span class="k">P12</span>.</li>
+          <li>Measured on our CAD: <strong>124.70 mm intrusion, zero interference with the
+          reference shell</strong>, seat annulus matching the register's own area to 1.3 %.</li>
+          <li>The driving band, the charge system, the bore-riding body and the gun are
+          untouched by construction <span class="k">P13</span>. No re-qualification of the shell.</li>
+        </ul>
+        <h3>Mass, stated as two ratios</h3>
+        <p class="small">The kit replaces a ≈ 0.98 kg fuze, so the honest figure is the net
+        penalty. Against the fielded kit: total mass lands at
+        <strong>1.0–1.21×</strong>, and the net penalty over the fuze replaced is
+        <strong>1.55–2.2×</strong> its +0.45 kg <span class="k">P9</span>. Both ratios,
+        always together — quoting only the flattering one is the trap panels look for.
+        Net CG shift ≈ 6–8 mm forward (≈ 0.8 % of projectile length), inside the platform's own
+        0.55–0.62 L spread <span class="k">P10</span>. <span class="flagtxt">And see slide 34:
+        the CAD's measured rollup is well above this band and is an open finding.</span></p>
+        <div class="callout blue">
+          <p><strong>Why retrofit and not a new round.</strong> The stockpile becomes
+          precision-capable at the point of firing, through the same gun line, the same charges
+          and the same crews. The customer buys a kit through the channel that already buys
+          its fuzes.</p>
+        </div>
+      </div>
+    </div>
+    <div class="foot"><span>What the kit is</span><span class="num">05</span></div>
+  </div>
+</section>
+
+<!-- ================================================================ 06 -->
+<section class="slide" id="s6">
+  <div class="inner">
+    <header class="head">
+      <h2>System architecture and packing</h2>
+      <p class="sub">Three bodies, one reserved centreline, and every cubic millimetre argued over.</p>
+    </header>
+    <div class="body cols c-side">
+      <div>
+        <figure>
+          <img src="../../design/cad/out/deck-renders/10-section-through-axis.png" alt="Section through the axis of the assembled kit showing the ring, machine, bearings and electronics">
+          <figcaption>Section through the axis <span class="meta">design/cad/out/deck-renders</span>.</figcaption>
+        </figure>
+        <figure>
+          <img src="../../design/cad/out/deck-renders/12-exploded-stack.png" alt="Exploded view of the kit stack from radome to well spigot">
+          <figcaption>Exploded stack, radome forward to the well spigot aft.</figcaption>
+        </figure>
+      </div>
+      <div>
+        <h3>The three mechanical bodies</h3>
+        <table class="data tight">
+          <tr><th>Body</th><th>Behaviour</th></tr>
+          <tr><td>Shell + kit body + nose</td><td>Rigidly joined, <strong>spins with the body</strong>
+            at 176.3–304.4 Hz <span class="k">S6</span>. Carries the stator, the fuze, the electronics.</td></tr>
+          <tr><td>Canard ring</td><td><strong>De-spun</strong> on two bearings, free to rotate about
+            the roll axis within ±31.42 rad/s. Carries the canards and the alternator magnets.</td></tr>
+          <tr><td>Reference shell</td><td>Untouched. Draws the ogive envelope the kit must live inside
+            <span class="k">P8</span>.</td></tr>
+        </table>
+        <h3>The packing rules</h3>
+        <ul>
+          <li><strong>Centreline reserved.</strong> The explosive train runs on the axis to reach the
+          shell's booster, so a clear <strong>Ø30 mm bore</strong> runs the length of the well and
+          machine sections. Everything else is annular <span class="k">F9</span>.</li>
+          <li><strong>Boards live in the spigot annulus</strong> (Ø30–48 mm), 6–10 layers on a spine
+          that routes the launch load around them. <em>No nose volume spent on electronics</em>
+          <span class="k">H5</span>.</li>
+          <li><strong>The dump stage sits body-side</strong> inside the machine's own axial envelope,
+          sharing the stator's route into the shell <span class="k">W12</span>.</li>
+          <li>The nose carries the contested set: radome, GNSS aperture, 24 GHz front end, S&amp;A
+          rotor, detonator. <span class="flagtxt">Packing is an open integration risk (risk 27).</span></li>
+        </ul>
+        <p class="small">Canard tips are capped at <strong>Ø151 mm</strong> because the bore is
+        155.0 mm and the shell body already occupies 154.89 mm of it: 2 mm of side clearance,
+        26.5 mm of exposed span <span class="k">C31</span>.</p>
+      </div>
+    </div>
+    <div class="foot"><span>Architecture</span><span class="num">06</span></div>
+  </div>
+</section>
+
+<!-- ================================================================ 07 -->
+<section class="slide" id="s7">
+  <div class="inner">
+    <header class="head">
+      <h2>The physics this design stands on</h2>
+      <p class="sub">Six principles. Every component in the next eight slides is an application
+        of one of them, and every requirement traces to the same short list.</p>
+    </header>
+    <div class="body">
+      <table class="data">
+        <tr><th style="width:22%">Principle</th><th style="width:44%">What it says</th><th>Where the design uses it</th></tr>
+        <tr>
+          <td><strong>1 · Gyroscopic stabilisation</strong></td>
+          <td>A spinning shell resists overturning through angular-momentum conservation; the
+            stability factor Sg compares that resistance to the aerodynamic overturning moment.
+            Spin comes from the rifling: p = 2πV / twist.</td>
+          <td>The shell flies straight unguided <span class="k">S1</span>, and the kit's canards
+            are capped because they raise the overturning moment <span class="k">S2</span>.
+            Muzzle stability is charge-independent <span class="k">S6</span>.</td>
+        </tr>
+        <tr>
+          <td><strong>2 · Canted-surface force decomposition</strong></td>
+          <td>A fixed surface at incidence δ to the flow produces a normal force
+            F = q · S · C<sub>Nδ</sub> · δ. Two equal-canted surfaces add forces and cancel
+            torques; two opposite-canted ones cancel forces and add torques.</td>
+          <td>The whole steering concept: one pair makes the guidance force, the other makes the
+            roll torque that aims it <span class="k">C1</span>. No moving surface exists.</td>
+        </tr>
+        <tr>
+          <td><strong>3 · Dynamic pressure sets the window</strong></td>
+          <td>q = ½ρV². Both the canard force and the ring's aerodynamic torque scale with q,
+            so control authority is large early and late and collapses near apogee.</td>
+          <td>The guidance window is state-dependent, not scheduled <span class="k">G3</span>;
+            18.1 N closes only above q ≈ 23 kPa <span class="k">C8</span> <span class="k">C31</span>.</td>
+        </tr>
+        <tr>
+          <td><strong>4 · Generator reaction torque (Lenz)</strong></td>
+          <td>Drawing current from a machine in motion creates a torque opposing that motion:
+            T = K<sub>t</sub>·I while E = K<sub>v</sub>·ω. Loading the machine is steering;
+            the same load is also the flight power supply, P = T·ω.</td>
+          <td>One machine is actuator, generator and power plant at once
+            <span class="k">C14</span> <span class="k">C20</span>. The bill is the 2.92 kW it must
+            absorb <span class="k">C42</span>.</td>
+        </tr>
+        <tr>
+          <td><strong>5 · Rolling contact and friction</strong></td>
+          <td>Bearing friction rises with speed and load; preload buys stiffness and costs
+            friction and heat, with a known thermal runaway path at high speed.</td>
+          <td>Friction is the feasibility gate of the whole ring architecture
+            <span class="k">C12</span> <span class="k">C13</span>, and preload is a three-way
+            trade <span class="k">C23</span>.</td>
+        </tr>
+        <tr>
+          <td><strong>6 · Heat leaves through joints, not surfaces</strong></td>
+          <td>Conductive contact resistance dominates metal-to-metal joints; heat flux crowds
+            near fasteners, and a thin compliant interlayer changes conductance by an order of
+            magnitude more than clamping force does.</td>
+          <td>121 kJ of control energy exits through the fuze-well interface, which is therefore
+            <em>specified</em> as ≥ 58 W/K rather than inherited from a thread
+            <span class="k">W7</span> <span class="k">P6</span>.</td>
+        </tr>
+      </table>
+    </div>
+    <div class="foot"><span>Physics principles</span><span class="num">07</span></div>
+  </div>
+</section>
+<!-- ================================================================ 08 -->
+<section class="slide" id="s8">
+  <div class="inner">
+    <header class="head">
+      <h2>Physics 1 in practice: spin and gyroscopic stability</h2>
+      <p class="sub">The one criterion that could veto the architecture is stability, because
+        canards ahead of the centre of gravity are destabilising by construction.</p>
+    </header>
+    <div class="body cols c-side">
+      <div>
+        <h3>The stability factor</h3>
+        <div class="eq">Sg = I<sub>xx</sub>² p² / (4 · I<sub>yy</sub> · M<sub>α</sub>) &nbsp;&nbsp;with&nbsp;&nbsp; M<sub>α</sub> = C<sub>Mα</sub> · q · S · d<small>Murphy form, evaluated over the declared platform envelope</small></div>
+        <p>Over the envelope (mass 43–47 kg, inertia bands calibrated on published
+        mass-property data, C<sub>Mα</sub> bracketed 3.7–4.8): <strong>Sg spans 1.37 to 3.55,
+        design point 1.83</strong> <span class="k">S1</span>. The customary floor is 1.3–1.5.</p>
+        <h3>The canard allowance</h3>
+        <p>Because Sg ∝ 1/C<sub>Mα</sub> and the canards sit forward of the CG, the kit is allowed
+        to raise C<sub>Mα</sub> by <strong>≤ 5 % at the conservative envelope corner</strong>
+        (40 % at the design point) <span class="k">S1</span> <span class="k">S2</span>. That 5 % is
+        the stability budget the canard designer spends against, and it is why the design's lever
+        is <em>cant angle, not canard area</em>.</p>
+        <p class="small">Two results that run in our favour. The ring and canards at body radius add
+        ≈ +5.4 % to I<sub>xx</sub>, which <em>raises</em> Sg by ≈ 11 % and partly pays for their own
+        destabilising effect <span class="k">P11</span>. And because spin is fixed by the rifling
+        twist (1 turn in 20 calibres), p/V is constant, so <strong>muzzle Sg is charge-independent</strong>:
+        a 3M and a 6M round leave the tube equally stable <span class="k">S6</span>.</p>
+      </div>
+      <div>
+        <h3>The resonance we named ourselves</h3>
+        <div class="callout">
+          <p><strong>S8 · roll–coning resonance.</strong> The published work on this exact
+          configuration reproduces a resonance instability: the canard disturbance couples with the
+          projectile's natural frequency and drives ballistic fluctuation. S1 is a gyroscopic
+          criterion at the muzzle and does not answer it. The literature's own fix is
+          <em>reduced canard span with increased deflection</em>, which raises the pitching-moment
+          derivative and the natural frequency — exactly where this design already landed
+          (Ø151 mm span cap, cant as the lever). S8 asks for the evidence at P3 rather than a
+          redesign. <span class="flagtxt">Open, risk 41.</span></p>
+        </div>
+        <h3>Spin decay through the flight</h3>
+        <table class="data tight">
+          <tr><th>Point</th><th>Spin</th><th>Source</th></tr>
+          <tr><td>Launch, charge 3M</td><td class="n">1 107.5 rad/s · 176.3 Hz</td><td><span class="k">S6</span></td></tr>
+          <tr><td>Launch, charge 6M</td><td class="n">1 912.3 rad/s · 304.4 Hz</td><td><span class="k">S6</span></td></tr>
+          <tr><td>Design point at launch</td><td class="n">1 623 rad/s (≈ 15 500 rpm)</td><td><span class="k">[ref]</span></td></tr>
+          <tr><td>Impact, t = 86 s</td><td class="n">≈ 1 050 rad/s</td><td><span class="k">[ref]</span></td></tr>
+        </table>
+        <p class="small">Confirmed independently: a 1:20 cal rifling check predicts both charge
+        cases exactly (p = 2πV/twist), which is the one platform quantity the public record
+        corroborates outright.</p>
+      </div>
+    </div>
+    <div class="foot"><span>Stability physics</span><span class="num">08</span></div>
+  </div>
+</section>
+
+<!-- ================================================================ 09 -->
+<section class="slide" id="s9">
+  <div class="inner">
+    <header class="head">
+      <h2>Component: the canard set</h2>
+      <p class="sub">Four fixed-incidence canards in two pairs on the de-spun ring. No moving
+        control surface exists anywhere in the kit.</p>
+    </header>
+    <div class="body cols c-side">
+      <div>
+        <figure>
+          <img src="../../notes/figures/p38-fig2.4-steering-and-control-canards.jpg" alt="Thesis figure: steering canards at 0 and 180 degrees producing net force, control canards at 90 and minus 90 producing net torque">
+          <figcaption>The two-pair split, from our reference thesis (Günay 2022, Fig. 2.4)
+          <span class="k">[ref]</span>. Independently validated in AIAA 2024-1105 and credited to
+          US Patent 6,981,672 for the geometry.</figcaption>
+        </figure>
+        <figure>
+          <img src="../../design/cad/out/deck-renders/14-part-ring-canards.png" alt="CAD render of the ring with its four canards">
+          <figcaption>Our ring and canards as modelled: cant measured at 10.0000° off the inertia
+          tensor, tips Ø151.00 mm, exposed span 26.50 mm.</figcaption>
+        </figure>
+      </div>
+      <div>
+        <h3>How the force and torque split works</h3>
+        <table class="data tight">
+          <tr><th>Pair</th><th>Geometry</th><th>Force</th><th>Torque</th></tr>
+          <tr><td><strong>Steering</strong><br>0° / 180°</td><td>equal cant</td>
+            <td>components add → <strong>net force 2·F·sin δ</strong></td><td>roll torques cancel</td></tr>
+          <tr><td><strong>Control</strong><br>90° / −90°</td><td>opposite cant</td>
+            <td>components cancel</td><td>components add → <strong>net roll torque</strong></td></tr>
+        </table>
+        <p>Rotating the ring rotates the force vector in the plane: <strong>two-dimensional
+        steering from a single actuation axis</strong> <span class="k">C1</span>. The command is a
+        ring <em>angle</em> and nothing else, because steering comes from cant rather than
+        deflection: the force magnitude is set by cant and dynamic pressure and the ring can only
+        aim it <span class="k">G2</span>.</p>
+        <p class="small">The control pair is load-bearing, not decorative: the machine's reaction
+        torque acts in one sense only, so the control pair's aerodynamic torque is the only source
+        of ring torque in the opposite sense. Without it the ring has half its command range.</p>
+        <h3>Numbers, and one correction</h3>
+        <ul class="small">
+          <li>Requirement: <strong>F<sub>steer</sub> ≥ 18.1 N</strong> at the worst point of the
+          guided window. The reference canard's ±15–25 N band does <em>not</em> clear it at its
+          floor: 15 N captures only 67 % of the unguided population <span class="k">C8</span>.</li>
+          <li>Cant <strong>10.0000°</strong>, area 2 120 mm², aspect ratio 0.33, chord ≈ 80 mm.
+          Chord buys force poorly (2.7× area buys 23 % force), so cant is the lever
+          <span class="k">C31</span> <span class="k">C43</span>.</li>
+          <li><span class="flagtxt">Register correction (CAD finding T7): the sizing formula is
+          F = 2·F·sin δ, not cos δ.</span> Sine fits C43's own trade table to within 0.3 N across
+          all four rows; cosine predicts a flat 102 N and refutes the cant coupling the design
+          depends on.</li>
+          <li>Launch transient on the canards ≈ ±85 N, the structural case <span class="k">C28</span>.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot"><span>Canard set</span><span class="num">09</span></div>
+  </div>
+</section>
+
+<!-- ================================================================ 10 -->
+<section class="slide" id="s10">
+  <div class="inner">
+    <header class="head">
+      <h2>Component: the machine — actuator, generator and power plant in one</h2>
+      <p class="sub">A frameless outrunner PMSM whose rotor is the canard ring itself. Loading it
+        is how the kit steers; the load is also where flight power comes from.</p>
+    </header>
+    <div class="body cols c-side">
+      <div>
+        <figure>
+          <img src="../../design/cad/out/deck-renders/16-part-stator-windings.png" alt="CAD render of the stator with windings on the body side">
+          <figcaption>Stator (coils, body side) — 12 slots, concentrated double-layer winding.</figcaption>
+        </figure>
+        <figure>
+          <img src="../../design/cad/out/deck-renders/17-part-rotor-magnets.png" alt="CAD render of the rotor magnet ring">
+          <figcaption>Rotor (magnets, ring side) — 14 poles, NdFeB 1.5 mm radial, mechanically retained.</figcaption>
+        </figure>
+      </div>
+      <div>
+        <h3>The working principle</h3>
+        <p class="small">Current-carrying conductors in a magnetic field experience the Lorentz
+        force; integrated around the air gap it becomes torque <strong>T = K<sub>t</sub>·I</strong>.
+        The same rotation induces a back-EMF <strong>E = K<sub>v</sub>·ω<sub>rel</sub></strong>,
+        and the induced current's own field produces a reaction torque opposing the relative motion
+        (Lenz's law). So drawing current brakes the ring — that braking is the control input — and
+        the drawn energy is real electrical power, P = T·ω<sub>body</sub>.</p>
+        <table class="data tight">
+          <tr><th>Parameter</th><th>Value</th><th>ID</th></tr>
+          <tr><td>Topology</td><td>radial-flux, 3-phase, frameless <strong>outrunner</strong> (magnets on ring)</td><td><span class="k">C34</span></td></tr>
+          <tr><td>Slots / poles</td><td class="n">12 / 14 (p = 7), k<sub>w</sub> 0.933</td><td><span class="k">C36</span> <span class="k">C16</span></td></tr>
+          <tr><td>Mid-gap diameter / air gap</td><td class="n">≈ 79 mm / 0.400 mm</td><td><span class="k">C35</span></td></tr>
+          <tr><td>Stack length</td><td class="n">25–30 mm (nominal 28)</td><td><span class="k">C34</span></td></tr>
+          <tr><td>Torque constant K<sub>t</sub> / voltage constant K<sub>v</sub></td><td class="n">0.362 N·m/A rms / 0.209 V/(rad/s) LL</td><td><span class="k">C14</span> <span class="k">C15</span></td></tr>
+          <tr><td>Peak / holding current</td><td class="n">15.9 A (7.5 A/mm²) / 6.5 A (3 A/mm²)</td><td><span class="k">C18</span></td></tr>
+          <tr><td>Max torque / rating</td><td class="n">5.76 N·m / ≈ 3.0 kW</td><td><span class="k">C19</span> <span class="k">C20</span></td></tr>
+          <tr><td>Electrical frequency at launch spin</td><td class="n">2 130 Hz</td><td><span class="k">C39</span></td></tr>
+          <tr class="tot"><td>Mass</td><td class="n">0.81–0.97 kg</td><td><span class="k">C40</span></td></tr>
+        </table>
+        <h3>Why this shape, and what it costs</h3>
+        <ul class="small">
+          <li><strong>Frameless</strong> decouples the magnetic machine from the bearing choice;
+          <strong>outrunner</strong> puts the magnets at the largest available radius, which is
+          where torque lives in a 92 mm envelope.</li>
+          <li>It is a <strong>loaded generator</strong>, not an idler: holding the ring against the
+          aerodynamic torque at full body spin absorbs <strong>2.92 kW peak and ≈ 121 kJ per
+          flight</strong> <span class="k">C42</span> — ×2.4 the reference machine's rating. This is
+          the architecture's defining cost and slide 30 is where it goes.</li>
+          <li>At 2 130 Hz, standard 0.35 mm laminations will not do: 0.1–0.2 mm laminations or a
+          soft-magnetic-composite core, traded on loss <em>and</em> strength
+          <span class="k">C39</span>. Magnets need mechanical retention: a 5 g magnet sees ≈ 736 N
+          of shear at 15 000 g <span class="k">C38</span>.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot"><span>The machine</span><span class="num">10</span></div>
+  </div>
+</section>
+
+<!-- ================================================================ 11 -->
+<section class="slide" id="s11">
+  <div class="inner">
+    <header class="head">
+      <h2>Component: the bearings, and the friction gate</h2>
+      <p class="sub">The ring is only controllable if the aerodynamic torque beats the friction
+        torque. That single inequality decides whether this architecture exists.</p>
+    </header>
+    <div class="body cols c-side">
+      <div>
+        <figure>
+          <img src="../../design/cad/out/deck-renders/18-part-bearing-path.png" alt="CAD render of the bearing pair and the launch load path">
+          <figcaption>The bearing pair and the launch load path that bypasses it
+          (Phase 3 gate PASS; face stress 207.9 MPa at the measured load, ×1.44 margin).</figcaption>
+        </figure>
+        <h3>The torque balance on the ring</h3>
+        <div class="eq">T<sub>+X</sub> = T<sub>alt</sub> + T<sub>f</sub> − T<sub>aero</sub><small>ring control = holding the angle while these three fight</small></div>
+        <p class="small">T<sub>aero</sub> is the control pair's aerodynamic torque (unavoidable,
+        tracks q). T<sub>alt</sub> is the machine's reaction (controllable). T<sub>f</sub> is bearing
+        friction. To have any authority <em>against</em> the aero torque you need
+        <strong>T<sub>aero</sub> &gt; T<sub>f</sub></strong>, and near apogee T<sub>aero</sub>
+        falls to 0.1706 N·m <span class="k">C12</span>.</p>
+      </div>
+      <div>
+        <h3>The feasibility gate</h3>
+        <p>Combining the two sizing criteria — need T<sub>aero</sub> &gt; T<sub>f</sub> at apogee,
+        and T<sub>aero</sub> ≤ T<sub>alt_max</sub>/2 + T<sub>f</sub> at descent — closes the
+        control-pair sizing window entirely above <strong>T<sub>f</sub> = 0.1567 N·m</strong>. At
+        the measured 0.1 N·m the window is a narrow <strong>±20 %</strong> of the reference's
+        control-pair size <span class="k">C12</span>. Friction is therefore a
+        <strong>feasibility gate on the architecture</strong>, not a number to minimise.</p>
+        <table class="data tight">
+          <tr><th>Requirement</th><th>Value</th><th>ID</th></tr>
+          <tr><td>Friction torque, flat over speed and temperature</td><td class="n">≤ 0.10 N·m to ≈ 1 900 rad/s</td><td><span class="k">C13</span></td></tr>
+          <tr><td>Bearing pair radial stiffness</td><td class="n">≥ 122 N/µm</td><td><span class="k">C35</span></td></tr>
+          <tr><td>Structural path stiffness (axial)</td><td class="n">≥ 367 N/µm</td><td><span class="k">C35</span></td></tr>
+          <tr><td>Setback load routed around the bearings</td><td class="n">73.5 kN at 0.5 kg ring</td><td><span class="k">C26</span></td></tr>
+        </table>
+        <ul class="small">
+          <li><strong>Flatness is the spec.</strong> The reference's 0.1 N·m was measured at
+          83.8 rad/s, 19.4× below flight speed; read as a viscous law it predicts 1.72 N·m at
+          apogee and the architecture fails outright. A load-dominated, speed-flat bearing is
+          correct under either reading <span class="k">C13</span>. <span class="flagtxt">Must be
+          closed by test (risk 24, rig item 1).</span></li>
+          <li><strong>Preload is a three-way trade</strong>: it buys the 122 N/µm stiffness, spends
+          friction budget, and the friction becomes <strong>≈ 140–190 W of heat in the bearings</strong>
+          (≈ 12–17 kJ per flight) with a known thermal-preload runaway path at 1 900 rad/s
+          <span class="k">C23</span> (risks 45).</li>
+          <li><strong>74 kN cannot pass through thin-section instrument bearings</strong> — an order
+          of magnitude above their static ratings — so C32 routes it around them through a
+          setback-actuated seat. <span class="flagtxt">CAD finding T6: at the modelled 1.876 kg
+          rotating mass the load is 276 kN, three times the register's assumption (slide 34).</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot"><span>Bearings and friction</span><span class="num">11</span></div>
+  </div>
+</section>
+
+<!-- ================================================================ 12 -->
+<section class="slide" id="s12">
+  <div class="inner">
+    <header class="head">
+      <h2>Component: the sensor suite</h2>
+      <p class="sub">The hardest sensing problem in a spin-stabilised guided shell is solved
+        twice by geometry — and that is what makes cheap COTS sensors sufficient.</p>
+    </header>
+    <div class="body">
+      <table class="data tight">
+        <tr><th style="width:15%">Sensor</th><th style="width:24%">Physical principle</th><th style="width:33%">How the spin problem is handled</th><th>Spec / note</th><th>ID</th></tr>
+        <tr>
+          <td><strong>GNSS aperture</strong><br>(multi-constellation)</td>
+          <td>L-band carrier tracking and code phase; position from pseudo-range multilateration.</td>
+          <td>A <strong>rotationally symmetric aperture on the spin axis</strong>, elements combined
+            rather than switched: the pattern is invariant under rotation, so the spin produces
+            <em>no</em> modulation by symmetry. Only slow coning remains, which a standard loop
+            absorbs. Standard receiver, no redesign.</td>
+          <td>Acquisition is a <em>requirement</em>: fix in the opening seconds, enabled by
+            pre-loaded ephemeris and keys. A ring-mounted aperture is refuted — the ring angle is
+            the guidance channel.</td>
+          <td><span class="k">N3</span> <span class="k">F12</span></td>
+        </tr>
+        <tr>
+          <td><strong>Ring-mounted IMU</strong></td>
+          <td>Coriolis vibratory rate sensing and MEMS accelerometer; attitude from integration
+            with aiding.</td>
+          <td>Spin is removed <strong>mechanically</strong>: the unit rides the de-spun ring and
+            sees coning (a few rad/s) plus its own slew (±31.42 rad/s limit) instead of
+            1 107–1 912 rad/s.</td>
+          <td>±2 000 °/s, ≥ 100 Hz, ARW ≤ 1 °/√h, bias ≤ 5 °/h — tactical/industrial MEMS.
+            A body-fixed unit would need <strong>92 880 °/s</strong>; no COTS part exists.</td>
+          <td><span class="k">N6</span> <span class="k">N7</span> <span class="k">N8</span></td>
+        </tr>
+        <tr>
+          <td><strong>Magnetometer</strong></td>
+          <td>Earth's field direction gives absolute heading (the ring angle's earth reference).</td>
+          <td>Fused into the navigation filter. The alternator's field is rejected at its measured
+            frequency and compensated against measured coil current (slide 27).</td>
+          <td>Requirement is disturbance rejection, not resolution: ≤ 1.0° (1σ) after filtering.</td>
+          <td><span class="k">G6</span> <span class="k">N12</span> <span class="k">F15</span></td>
+        </tr>
+        <tr>
+          <td><strong>Ring pickoff</strong></td>
+          <td>Inductive or optical edge sensing of ring-to-body angle.</td>
+          <td>Body-side, so it measures exactly the relative quantity the control loop needs.</td>
+          <td>≤ 0.8° (1σ) relative. Second, different-physics pickoff as targeted redundancy.</td>
+          <td><span class="k">G5</span> <span class="k">N10</span></td>
+        </tr>
+        <tr>
+          <td><strong>Spin channel</strong></td>
+          <td>Rate from the same pickoff geometry.</td>
+          <td>One sensor, three consumers: limit laws, the EMI notch, and the nav filter.</td>
+          <td>Range 1 050–1 912 rad/s relative.</td>
+          <td><span class="k">N9</span> <span class="k">H6</span></td>
+        </tr>
+        <tr>
+          <td><strong>Barometer</strong></td>
+          <td>Piezoresistive pressure → density altitude for the aero model.</td>
+          <td>Unaffected by spin.</td>
+          <td>Density reference is the environment model; the sensor is a selection item.</td>
+          <td><span class="k">N11</span></td>
+        </tr>
+        <tr>
+          <td><strong>24 GHz RF Doppler</strong><br>(proximity fuze)</td>
+          <td>Doppler shift f<sub>d</sub> = 2·v<sub>r</sub>·f<sub>0</sub>/c on the ground return
+            gives range rate; burst height from the return's amplitude/threshold behaviour.</td>
+          <td>Spins with the body at 176.3–304.4 Hz, so the ground return is amplitude-modulated.
+            <strong>The detection scheme shall reject that spin modulation</strong>, or the round
+            bursts at the wrong height.</td>
+          <td>24 GHz chosen to be clear of GNSS (1.2/1.5 GHz) and of the machine's 2.1 kHz content;
+            radome passes L-band and 24 GHz together.</td>
+          <td><span class="k">F2</span> <span class="k">F3</span></td>
+        </tr>
+      </table>
+      <p class="small"><strong>Timing.</strong> One hardware counter is the kit's clock; every sample
+      is stamped at conversion (≤ 100 µs) and GNSS labels the epoch without steering the clock, so
+      timing survives jamming and outages <span class="k">H6</span> <span class="k">N15</span>.
+      Ring-side data crosses the joint on an <strong>optical</strong> channel (immune to the
+      machine's fields) with power on a rotary transformer <span class="k">H7</span>.</p>
+    </div>
+    <div class="foot"><span>Sensors</span><span class="num">12</span></div>
+  </div>
+</section>
+
+<!-- ================================================================ 13 -->
+<section class="slide" id="s13">
+  <div class="inner">
+    <header class="head">
+      <h2>Component: the multi-mode fuze</h2>
+      <p class="sub">Three modes with real setting envelopes, and safety that is mechanical before
+        it is electronic.</p>
+    </header>
+    <div class="body cols c-side">
+      <div>
+        <h3>Modes and setting envelope</h3>
+        <table class="data tight">
+          <tr><th>Mode</th><th>Setting</th><th>Notes</th></tr>
+          <tr><td>Proximity</td><td class="n">burst height 2–15 m</td><td>24 GHz RF Doppler through
+            the nose radome; ≈ 7 m default</td></tr>
+          <tr><td>Time</td><td class="n">0.1–199.9 s, 0.1 s steps</td><td>crystal reference,
+            <strong>re-synchronised in flight</strong> from the nav solution</td></tr>
+          <tr><td>Impact</td><td class="n">superquick / ≈ 0.05 s delay / graze</td><td>full
+            terminal-effect envelope of the fuze replaced is retained</td></tr>
+        </table>
+        <p class="small">Set over the in-service <strong>inductive gun-line setter</strong> to NATO
+        AOP-22: 100 kHz carrier, 1 000 bit/s, a 275 ms forward window, read-back verify, crew
+        go/no-go and a target sanity check against the firing solution <span class="k">F11</span>
+        <span class="k">F12</span>. <span class="flagtxt">The read-back is AOP-22's own
+        error-detection mechanism, so it is compliance rather than invention — and the mission
+        package must be counted against ≈ 550 bits of standard budget (risk 44).</span></p>
+        <div class="callout blue">
+          <p><strong>In-flight time correction — credited, not claimed.</strong> AOP-22 Annex E.16
+          registers the XM8 course-correction time fuze, which already corrects its time in flight.
+          What is ours is narrower: the correction is driven by <em>our own continuous navigation
+          solution</em>, in a bounded, one-way, arming-gated form. A guided round's flight time is
+          changed by the guidance itself, so a pre-set time would inherit the whole time-of-flight
+          prediction error <span class="k">F1</span>.</p>
+        </div>
+      </div>
+      <div>
+        <figure>
+          <img src="../../design/cad/out/deck-renders/21-part-fuze-train.png" alt="CAD render of the fuze train with the out-of-line rotor">
+          <figcaption>Fuze train on the reserved centreline, interrupted by the out-of-line rotor.</figcaption>
+        </figure>
+        <h3>Safe-and-arm: two stimuli, then a command</h3>
+        <ul class="small">
+          <li>MIL-STD-1316 <strong>out-of-line rotor</strong>, driven mechanically into line by
+          two independent environment stimuli — <strong>15 000 g setback</strong> and
+          <strong>176.3–304.4 Hz spin</strong> — with the electronics' arm command as a third,
+          independent condition <span class="k">F6</span>.</li>
+          <li>The rotor cannot complete its travel while setback is sustained, so
+          <strong>no in-bore function is possible by construction, not by timer</strong>. Dead
+          electronics give a dud, never a premature burst; a misfire is safe with no abort logic.</li>
+          <li>HERO / EMR / ESD qualification: nothing outside can make it initiate
+          <span class="k">E12</span>. Two halves of one safety argument with F6.</li>
+        </ul>
+        <h3>The predicted-miss failsafe</h3>
+        <p class="small">The fielded kit withholds detonation when it expects to miss by more than
+        150 m. We adopted the same property, and the mechanism is the arming logic we already have:
+        when the predicted impact is still beyond <strong>150 m</strong> at the moment the guidance
+        can no longer change the outcome, the kit <strong>withholds the electrical arm command</strong>
+        — latched, irrevocable, and the failure direction is a dud <span class="k">F16</span>.
+        Cost stated: a prediction error can dud a round that would have landed acceptably
+        (risk 40), and the dud-rate target must now carry this deliberate contribution.</p>
+      </div>
+    </div>
+    <div class="foot"><span>Fuze</span><span class="num">13</span></div>
+  </div>
+</section>
+
+<!-- ================================================================ 14 -->
+<section class="slide" id="s14">
+  <div class="inner">
+    <header class="head">
+      <h2>Power chain and electronics</h2>
+      <p class="sub">Self-generated flight power, two processors with one physical boundary, and
+        the block diagram the problem statement asks for.</p>
+    </header>
+    <div class="body cols c-side">
+      <div>
+        <figure class="plain">
+          <svg viewBox="0 0 640 430" role="img" aria-label="Electronics block diagram: machine, four-quadrant converter, dump, buffer, dual-core flight computer, fuze domain and sensors" style="width:100%;height:auto;font-family:var(--font)">
+            <defs><marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#3f4a56"/></marker></defs>
+            <g font-size="11.5" fill="#12171d">
+              <!-- power chain -->
+              <rect x="14" y="24" width="150" height="52" rx="5" fill="#f2f5f8" stroke="#0b5cad"/>
+              <text x="89" y="45" text-anchor="middle" font-weight="650">Machine (PMSM)</text>
+              <text x="89" y="62" text-anchor="middle" fill="#3f4a56" font-size="10.5">generator + actuator · 2.92 kW peak</text>
+              <rect x="204" y="24" width="150" height="52" rx="5" fill="#f2f5f8" stroke="#0b5cad"/>
+              <text x="279" y="45" text-anchor="middle" font-weight="650">4-quadrant stage</text>
+              <text x="279" y="62" text-anchor="middle" fill="#3f4a56" font-size="10.5">buck gen / boost motor · ≥100 kHz</text>
+              <rect x="394" y="24" width="112" height="52" rx="5" fill="#f2f5f8" stroke="#0b5cad"/>
+              <text x="450" y="45" text-anchor="middle" font-weight="650">180 V bus</text>
+              <text x="450" y="62" text-anchor="middle" fill="#3f4a56" font-size="10.5">below E<sub>min</sub> ≈ 230 V</text>
+              <path d="M164 50 H200" stroke="#3f4a56" stroke-width="1.4" marker-end="url(#ar)"/>
+              <path d="M354 50 H390" stroke="#3f4a56" stroke-width="1.4" marker-end="url(#ar)"/>
+              <!-- bus loads -->
+              <rect x="394" y="112" width="112" height="46" rx="5" fill="#fff" stroke="#d9dee4"/>
+              <text x="450" y="131" text-anchor="middle" font-weight="650">Dump (H9)</text>
+              <text x="450" y="147" text-anchor="middle" fill="#3f4a56" font-size="10.5">chopper shunt → shell</text>
+              <rect x="394" y="176" width="112" height="46" rx="5" fill="#fff" stroke="#d9dee4"/>
+              <text x="450" y="195" text-anchor="middle" font-weight="650">Supercap buffer</text>
+              <text x="450" y="211" text-anchor="middle" fill="#3f4a56" font-size="10.5">150–200 J · 3 duties</text>
+              <path d="M450 76 V108" stroke="#3f4a56" stroke-width="1.4" marker-end="url(#ar)"/>
+              <path d="M450 158 V172" stroke="#3f4a56" stroke-width="1.4" marker-end="url(#ar)"/>
+              <!-- guidance domain -->
+              <rect x="14" y="112" width="330" height="118" rx="5" fill="#fbfcfd" stroke="#12171d" stroke-width="1.4"/>
+              <text x="26" y="132" font-weight="650">Flight computer — STM32H755 (dual core)</text>
+              <rect x="26" y="144" width="146" height="72" rx="4" fill="#f2f5f8" stroke="#d9dee4"/>
+              <text x="99" y="163" text-anchor="middle" font-weight="650">Cortex-M4F 240 MHz</text>
+              <text x="99" y="181" text-anchor="middle" fill="#3f4a56" font-size="10.5">1 kHz loop: cascade,</text>
+              <text x="99" y="196" text-anchor="middle" fill="#3f4a56" font-size="10.5">DOB, live limits</text>
+              <rect x="184" y="144" width="146" height="72" rx="4" fill="#f2f5f8" stroke="#d9dee4"/>
+              <text x="257" y="163" text-anchor="middle" font-weight="650">Cortex-M7 480 MHz</text>
+              <text x="257" y="181" text-anchor="middle" fill="#3f4a56" font-size="10.5">nav filter + IPP law</text>
+              <text x="257" y="196" text-anchor="middle" fill="#3f4a56" font-size="10.5">≈ 6 Hz guidance</text>
+              <path d="M89 76 V236 V230" stroke="none"/>
+              <path d="M89 76 V108" stroke="#3f4a56" stroke-width="1.4" marker-end="url(#ar)"/>
+              <path d="M279 230 V226" stroke="none"/>
+              <!-- sensors -->
+              <rect x="14" y="256" width="330" height="76" rx="5" fill="#fff" stroke="#d9dee4"/>
+              <text x="26" y="276" font-weight="650">Sensing (stamped at conversion)</text>
+              <text x="26" y="296" fill="#3f4a56" font-size="10.5">ring IMU (optical link) · magnetometer · barometer</text>
+              <text x="26" y="312" fill="#3f4a56" font-size="10.5">ring pickoff + spin (loop side) · GNSS (spin-axis aperture)</text>
+              <text x="26" y="328" fill="#3f4a56" font-size="10.5">24 GHz Doppler front end (fuze side, duty-cycled)</text>
+              <path d="M120 252 V234" stroke="#3f4a56" stroke-width="1.4" marker-end="url(#ar)"/>
+              <!-- reserve + fuze domain -->
+              <rect x="394" y="256" width="232" height="112" rx="5" fill="#fbfcfd" stroke="#12171d" stroke-width="1.4"/>
+              <text x="406" y="276" font-weight="650">Fuze domain (own MCU + power)</text>
+              <text x="406" y="296" fill="#3f4a56" font-size="10.5">arming logic · timer · detector · S&amp;A interlock</text>
+              <text x="406" y="312" fill="#3f4a56" font-size="10.5">setter front end (always-alive reserve rail)</text>
+              <rect x="406" y="322" width="208" height="36" rx="4" fill="#f2f5f8" stroke="#d9dee4"/>
+              <text x="510" y="338" text-anchor="middle" fill="#3f4a56" font-size="10.5">reserve battery — pre-launch / safe state only</text>
+              <text x="510" y="352" text-anchor="middle" fill="#3f4a56" font-size="10.5">diode-OR hand-over at muzzle exit</text>
+              <path d="M344 300 H386" stroke="#3f4a56" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#ar)"/>
+              <text x="365" y="292" text-anchor="middle" fill="#a4551a" font-size="9.5">one-way</text>
+              <!-- thermal -->
+              <rect x="14" y="366" width="330" height="46" rx="5" fill="#fff" stroke="#d9dee4"/>
+              <text x="26" y="385" font-weight="650">Thermal interface (W7 / P6)</text>
+              <text x="26" y="402" fill="#3f4a56" font-size="10.5">dump + boards + machine → fuze-well joint → 45 kg shell (+5.8 K)</text>
+            </g>
+          </svg>
+          <figcaption>Electronics block diagram. Every block traces to a criterion:
+          H1 (compute split), H5 (annular stack), H7 (ring link), H8/H9 (machine and dump stages),
+          H10 (fuze partition), H12 (rails and isolation).</figcaption>
+        </figure>
+      </div>
+      <div>
+        <h3>The power story in three lines</h3>
+        <ul>
+          <li>Demand is trivial: <strong>≈ 12 W peak</strong> avionics against generation that never
+          drops below 0.24 kW. <strong>≈ 20:1 at the worst point</strong> — the problem is routing,
+          not supply <span class="k">W4</span>.</li>
+          <li>The surplus goes to a <strong>chopper-driven dump</strong> (0.15–0.30 kg) whose first
+          protection action is to derate the guidance authority limit, not to trip
+          <span class="k">H9</span>.</li>
+          <li>A <strong>supercapacitor buffer</strong> (150–200 J, 50–150 g) carries the fireset
+          reservoir (≥ 1 J, charged only under the arming interlock), ≥ 2 s of hold-up and the
+          actuator's motoring bursts. A small <strong>reserve battery</strong> covers pre-launch
+          and the safe state only <span class="k">W4</span> <span class="k">W5</span>.</li>
+        </ul>
+        <h3>Design decisions worth knowing</h3>
+        <ul class="small">
+          <li><strong>Bus at 180 V nominal</strong>, deliberately <em>below</em> the flight-minimum
+          back-EMF (≈ 230 V), so the four-quadrant stage never crosses the buck/boost boundary at
+          the peak-load instant. The price is doubled bus current at the peak (≈ 16.7 A)
+          <span class="k">H8</span> <span class="k">H12</span>.</li>
+          <li><strong>Two processors, one physical boundary:</strong> the fuze keeps its own MCU,
+          board and power path. The only crossing is the bounded one-way time correction, on
+          optical isolation. A guidance fault leaves the fuze whole and autonomous
+          <span class="k">H10</span>.</li>
+          <li>Timing margins: the 1 kHz loop needs ≤ 100 µs and estimates 5–15 µs; each guidance
+          propagation gets ≤ 100 ms and estimates 5–20 ms. Roughly 10× on both
+          <span class="k">H4</span>.</li>
+          <li><strong>Authenticated GNSS</strong> (crypto/hash engine, keys in the setter package):
+          a spoofed fix is the one failure worse than jamming, since it steers a guided round
+          confidently to the wrong place <span class="k">H11</span>.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot"><span>Power and electronics</span><span class="num">14</span></div>
+  </div>
+</section>
+
+<!-- ================================================================ 15 -->
+<section class="slide" id="s15">
+  <div class="inner">
+    <header class="head">
+      <h2>The whole trajectory, 0 to 86 s</h2>
+      <p class="sub">One chart with everything that varies with time: the arc, the authority
+        window, the ring's aerodynamic load, and the generated power. Anchor points are cited;
+        the curves between them are schematic.</p>
+    </header>
+    <div class="body">
+      <figure class="plain">
+        <svg viewBox="0 0 1160 540" role="img" aria-label="Flight trajectory with phase bands and three stacked plots: available control force, aerodynamic torque on the ring, and generated power, over 86 seconds" style="width:100%;height:auto;font-family:var(--font)">
+          <!-- phase bands -->
+          <g>
+            <rect x="60" y="240" width="25" height="235" fill="#eceff3"/>
+            <rect x="85" y="240" width="160" height="235" fill="#f6f8fa"/>
+            <rect x="245" y="240" width="246" height="235" fill="rgba(11,92,173,.05)"/>
+            <rect x="491" y="240" width="247" height="235" fill="rgba(164,85,26,.07)"/>
+            <rect x="738" y="240" width="382" height="235" fill="rgba(11,92,173,.05)"/>
+          </g>
+          <!-- arc -->
+          <path d="M70 214 C 210 74, 430 42, 566 50 C 748 62, 950 152, 1112 222"
+                fill="none" stroke="#0b5cad" stroke-width="2.4"/>
+          <g font-size="11" fill="#3f4a56">
+            <circle cx="70" cy="214" r="4" fill="#12171d"/><text x="58" y="236">muzzle exit · t = 0</text>
+            <circle cx="245" cy="72" r="3.5" fill="#0b5cad"/><text x="196" y="60">t ≈ 15 s · nav converged, guidance on</text>
+            <circle cx="566" cy="50" r="3.5" fill="#a4551a"/><text x="524" y="34">t = 41.2 s · apogee</text>
+            <circle cx="874" cy="132" r="3.5" fill="#0b5cad"/><text x="826" y="118">t ≈ 66 s · endgame window</text>
+            <circle cx="1112" cy="222" r="4" fill="#12171d"/><text x="1042" y="244">t = 86 s · impact</text>
+            <text x="330" y="150" fill="#6d7987">ballistic arc — no target-referenced guidance exists anywhere in the ascent</text>
+          </g>
+          <!-- guide lines -->
+          <g stroke="#c3ccd6" stroke-dasharray="3 4" stroke-width="1">
+            <line x1="245" y1="76" x2="245" y2="475"/>
+            <line x1="566" y1="56" x2="566" y2="475"/>
+            <line x1="874" y1="136" x2="874" y2="475"/>
+          </g>
+          <!-- chart A: force -->
+          <g font-size="10.5" fill="#6d7987">
+            <text x="60" y="256" fill="#12171d" font-size="11.5" font-weight="650">Available control force (N)</text>
+            <polyline points="60,250 85,279 122,289 245,291 430,292 504,303 566,304 738,304 800,293 985,292 1120,292"
+              fill="none" stroke="#0b5cad" stroke-width="1.8"/>
+            <text x="70" y="243" fill="#0b5cad">±85 N transient</text>
+            <text x="300" y="283" fill="#0b5cad">±15–25 N mid-band</text>
+            <text x="540" y="296" fill="#a4551a">≈ 0 — gate closes</text>
+            <text x="880" y="283" fill="#0b5cad">≈ 20 N descent</text>
+          </g>
+          <line x1="60" y1="305" x2="1120" y2="305" stroke="#d9dee4"/>
+          <!-- chart B: Taero -->
+          <g font-size="10.5" fill="#6d7987">
+            <text x="60" y="336" fill="#12171d" font-size="11.5" font-weight="650">Ring aerodynamic torque T<tspan baseline-shift="sub" font-size="8">aero</tspan> (N·m)</text>
+            <polyline points="60,330 183,344 307,358 568,375 800,349 1120,321"
+              fill="none" stroke="#a4551a" stroke-width="1.8"/>
+            <circle cx="568" cy="375" r="3" fill="#a4551a"/>
+            <text x="500" y="392" fill="#a4551a">min 0.1706 N·m at 41.16 s — 1.7× over friction</text>
+            <text x="930" y="336" fill="#a4551a">max 2.119 N·m at 86.5 s</text>
+          </g>
+          <line x1="60" y1="380" x2="1120" y2="380" stroke="#d9dee4"/>
+          <!-- chart C: power -->
+          <g font-size="10.5" fill="#6d7987">
+            <text x="60" y="416" fill="#12171d" font-size="11.5" font-weight="650">Generated power (kW) — and 121 kJ total</text>
+            <polyline points="60,392 183,413 307,433 568,454 800,427 1120,408"
+              fill="none" stroke="#12171d" stroke-width="1.8"/>
+            <text x="70" y="386" fill="#12171d">2.92 kW peak</text>
+            <text x="520" y="470" fill="#12171d">0.24 kW floor at apogee — demand is ≈ 0.012 kW</text>
+            <text x="960" y="402" fill="#12171d">2.2 kW at end</text>
+          </g>
+          <line x1="60" y1="460" x2="1120" y2="460" stroke="#d9dee4"/>
+          <!-- time axis -->
+          <g font-size="10.5" fill="#3f4a56">
+            <line x1="60" y1="475" x2="1120" y2="475" stroke="#12171d" stroke-width="1.2"/>
+            <g stroke="#12171d"><line x1="60" y1="475" x2="60" y2="480"/><line x1="307" y1="475" x2="307" y2="480"/><line x1="566" y1="475" x2="566" y2="480"/><line x1="800" y1="475" x2="800" y2="480"/><line x1="1120" y1="475" x2="1120" y2="480"/></g>
+            <text x="54" y="494">0</text><text x="295" y="494">20</text><text x="554" y="494">41</text><text x="788" y="494">60</text><text x="1104" y="494">86 s</text>
+          </g>
+          <!-- phase legend -->
+          <g font-size="11">
+            <rect x="60" y="508" width="14" height="10" fill="#eceff3" stroke="#d9dee4"/><text x="80" y="517" fill="#3f4a56">bore + boost transient</text>
+            <rect x="240" y="508" width="14" height="10" fill="rgba(11,92,173,.08)" stroke="#d9dee4"/><text x="260" y="517" fill="#3f4a56">guided (two segments, ≈ 51 s total)</text>
+            <rect x="500" y="508" width="14" height="10" fill="rgba(164,85,26,.12)" stroke="#d9dee4"/><text x="520" y="517" fill="#3f4a56">apogee band — inhibited, computed in flight</text>
+            <rect x="820" y="508" width="14" height="10" fill="#f6f8fa" stroke="#d9dee4"/><text x="840" y="517" fill="#3f4a56">acquisition and arming</text>
+          </g>
+        </svg>
+        <figcaption>Anchor points from the reference flight profile replayed in the thesis
+        <span class="k">[ref]</span> and the register's derived values
+        <span class="k">G3</span> <span class="k">C8</span> <span class="k">C12</span>
+        <span class="k">C42</span>. The force curve is the authority window: it tracks dynamic
+        pressure, which is why the guidance window is <em>state-dependent</em> rather than a fixed
+        time band. Curves between anchors are schematic and labelled as such.</figcaption>
+      </figure>
+    </div>
+    <div class="foot"><span>The whole trajectory</span><span class="num">15</span></div>
+  </div>
+</section>
+
+<!-- ================================================================ 16 -->
+<section class="slide" id="s16">
+  <div class="inner">
+    <header class="head">
+      <h2>Activation matrix: what runs when</h2>
+      <p class="sub">Sixteen subsystems across seven flight phases, wired by the real interfaces.
+        This is the "which sensor activates at which point" question, answered as a matrix.</p>
+    </header>
+    <div class="body">
+      <figure class="plain">
+        <img src="../../design/atlas/out/flow.svg" alt="Atlas flow sheet: system nodes wired by their real interfaces with a sixteen-row by seven-phase activation table">
+        <figcaption>Architecture atlas sheet <em>flow</em> (1560 × 710). Nodes wired left to right
+        by the actual interfaces — mechanical, magnetic, optical, electrical — with the activation
+        table beneath. Source of truth: <span class="meta">design/atlas/atlas_scene.py</span>;
+        every number audited in <span class="meta">design/08-atlas.md</span>.</figcaption>
+      </figure>
+    </div>
+    <div class="foot"><span>Activation matrix</span><span class="num">16</span></div>
+  </div>
+</section>
+
+<!-- ================================================================ 17 -->
+<section class="slide" id="s17">
+  <div class="inner">
+    <header class="head">
+      <h2>Timeline: action to reaction</h2>
+      <p class="sub">What happens to the round, and what the kit does about it, in order.</p>
+    </header>
+    <div class="body">
+      <figure class="plain">
+        <img src="../../design/atlas/out/sheet5.svg" alt="Atlas sheet five: the flight timeline with the action to reaction set">
+        <figcaption>Architecture atlas sheet 5 — timeline and the action → reaction set, with
+        criterion IDs on every row.</figcaption>
+      </figure>
+      <figure class="plain">
+        <img src="../../design/atlas/out/sheet3.svg" alt="Atlas sheet three: power, energy and heat, the 121 kilojoule path from generation to the shell">
+        <figcaption>Architecture atlas sheet 3 — the 121 kJ path from generation to the shell,
+        which is the thermal half of the same timeline.</figcaption>
+      </figure>
+    </div>
+    <div class="foot"><span>Timeline</span><span class="num">17</span></div>
+  </div>
+</section>
+
+<!-- ================================================================ 18 -->
+<section class="slide" id="s18">
+  <div class="inner">
+    <header class="head">
+      <h2>Phase detail: bore, launch, boost — before t = 0 to 10 s</h2>
+      <p class="sub">The kit goes from inert package to armed, powered and measuring inside two
+        seconds, in an environment of 15 000 g.</p>
+    </header>
+    <div class="body cols c3">
+      <div>
+        <h3>On the gun line (t &lt; 0)</h3>
+        <ul class="small">
+          <li>Setter couples inductively (100 kHz carrier) and writes the <strong>mission
+          package</strong>: fuze mode and parameters, target coordinates, met, charge/muzzle-velocity
+          state, time reference, GNSS ephemeris and keys, round ID <span class="k">F12</span>.</li>
+          <li>Read-back verified, crew <strong>go/no-go</strong>, and the target is sanity-checked
+          against the firing solution.</li>
+          <li>Only the <strong>reserve-battery domain</strong> is alive: fuze logic, arming path,
+          setter front end, ≲ 1 W <span class="k">W5</span>. The kit computer is unpowered and the
+          fuze is programmable without it <span class="k">H11</span>.</li>
+          <li>Pre-launch BIT: setter read-back, fuze self-test (timer, detector, S&amp;A position),
+          guidance POST, sensor plausibility. The action is the crew's abort
+          <span class="k">H13</span>.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>In the bore (t &lt; 0 to 0)</h3>
+        <ul class="small">
+          <li>Setback <strong>15 000 g axial / 5 000 g radial</strong> <span class="k">E1</span>.
+          The ring sees 73.5 kN at the register's 0.5 kg assumption and the load is routed
+          <em>around</em> the flight bearings through a setback seat that closes to zero gap under
+          launch load <span class="k">C26</span> <span class="k">C32</span>.</li>
+          <li>The 0.40 mm machine air gap allows 0.20 mm of relative deflection: ≥ 367 N/µm
+          structural stiffness in the load path, and nothing compliant — no spring washer, no
+          elastomer, no soft potting — in that path <span class="k">C35</span>.</li>
+          <li>The S&amp;A rotor <strong>cannot complete its travel while setback is sustained</strong>,
+          so no function in the bore is possible by construction <span class="k">F6</span>.</li>
+          <li>Canards ride the bore inside Ø151 mm with 2 mm/side clearance
+          <span class="k">C31</span>. Nothing deploys, because nothing is stowed.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Muzzle exit and boost (0 to 10 s)</h3>
+        <ul class="small">
+          <li>At muzzle exit q peaks at <strong>545 kPa</strong> and the canards take an ≈ ±85 N
+          transient <span class="k">C28</span>.</li>
+          <li>The machine sees full relative spin instantly (the ring is de-spun, so
+          ω<sub>rel</sub> ≈ ω<sub>body</sub> ≈ 1 623 rad/s) and generation peaks at
+          <strong>2.92 kW</strong> <span class="k">C42</span>. The bus rises above the reserve rail
+          and takes over through a <strong>diode-OR</strong> — no active changeover to fail
+          <span class="k">H12</span>.</li>
+          <li>Spin stimulus present, setback decaying: the S&amp;A rotor travels and arms, still
+          gated on the electrical arm command <span class="k">F6</span>.</li>
+          <li>GNSS begins acquisition with pre-loaded ephemeris and keys; the spin-axis aperture
+          means there is no rotation-induced modulation to fight <span class="k">N3</span>.</li>
+          <li><strong>What changes:</strong> no guidance commands yet. The ring holds; the loop is
+          already running at 1 kHz with state-dependent limits; in-flight BIT classifies
+          continuously.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot"><span>Phase: bore, launch, boost</span><span class="num">18</span></div>
+  </div>
+</section>
+
+<!-- ================================================================ 19 -->
+<section class="slide" id="s19">
+  <div class="inner">
+    <header class="head">
+      <h2>Phase detail: midcourse and the opening edge — 10 to 35 s</h2>
+      <p class="sub">The guided phase does not open on a clock. It opens when two independent
+        conditions are both satisfied.</p>
+    </header>
+    <div class="body cols c-side">
+      <div>
+        <h3>The opening edge</h3>
+        <p>The gate opens at <strong>max(fuze arming distance, navigation convergence)</strong>
+        — placeholder <strong>t ≈ 15 s</strong>, provisional on F8 and N2/N3
+        <span class="k">G3</span>. Nav convergence is the binding one: the 5 m navigation
+        allocation is a GNSS-availability claim, so guidance waits for the fix.</p>
+        <h3>What starts at the opening edge</h3>
+        <ul class="small">
+          <li><strong>Impact-point prediction at ≈ 6 Hz</strong> (a 10 Hz ceiling set by the
+          outer loop's 0.103 s settling time): propagate the nav state to impact, compare the
+          predicted impact point with the loaded target, command the ring angle that drives the
+          predicted miss to zero <span class="k">G1</span> <span class="k">G10</span>.</li>
+          <li><strong>The dwell-fraction phasor realises the command:</strong> the ring holds the
+          commanded aim azimuth for the fraction of each cycle the available authority allows and
+          parks at ±90° for the rest, so the cycle-averaged force is the command while the force
+          magnitude stays set by cant and q <span class="k">G2</span>.</li>
+          <li>Authority here is healthy: ±15–25 N of control force, T<sub>aero</sub> ≈ 1.3 → 0.8 N·m
+          and falling, generation 2.0 → 1.2 kW.</li>
+        </ul>
+        <h3>What the loop is doing underneath</h3>
+        <p class="small">All the time — from t = 0 — the 1 kHz cascade on the M4F core has been
+        closing the ring angle, with the disturbance observer estimating the unmeasurable
+        aerodynamic and friction torques and the limit law bounding current and rate from those
+        estimates and the measured relative speed. Guidance only ever sets a position reference.</p>
+      </div>
+      <div>
+        <figure>
+          <img src="../../notes/figures/p103-fig5.7-5.8-velocities-and-control-forces.jpg" alt="Thesis figure: control force available across the flight, collapsing at apogee">
+          <figcaption>The authority window from the reference flight simulation: ≈ ±85 N at the
+          launch transient, ±15–25 N through mid-band, ≈ 0 at apogee, ≈ ±20 N in descent
+          <span class="k">[ref]</span> (Fig. 5.7–5.8).</figcaption>
+        </figure>
+        <div class="callout">
+          <p><strong>Two obligations riding on this phase.</strong> (1) The steering force is
+          <em>always on</em> — "not correcting" is impossible with fixed-canted canards — so the
+          propagation model must include it or the error budget's largest term is wrong
+          (risk 18). (2) The phasor's commanded wobble (±1.3 m/s class in the predecessor study)
+          must be modelled inside the propagation and subtracted, because the law steers the
+          <em>mean</em> trajectory <span class="k">G4</span>.</p>
+        </div>
+      </div>
+    </div>
+    <div class="foot"><span>Phase: midcourse</span><span class="num">19</span></div>
+  </div>
+</section>
+
+<!-- ================================================================ 20 -->
+<section class="slide" id="s20">
+  <div class="inner">
+    <header class="head">
+      <h2>Phase detail: the apogee blackout — 35 to 55 s</h2>
+      <p class="sub">The kit cannot steer here. The design's contribution is knowing that in
+        flight, instead of discovering it at t = 30 s the way the reference did.</p>
+    </header>
+    <div class="body cols c-side">
+      <div>
+        <h3>What happens physically</h3>
+        <ul class="small">
+          <li>Dynamic pressure collapses near apogee. Canard force and the ring's aerodynamic
+          torque both track q, so control force falls to ≈ 0 and T<sub>aero</sub> reaches its
+          minimum <strong>0.1706 N·m at t = 41.16 s</strong> <span class="k">C12</span>.</li>
+          <li>Against a friction budget of 0.10 N·m that is a <strong>1.7:1 margin</strong> — the
+          thinnest in the design. Above T<sub>f</sub> = 0.1567 N·m no control-pair size is
+          controllable at all (the feasibility gate, slide 11).</li>
+          <li>Generation bottoms out at <strong>0.24 kW</strong> at the apogee — still 20× the
+          avionics demand <span class="k">W4</span>.</li>
+          <li>The span-capped canards cannot make 18 N below <strong>q ≈ 23 kPa</strong> anyway
+          <span class="k">C31</span>, so this band was never usable.</li>
+        </ul>
+        <h3>What the kit does about it</h3>
+        <ul class="small">
+          <li>The <strong>state-dependent authority gate</strong> computes the inhibited band in
+          flight from an onboard estimate of available force. It is a computed condition, not a
+          hard-coded time band, so it moves with the actual trajectory and charge
+          <span class="k">G3</span>.</li>
+          <li>Inside the band the law emits no correction; the ring holds; the phasor parks at its
+          neutral azimuth. Navigation, prediction and logging continue — the predicted impact point
+          keeps being computed, which is what makes the endgame decision possible.</li>
+          <li>Guidance energy spent here is energy wasted against a 1.11:1 authority margin, so
+          not steering is also the correct <em>optimisation</em>.</li>
+        </ul>
+      </div>
+      <div>
+        <div class="callout">
+          <p><strong>The failure this prevents.</strong> Replaying the real flight profile with
+          <em>fixed</em> saturation limits, the reference work lost control between t = 30 s and
+          50 s: T<sub>aero</sub> was too small to slow the ring, so it overshot to ≈ 5.5 rad against
+          a 2.4–3.9 rad reference and escalated toward full rotation. The available alternator
+          current itself falls with relative speed (≈ 10 A at launch → ≈ 5 A at apogee), so a
+          constant limit is wrong by construction. Our limits are
+          <strong>state-dependent everywhere</strong> — and the gate means the law never commands
+          into the dead zone in the first place <span class="k">G15</span>.</p>
+        </div>
+        <figure>
+          <img src="../../notes/figures/p124-fig7.4-7.6-alternator-saturation-and-observer.jpg" alt="Thesis figure: available alternator current falls with relative speed and the controller demand exceeds it near apogee">
+          <figcaption>Available alternator current (≈ 10 A → 5 A → 6–7 A) against controller
+          demand. Where demand exceeds supply, control authority is simply gone
+          <span class="k">[ref]</span> (Fig. 7.4). The limit law reads this curve from
+          <em>measured</em> relative speed rather than modelling it.</figcaption>
+        </figure>
+      </div>
+    </div>
+    <div class="foot"><span>Phase: apogee blackout</span><span class="num">20</span></div>
+  </div>
+</section>
+
+<!-- ================================================================ 21 -->
+<section class="slide" id="s21">
+  <div class="inner">
+    <header class="head">
+      <h2>Phase detail: descent, endgame and function — 55 to 86 s</h2>
+      <p class="sub">Authority returns, the fuze gets its final answer, and the round does what
+        it was told at the gun line.</p>
+    </header>
+    <div class="body cols c3">
+      <div>
+        <h3>Guidance returns (55 to ≈ 80 s)</h3>
+        <ul class="small">
+          <li>q rises again and the same computed gate reopens; control force ≈ 20 N. Second
+          guided segment, and this one only has to trim the impact <span class="k">G3</span>.</li>
+          <li>IPP keeps spending authority in proportion to the removable miss — which is why the
+          1.11:1 margin is usable at all <span class="k">M7</span>.</li>
+          <li><strong>The binding torque case is here, not at apogee:</strong> T<sub>aero</sub>
+          climbs to 2.119 N·m at 86.5 s while available current has fallen to ≈ 5 A, an
+          <strong>11 % shortfall in transient authority</strong> (holding authority is unaffected)
+          <span class="k">C9</span>. Transient response degrades gracefully at the end of flight;
+          it does not lose the ring.</li>
+          <li>Spin is down to ≈ 1 050 rad/s; generation ≈ 1.4 → 2.2 kW.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>The endgame decisions</h3>
+        <ul class="small">
+          <li><strong>Predicted-miss failsafe.</strong> The decision instant is not a clock: it is
+          the first cycle where the predicted miss exceeds 150 m <em>and</em> the remaining authority
+          can no longer bring it inside — the moment the residual stops shrinking. If so, the kit
+          withholds the arm command, latched and irrevocable. Failure direction: a dud
+          <span class="k">F16</span>.</li>
+          <li><strong>Time re-synchronisation.</strong> For the airburst modes the fuze's time
+          setting is corrected against the nav solution so the burst follows the round's
+          <em>actual</em> time of flight (the guidance itself changes it). One-way, bounded,
+          arming-gated; with no correction the fuze functions on its pre-set time
+          <span class="k">F1</span>.</li>
+          <li><strong>Proximity arming of the detector.</strong> The 24 GHz front end duty-cycles
+          in the terminal window and must reject the spin modulation of the ground return at
+          176.3–304.4 Hz <span class="k">F2</span>.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Function (≈ 86 s)</h3>
+        <ul class="small">
+          <li><strong>Proximity</strong>: burst height 2–15 m above the surface.</li>
+          <li><strong>Time</strong>: at the re-synchronised setting, 0.1–199.9 s in 0.1 s steps.</li>
+          <li><strong>Impact</strong>: superquick, short delay (≈ 0.05 s) or graze, as set.</li>
+          <li>Fuze autonomy throughout: it arms and functions on its own silicon and its own
+          power. A guidance-domain fault leaves it whole — hold, derate or fuze-autonomous are the
+          only in-flight responses, and none of them can make the round worse than unguided
+          <span class="k">H10</span> <span class="k">H13</span> <span class="k">R4</span>.</li>
+          <li>Logging writes the flight for the after-action record: round ID, state history,
+          fault classifications, the F16 decision <span class="k">R10</span>.</li>
+        </ul>
+        <figure>
+          <img src="../../design/cad/out/deck-renders/20-part-front-end.png" alt="CAD render of the nose front end with radome and aperture">
+          <figcaption>The nose that decides: radome passes L-band and 24 GHz through one aperture
+          stack <span class="meta">(risk 27)</span>.</figcaption>
+        </figure>
+      </div>
+    </div>
+    <div class="foot"><span>Phase: descent and function</span><span class="num">21</span></div>
+  </div>
+</section>
+
+<!-- ================================================================ 22 -->
+<section class="slide" id="s22">
+  <div class="inner">
+    <header class="head">
+      <h2>Sensor activation and duty, end to end</h2>
+      <p class="sub">Every sensing and power-producing element, when it turns on, at what rate, and
+        who consumes it.</p>
+    </header>
+    <div class="body">
+      <table class="data tight">
+        <tr><th style="width:16%">Element</th><th style="width:14%">Turns on</th><th style="width:14%">Rate / duty</th><th style="width:30%">Consumers</th><th>What it changes when it arrives</th></tr>
+        <tr><td>Setter coil (inductive)</td><td>gun line, before loading</td><td>100 kHz carrier, 1 000 bit/s</td>
+          <td>fuze MCU (always-alive domain) and the kit computer, each listening independently</td>
+          <td>Loads the mission package and the pre-set time; read-back and go/no-go happen here</td></tr>
+        <tr><td>Reserve battery domain</td><td>always alive pre-launch</td><td>≲ 1 W</td>
+          <td>fuze logic, arming path, setter front end</td>
+          <td>Hands over at muzzle exit through a diode-OR and stays the fuze's own supply</td></tr>
+        <tr><td>Machine (generator)</td><td>muzzle exit, t = 0</td><td>2.92 kW peak → 0.24 kW floor</td>
+          <td>bus, dump, buffer</td>
+          <td>Flight power exists; the buffer and dump start work immediately</td></tr>
+        <tr><td>Ring pickoff + spin channel</td><td>from spin-up in the bore (valid after engraving)</td><td>1 kHz, loop side</td>
+          <td>M4F control loop (G5), limit laws (G15), EMI notch (F15), nav filter</td>
+          <td>Closes the ring-angle loop; makes every limit measurable instead of modelled</td></tr>
+        <tr><td>Ring IMU</td><td>muzzle exit, across the optical link</td><td>≥ 100 Hz (200 Hz design)</td>
+          <td>M7 navigation filter</td>
+          <td>Attitude and gap-filling with the spin already removed mechanically</td></tr>
+        <tr><td>GNSS front end</td><td>after hand-over; fix in the opening seconds</td><td>5–15 Hz solutions</td>
+          <td>navigation filter; authenticated via the crypto engine</td>
+          <td><strong>Opens the guided phase</strong> (with arming distance): nav convergence is the
+            gate's binding condition at ≈ 15 s</td></tr>
+        <tr><td>Magnetometer</td><td>with the nav set</td><td>≥ 100 Hz, band ≤ 50 Hz</td>
+          <td>nav filter (absolute ring angle, G6)</td>
+          <td>Earth-referenced heading; without it the ring-angle line costs ≈ 1.9 m of the budget</td></tr>
+        <tr><td>Barometer</td><td>with the nav set</td><td>≈ 10 Hz</td>
+          <td>environment / aero model (density)</td>
+          <td>Tightens the q estimate that the authority gate depends on</td></tr>
+        <tr><td>Coil-current and bus sensing</td><td>from t = 0</td><td>1 kHz, loop side</td>
+          <td>limit law (G15), F15 current compensation, H8 current loop</td>
+          <td>Turns the limit law and the magnetic calibration into measured, not assumed, behaviour</td></tr>
+        <tr><td>24 GHz Doppler front end</td><td>terminal window, duty-cycled</td><td>≈ 1.5 W when active</td>
+          <td>fuze MCU only</td>
+          <td>Proximity mode becomes available; spin-modulation rejection is the requirement</td></tr>
+        <tr><td>Thermometry (dump + interface)</td><td>from t = 0</td><td>slow</td>
+          <td>dump protection (H9), limit multiplier to the guidance law</td>
+          <td>Can deliberately trade guidance authority for thermal margin before it ever trips</td></tr>
+        <tr class="tot"><td>BIT (pre-launch + in-flight)</td><td>gun line, then continuous</td><td>POST, then classify</td>
+          <td>crew go/no-go; then hold / derate / fuze-autonomous</td>
+          <td>Every fault class leaves a mode no worse than unguided <span class="k">R4</span></td></tr>
+      </table>
+    </div>
+    <div class="foot"><span>Sensor activation</span><span class="num">22</span></div>
+  </div>
+</section>
+
+<!-- ================================================================ 23 -->
+<section class="slide" id="s23">
+  <div class="inner">
+    <header class="head">
+      <h2>Flight logic: modes and the fault ladder</h2>
+      <p class="sub">The software's whole job is one rule: whatever fails, the round must end up
+        no worse than unguided.</p>
+    </header>
+    <div class="body cols c-side">
+      <div>
+        <h3>Mode sequence</h3>
+        <table class="data tight">
+          <tr><th>Mode</th><th>Entry condition</th><th>Behaviour</th></tr>
+          <tr><td><strong>Safe / pre-launch</strong></td><td>on the gun line</td>
+            <td>Reserve domain only. Setter programming, read-back, pre-launch go/no-go. No path
+            to the initiator is complete.</td></tr>
+          <tr><td><strong>Armed, sensing</strong></td><td>setback and spin stimuli seen, arm command
+            issued after interlocks</td>
+            <td>S&amp;A rotor in line; loop running; navigation acquiring; guidance inhibited by the
+            authority gate until nav converges.</td></tr>
+          <tr><td><strong>Guided</strong></td><td>arming complete <em>and</em> nav converged
+            <em>and</em> gate open (q above floor)</td>
+            <td>IPP at ≈ 6 Hz commands ring angles; phasor realises them; limits bound every
+            actuation.</td></tr>
+          <tr><td><strong>Coasting in the band</strong></td><td>gate computes insufficient authority</td>
+            <td>No commands, ring holds, prediction and logging continue.</td></tr>
+          <tr><td><strong>Endgame</strong></td><td>last usable window</td>
+            <td>Final corrections; F16 decision; fuze time re-synchronised; proximity detector on.</td></tr>
+          <tr><td><strong>Function / dud</strong></td><td>per mode setting, or failsafe</td>
+            <td>Burst as set, or a latched dud on predicted miss. Fuze autonomous in either case.</td></tr>
+        </table>
+      </div>
+      <div>
+        <h3>The fault ladder — three in-flight responses and no fourth</h3>
+        <table class="data tight">
+          <tr><th>Response</th><th>What it does</th><th>When</th></tr>
+          <tr><td><strong>Hold</strong></td><td>Last valid ring-angle command is held</td>
+            <td>Transient guidance/nav fault the filter can bridge</td></tr>
+          <tr><td><strong>Derate</strong></td><td>The limit law's multiplier lowers the current limit —
+            authority traded for margin, and the guidance law is <em>told</em>, so it spends the
+            remaining authority knowingly</td>
+            <td>Thermal margin loss, or supply limitation <span class="k">H9</span></td></tr>
+          <tr><td><strong>Fuze-autonomous</strong></td><td>Guidance stops correcting; the fuze functions
+            on its pre-set time and its own sensors</td>
+            <td>Unrecoverable guidance-domain fault <span class="k">F1</span></td></tr>
+        </table>
+        <p class="small">Note what is absent: there is no shutdown response. In flight it would have
+        nowhere safe to go, and it would violate the rule rather than satisfy it. The reserve and
+        arming path sits outside the guidance domain's fault set by construction — separate MCU,
+        separate power, optical isolation — so a guidance fault can never reach the firing chain
+        <span class="k">H10</span> <span class="k">H12</span>.</p>
+        <div class="callout blue">
+          <p><strong>The acceptance test.</strong> Every fault class is checked against the rule
+          "no mode may be worse than unguided" <span class="k">R4</span>. That is also why the
+          predicted-miss failsafe withholds the arm command rather than adding any new mechanism to
+          the explosive train: its failure direction is a dud, like every other safety decision in
+          this design.</p>
+        </div>
+      </div>
+    </div>
+    <div class="foot"><span>Flight logic</span><span class="num">23</span></div>
+  </div>
+</section>
+
+<!-- ================================================================ 24 -->
+<section class="slide" id="s24">
+  <div class="inner">
+    <header class="head">
+      <h2>The GNC stack</h2>
+      <p class="sub">Five layers, each with its own rate, its own processor, and its own error
+        allocation. This is the architecture the CEP claim rests on.</p>
+    </header>
+    <div class="body cols c-side">
+      <div>
+        <table class="data tight">
+          <tr><th>Layer</th><th>Rate</th><th>Input → output</th><th>Where</th></tr>
+          <tr><td><strong>1 · Mission data</strong></td><td>once, at the gun line</td>
+            <td>setter package → target, met, charge state, time base, keys</td>
+            <td>reserve domain</td></tr>
+          <tr><td><strong>2 · Navigation</strong><td></td><td></td><td></td></tr>
+          <tr><td>&nbsp;&nbsp;· sensor fusion (EKF)</td><td>≥ 100 Hz</td>
+            <td>IMU + GNSS + magnetometer + baro + spin → nav state and covariance</td>
+            <td>M7 core</td></tr>
+          <tr><td><strong>3 · Guidance</strong></td><td>≈ 6 Hz (≤ 10 Hz ceiling)</td>
+            <td>nav state + target + aero model → predicted impact point → ring-angle reference θ<sub>gk</sub></td>
+            <td>M7 core</td></tr>
+          <tr><td><strong>4 · Allocation</strong></td><td>per guidance cycle</td>
+            <td>θ<sub>gk</sub> + available authority → dwell-fraction phasor (aim azimuth, duty)</td>
+            <td>M7 core</td></tr>
+          <tr><td><strong>5 · Control</strong></td><td>1 kHz</td>
+            <td>angle error → P over PI cascade → converter current setpoint, inside state-dependent limits</td>
+            <td>M4F core</td></tr>
+          <tr class="tot"><td><strong>Actuation</strong></td><td>continuous</td>
+            <td>current → machine torque → ring angle; the force direction follows the ring</td>
+            <td>hardware</td></tr>
+        </table>
+        <p class="small">The split is deliberate. Control timing on a dedicated core with
+        hardware-timed sampling (HRTIM → ADC → DMA) is independent of the guidance load; the
+        guidance deadline is one propagation per ≈ 0.17 s interval instead of a hard 1 ms
+        <span class="k">H1</span> <span class="k">G13</span>. Overruns degrade gracefully: the law
+        skips an interval rather than disturbing the loop.</p>
+      </div>
+      <div>
+        <figure class="plain">
+          <img src="../../design/atlas/out/sheet4.svg" alt="Atlas sheet four: guidance, control and the error budget to the CEP claim">
+          <figcaption>Architecture atlas sheet 4 — the law, the loop, the limits, and the budget
+          that ends in the CEP claim, with criterion IDs on every row.</figcaption>
+        </figure>
+        <figure>
+          <img src="../../design/cad/out/deck-renders/19-part-electronics-stack.png" alt="CAD render of the annular electronics stack in the well spigot">
+          <figcaption>Where the layers physically live: the annular board stack in the well spigot,
+          6–10 layers about the reserved train bore <span class="k">H5</span>.</figcaption>
+        </figure>
+      </div>
+    </div>
+    <div class="foot"><span>GNC stack</span><span class="num">24</span></div>
+  </div>
+</section>
+
+<!-- ================================================================ 25 -->
+<section class="slide" id="s25">
+  <div class="inner">
+    <header class="head">
+      <h2>Guidance deep dive: impact-point prediction, gated and time-shared</h2>
+      <p class="sub">The law is published prior art for this airframe. What we add is the gate that
+        makes it work on hardware that loses authority near apogee.</p>
+    </header>
+    <div class="body cols c-side">
+      <div>
+        <h3>One guidance cycle, at ≈ 6 Hz</h3>
+        <ol class="small">
+          <li>Read the nav state (position, velocity, attitude) and its covariance.</li>
+          <li><strong>Propagate to impact</strong> with the onboard 7-DOF trajectory model —
+          including the always-on steering force and the phasor's commanded wobble, both subtracted
+          so the law steers the mean trajectory <span class="k">G4</span>.</li>
+          <li>Compare the predicted impact point with the loaded target coordinates → predicted
+          miss vector.</li>
+          <li>Estimate the currently <strong>available guidance force</strong> from dynamic
+          pressure. If below the floor (q ≈ 23 kPa class), inhibit: this is the apogee band,
+          computed rather than scheduled <span class="k">G3</span>.</li>
+          <li>Command the earth-referenced ring angle that points the force at the removable miss,
+          spending authority in proportion to the miss it can actually remove.</li>
+          <li>Realise it as a <strong>dwell-fraction phasor</strong> and hand the position
+          reference to the 1 kHz loop.</li>
+        </ol>
+        <div class="eq">d = a<sub>cmd</sub> / a<sub>auth</sub>(t) &nbsp;&nbsp;·&nbsp;&nbsp; park at ±90°<small>duty fraction of each cycle at the aim azimuth; the cycle-averaged force is the command</small></div>
+        <p class="small">The cycle length is bounded below by the outer loop's 0.103 s settling
+        (the ring must settle inside each dwell) and above by the 0.17 s guidance interval. The
+        predecessor study ran this form over 250 Monte-Carlo flights and closed its accuracy gate
+        with the duty peaking at ≈ 0.71 <span class="k">G2</span>.</p>
+      </div>
+      <div>
+        <h3>Why this law and not another</h3>
+        <ul class="small">
+          <li>The authority margin is <strong>1.11:1</strong>. IPP spends force in proportion to the
+          removable miss, so it survives a thin budget; path-following would spend it keeping a
+          shape, and terminal-only guidance would inherit the whole midcourse error with less time
+          <span class="k">M7</span>.</li>
+          <li>It closes on <em>measured</em> state, so muzzle-velocity spread, met error and launch
+          perturbation are absorbed rather than predicted. The muzzle-velocity residual disappears
+          from the budget for exactly this reason.</li>
+          <li>It needs the target in the round — which is why the setter package carries target
+          coordinates, not a mode word <span class="k">F12</span>.</li>
+        </ul>
+        <h3>What is claimed, and what is not</h3>
+        <div class="callout">
+          <p><strong>Not claimed:</strong> IPP itself. Zhang, Yao &amp; Zheng (Chinese Journal of
+          Aeronautics, 2019) publish impact-point-prediction guidance for a dual-spin projectile
+          with fixed canards — this exact airframe. <strong>Claimed:</strong> the
+          <em>state-dependent authority gate</em> and the layered limit law that make the law usable
+          where the published bench work lost the ring, plus the propagation obligations (always-on
+          force, phasor wobble) that the published form does not carry
+          <span class="k">G1</span> <span class="k">G3</span> <span class="k">G15</span>.</p>
+        </div>
+        <p class="small"><strong>Load it implies:</strong> ≈ 300 propagations per flight, each an
+        integration to impact, budgeted at ≤ 100 ms against a ≈ 0.17 s interval and estimated at
+        5–20 ms <span class="k">H4</span>. Roughly 2–7 % of the M7 core's time averaged.</p>
+      </div>
+    </div>
+    <div class="foot"><span>Guidance</span><span class="num">25</span></div>
+  </div>
+</section>
+
+<!-- ================================================================ 26 -->
+<section class="slide" id="s26">
+  <div class="inner">
+    <header class="head">
+      <h2>Control deep dive: cascade, disturbance observer, live limits</h2>
+      <p class="sub">Hardware-validated in the reference work, and the one part of this design that
+        has already been shown to behave on a bench.</p>
+    </header>
+    <div class="body cols c-side">
+      <div>
+        <figure>
+          <img src="../../notes/figures/p70-fig4.1-cascade-control-structure.jpg" alt="Thesis figure: cascade control block diagram, position loop over velocity loop over the plant">
+          <figcaption>The inherited cascade: P outer (position) over PI inner (velocity) over the
+          plant <span class="k">[ref]</span> (Fig. 4.1). Inner loop kills T<sub>aero</sub> and
+          body-spin disturbances before the outer loop sees them.</figcaption>
+        </figure>
+        <figure>
+          <img src="../../notes/figures/p112-fig6.5-disturbance-observer-block-diagram.jpg" alt="Thesis figure: frequency-domain disturbance observer block diagram">
+          <figcaption>Frequency-domain disturbance observer:
+          û = Q(s)·[Ĝ⁻¹(s)·y − u], with Q = 1/(0.5s+1) deliberately slow
+          <span class="k">[ref]</span> (Fig. 6.5) <span class="k">G14</span>.</figcaption>
+        </figure>
+      </div>
+      <div>
+        <h3>The numbers</h3>
+        <table class="data tight">
+          <tr><th>Element</th><th>Value</th><th>ID</th></tr>
+          <tr><td>Inner velocity loop</td><td class="n">PI · 0.29 + 7.82/s · 33.6 Hz</td><td><span class="k">G9</span></td></tr>
+          <tr><td>Outer position loop</td><td class="n">P · gain 29.7 · 6.2 Hz</td><td><span class="k">G8</span></td></tr>
+          <tr><td>Settling (2 % band)</td><td class="n">0.103 s outer · ≈ 19 ms inner</td><td><span class="k">G10</span></td></tr>
+          <tr><td>Loop rate</td><td class="n">1 kHz, single precision</td><td><span class="k">G13</span> <span class="k">H4</span></td></tr>
+          <tr><td>Observer filter</td><td class="n">Q = 1/(0.5s+1), corner ≈ 0.32 Hz</td><td><span class="k">G14</span></td></tr>
+          <tr><td>Anti-windup</td><td>clamping, re-evaluated against the <em>live</em> limit every cycle</td><td><span class="k">G12</span></td></tr>
+          <tr class="tot"><td>Overshoot spec</td><td class="n">≤ 10 % of step, never past δ = 0.1π rad</td><td><span class="k">G11</span></td></tr>
+        </table>
+        <h3>The limit law — the part that is ours</h3>
+        <div class="eq">I<sub>lim</sub> = min( 2·Î<sub>disturbance</sub> , I<sub>avail</sub>(ω<sub>rel</sub>) ) &nbsp;&nbsp;·&nbsp;&nbsp; V<sub>lim</sub> = 26 (rad/s)/A × I<sub>lim</sub><small>every limit state-dependent, by construction</small></div>
+        <ul class="small">
+          <li>The observer route sizes authority to twice the aerodynamic load actually present;
+          the capability route saturates the command to what the machine can supply at the
+          <em>measured</em> relative speed (≈ 10 A launch → 5 A apogee → 6–7 A at 85 s). No regime
+          survives in which a constant limit applies <span class="k">G15</span>.</li>
+          <li>The combined current-plus-velocity form is what produced <strong>no overshoot and a
+          symmetric response</strong> in the reference's hardware tests — either alone leaves one of
+          the two observed failure routes open.</li>
+          <li>The slow observer is deliberate: T<sub>aero</sub> and T<sub>f</sub> have no
+          high-frequency content, and estimate noise in a hard clamp is the route back to the
+          limit-cycle behaviour the observer exists to remove.</li>
+          <li><span class="flagtxt">Accepted residual:</span> the observer is an estimate, not a
+          measurement, so the 2× factor must be justified as a bound — and a defect in it would
+          affect the gate, the limits and the anti-windup in the same direction (risk 17). The
+          third driver, thermal margin, is coordinated the same way <span class="k">H9</span>.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot"><span>Control</span><span class="num">26</span></div>
+  </div>
+</section>
+
+<!-- ================================================================ 27 -->
+<section class="slide" id="s27">
+  <div class="inner">
+    <header class="head">
+      <h2>Navigation deep dive: 3.7 m, and what it depends on</h2>
+      <p class="sub">The budget closes from below with 26 % margin — but it is a statement about
+        GNSS availability, not about inertial grade.</p>
+    </header>
+    <div class="body cols c-side">
+      <div>
+        <h3>The bottom-up budget</h3>
+        <table class="data tight">
+          <tr><th>Term</th><th>1σ</th><th>What it rests on</th></tr>
+          <tr><td>GNSS position at impact</td><td class="n">3.0 m</td>
+            <td>multi-constellation single frequency, spin-tolerant aperture (spin-induced C/N₀ loss
+            included) <span class="k">N3</span></td></tr>
+          <tr><td>IMU + filter residual</td><td class="n">2.0 m</td>
+            <td>tactical MEMS on the <strong>de-spun ring</strong>, continuous aiding
+            <span class="k">N6</span> <span class="k">N8</span></td></tr>
+          <tr><td>Time sync + lever arm</td><td class="n">1.0 m</td>
+            <td>single hardware clock, stamps at conversion ≤ 100 µs <span class="k">H6</span></td></tr>
+          <tr class="tot"><td>RSS</td><td class="n">3.7 m</td>
+            <td>against the 5 m allocation in the error budget — ≈ 26 % margin <span class="k">N1</span></td></tr>
+        </table>
+        <div class="callout">
+          <p><strong>The conditionality worth saying out loud.</strong> Unaided, an attitude error of
+          just 0.1° mis-resolving the drag deceleration gives a phantom 0.09 m/s² that integrates to
+          <strong>≈ 110 m over 50 s</strong>. The 5 m line holds while the receiver tracks, so the
+          outage tolerance is a <em>bounded requirement</em>, not a graceful-degradation sentence —
+          and anti-jam GNSS with INS coasting, not a seeker, is the GPS-denied answer
+          <span class="k">N4</span> <span class="k">X17</span>.</p>
+        </div>
+      </div>
+      <div>
+        <h3>Electromagnetic coexistence, solved by measurement</h3>
+        <p class="small">Three magnetic disturbances share the nose with the magnetometer and the
+        receiver. Each is a function of something the kit already measures, so each is rejected
+        with signals that already exist <span class="k">F15</span>:</p>
+        <table class="data tight">
+          <tr><th>Disturbance</th><th>Mechanism</th></tr>
+          <tr><td>Rotating magnet field at <strong>1 234–2 131 Hz</strong>
+            (7 pole pairs × the relative rotation)</td>
+            <td><strong>Coherent notch</strong> locked to the measured relative rotation — the same
+            signal the limit laws read</td></tr>
+          <tr><td>Coil-current field, drifting with flight phase</td>
+            <td><strong>Compensated against measured coil current</strong> in the in-flight
+            calibration model — which is exactly what the ring-angle spec asked for</td></tr>
+          <tr><td>Converter switching harmonics (the only broadband source)</td>
+            <td><strong>Specified</strong>: ≥ 100 kHz with controlled edge rate and L-band
+            attenuation to the GNSS threshold</td></tr>
+        </table>
+        <p class="small">And the negative result, which is the honest half: for the magnetometer
+        the interference and the measurand share the same band <em>and</em> the same space, so
+        shielding cannot separate them. The answer is spectral and temporal, and it costs no new
+        hardware. If the magnetometer ever proves unworkable, the priced fallback (pre-launch
+        alignment plus gyrocompassing) costs ≈ 4 m of CEP — 27.9 m instead of 23.9, margin 7 %
+        instead of 20 % <span class="k">G6</span>.</p>
+      </div>
+    </div>
+    <div class="foot"><span>Navigation</span><span class="num">27</span></div>
+  </div>
+</section>
+
+<!-- ================================================================ 28 -->
+<section class="slide" id="s28">
+  <div class="inner">
+    <header class="head">
+      <h2>The error budget, and where it ends</h2>
+      <p class="sub">Seven lines of 1σ allocations, combined in quadrature, converted to a CEP.
+        The largest single bar is the guidance model's own propagation error.</p>
+    </header>
+    <div class="body cols c-side">
+      <div>
+        <figure class="plain">
+          <svg viewBox="0 0 620 300" role="img" aria-label="Error budget waterfall: seven terms in root-sum-square giving 20.3 metres, or 23.9 metres CEP" style="width:100%;height:auto;font-family:var(--font)">
+            <g font-size="11" fill="#3f4a56">
+              <!-- scale: 1 m = 8.2 px -->
+              <g>
+                <rect x="30" y="40" width="52" height="106" fill="#0b5cad" opacity=".85"/>
+                <text x="56" y="32" text-anchor="middle" fill="#12171d" font-weight="650">13</text>
+                <text x="56" y="252" text-anchor="middle">IPP prop.</text><text x="56" y="266" text-anchor="middle">+ model</text>
+              </g>
+              <g>
+                <rect x="100" y="114" width="52" height="74" fill="#0b5cad" opacity=".7"/>
+                <text x="126" y="106" text-anchor="middle" fill="#12171d" font-weight="650">9.1</text>
+                <text x="126" y="252" text-anchor="middle">ring</text><text x="126" y="266" text-anchor="middle">angle</text>
+              </g>
+              <g>
+                <rect x="170" y="138" width="52" height="50" fill="#0b5cad" opacity=".6"/>
+                <text x="196" y="130" text-anchor="middle" fill="#12171d" font-weight="650">6</text>
+                <text x="196" y="252" text-anchor="middle">actuation</text><text x="196" y="266" text-anchor="middle">+ lag</text>
+              </g>
+              <g>
+                <rect x="240" y="151" width="52" height="37" fill="#a4551a" opacity=".8"/>
+                <text x="266" y="143" text-anchor="middle" fill="#12171d" font-weight="650">5</text>
+                <text x="266" y="252" text-anchor="middle">meteo</text><text x="266" y="266" text-anchor="middle">residual</text>
+              </g>
+              <g>
+                <rect x="310" y="126" width="52" height="62" fill="#a4551a" opacity=".8"/>
+                <text x="336" y="118" text-anchor="middle" fill="#12171d" font-weight="650">8</text>
+                <text x="336" y="252" text-anchor="middle">ballistic</text><text x="336" y="266" text-anchor="middle">+ aero</text>
+              </g>
+              <g>
+                <rect x="380" y="163" width="52" height="25" fill="#a4551a" opacity=".6"/>
+                <text x="406" y="155" text-anchor="middle" fill="#12171d" font-weight="650">3</text>
+                <text x="406" y="252" text-anchor="middle">fuze +</text><text x="406" y="266" text-anchor="middle">detonation</text>
+              </g>
+              <g>
+                <rect x="450" y="147" width="52" height="41" fill="#1c6b3f" opacity=".8"/>
+                <text x="476" y="139" text-anchor="middle" fill="#12171d" font-weight="650">5</text>
+                <text x="476" y="252" text-anchor="middle">navigation</text><text x="476" y="266" text-anchor="middle">(3.7 derived)</text>
+              </g>
+              <g>
+                <rect x="526" y="23" width="66" height="165" fill="#12171d"/>
+                <text x="559" y="16" text-anchor="middle" fill="#12171d" font-weight="650">20.3</text>
+                <text x="559" y="252" text-anchor="middle" fill="#12171d">RSS</text><text x="559" y="266" text-anchor="middle">→ CEP 23.9</text>
+              </g>
+              <line x1="24" y1="188" x2="516" y2="188" stroke="#12171d" stroke-width="1"/>
+              <text x="24" y="30">1σ radial allocations (m), combined in quadrature</text>
+            </g>
+          </svg>
+          <figcaption>Waterfall of the 1σ allocations <span class="k">G4</span>. Blue bars are
+          guidance and control, orange the environment and model, green navigation. Target-location
+          error is deliberately outside this chart <span class="k">M5</span>.</figcaption>
+        </figure>
+      </div>
+      <div>
+        <table class="data tight">
+          <tr><th>Line</th><th>1σ</th><th>Note</th><th>ID</th></tr>
+          <tr><td>Navigation at impact</td><td class="n">5</td><td>3.7 m derived below the allocation</td><td><span class="k">N1</span></td></tr>
+          <tr><td>Guidance and control</td><td class="n">17</td><td>decomposes as follows</td><td><span class="k">G4</span></td></tr>
+          <tr><td>&nbsp;&nbsp;IPP propagation + model</td><td class="n">13</td><td>must include the always-on force and the phasor wobble</td><td><span class="k">G4</span></td></tr>
+          <tr><td>&nbsp;&nbsp;Ring-angle direction</td><td class="n">9.1</td><td>1.28° (1σ): 1.0° absolute + 0.8° relative</td><td><span class="k">G5</span> <span class="k">G6</span></td></tr>
+          <tr><td>&nbsp;&nbsp;Actuation and loop lag</td><td class="n">6</td><td>settling and tracking error</td><td><span class="k">G11</span></td></tr>
+          <tr><td>Meteo residual</td><td class="n">5</td><td>forecast error over the <em>remaining</em> flight only</td><td><span class="k">G4</span></td></tr>
+          <tr><td>Ballistic / aero model</td><td class="n">8</td><td>coefficient uncertainty, carried explicitly</td><td><span class="k">G4</span></td></tr>
+          <tr><td>Fuze and detonation</td><td class="n">3</td><td>small at this calibre</td><td><span class="k">G4</span></td></tr>
+          <tr class="tot"><td>RSS → CEP = 1.1774 σ</td><td class="n">20.3 → 23.9 m</td>
+            <td>20 % margin under the 30 m claim</td><td><span class="k">G4</span></td></tr>
+        </table>
+        <p class="small">Two structural notes. The muzzle-velocity residual is <em>absorbed into the
+        navigation state</em> — under continuous prediction an already-incurred velocity error is
+        measured, not predicted. And the two model-error terms (13 m and 8 m) are correlated, so
+        the Monte-Carlo campaign samples them with a stated correlation instead of assuming
+        independence (risk 16) <span class="k">R5</span>.</p>
+        <p class="small">Because the requirement is a 30 m figure, the published result is CEP
+        <em>and</em> the fraction of rounds breaching 30 m, per condition. A median 20 % inside the
+        claim is not the same as meeting it.</p>
+      </div>
+    </div>
+    <div class="foot"><span>Error budget</span><span class="num">28</span></div>
+  </div>
+</section>
+
+<!-- ================================================================ 29 -->
+<section class="slide" id="s29">
+  <div class="inner">
+    <header class="head">
+      <h2>Where the margins are thin</h2>
+      <p class="sub">Every design has the places where it is nearly wrong. Here are ours, with the
+        number in each case.</p>
+    </header>
+    <div class="body">
+      <table class="data">
+        <tr><th style="width:20%">Margin</th><th style="width:16%">The number</th><th style="width:40%">Why it is thin</th><th>What would relieve it</th><th>ID</th></tr>
+        <tr><td><strong>Correction authority</strong></td><td class="n">1.11 : 1</td>
+          <td>407 m of correction needed to capture 80 % of the unguided population against 450 m
+            available from 20 N over the 45 s terminal window. And 450 m assumes continuous
+            full-force, which the gate refutes — the true figure is worse and unquantified until
+            the campaign runs.</td>
+          <td>More force via cant (costs dissipation), or a lower capture fraction (67 % at 15 N)</td>
+          <td><span class="k">M7</span> <span class="k">C8</span></td></tr>
+        <tr><td><strong>Apogee torque</strong></td><td class="n">1.7 : 1</td>
+          <td>T<sub>aero</sub> = 0.1706 N·m against a 0.10 N·m friction budget. Above a measured
+            friction of 0.1567 N·m the architecture has no controllable window at all.</td>
+          <td>Bearing selection and preload discipline; the flat-friction spec; rig measurement</td>
+          <td><span class="k">C12</span> <span class="k">C13</span></td></tr>
+        <tr><td><strong>End-of-flight transient authority</strong></td><td class="n">−11 %</td>
+          <td>At 86.5 s the symmetric criterion wants 5.64 A while ≈ 5 A is available. Holding is
+            unaffected; transient response is short exactly where the guidance demand is falling.</td>
+          <td>Low-relative-speed current capability, or control-pair cant</td>
+          <td><span class="k">C9</span> <span class="k">C18</span></td></tr>
+        <tr><td><strong>Stability at the envelope corner</strong></td><td class="n">5 % of C<sub>Mα</sub></td>
+          <td>The conservative corner clears the Sg floor of 1.3 by 5 %, and that 5 % <em>is</em>
+            the canard allowance there. The reference inertia pair would have flattered this.</td>
+          <td>Canard sizing discipline (cant over area), and the P6 re-baseline of the real shell</td>
+          <td><span class="k">S1</span> <span class="k">S2</span></td></tr>
+        <tr><td><strong>Guidance window floor</strong></td><td class="n">q ≈ 23 kPa</td>
+          <td>The span-capped canards cannot make 18.1 N below it. The window is narrower than the
+            force profile alone suggests, against an already-thin authority margin.</td>
+          <td>Cant angle first (it buys force at no stability cost); chord only weakly</td>
+          <td><span class="k">C31</span> <span class="k">C43</span></td></tr>
+        <tr><td><strong>Canard sizing freedom</strong></td><td class="n">k ∈ (0.59, 0.89)</td>
+          <td>The control pair must sit within ≈ ±20 % of the reference's size to satisfy the
+            apogee floor and the descent ceiling at once.</td>
+          <td>A lower-friction bearing widens the window directly</td>
+          <td><span class="k">C12</span></td></tr>
+        <tr><td><strong>Navigation conditionality</strong></td><td class="n">110 m per 0.1°</td>
+          <td>Unaided, the budget is two orders of magnitude away from its allocation. The 5 m
+            line is a GNSS-availability claim.</td>
+          <td>Bounded outage tolerance (N4, owed), anti-jam aperture (N5)</td>
+          <td><span class="k">N1</span> <span class="k">N4</span></td></tr>
+        <tr><td><strong>Kit mass</strong></td><td class="n">2× over budget?</td>
+          <td><span class="flagtxt">The CAD's measured rollup is 2.7–4.8 kg against a 1.4 kg
+            benchmark</span> — the newest and largest open item, and it moves the setback load with
+            it (slide 34).</td>
+          <td>Aluminium structure, ring-diameter trade (C44 axial-flux), retention redesign</td>
+          <td><span class="k">P9</span> <span class="k">C40</span></td></tr>
+      </table>
+    </div>
+    <div class="foot"><span>Thin margins</span><span class="num">29</span></div>
+  </div>
+</section>
+
+<!-- ================================================================ 30 -->
+<section class="slide" id="s30">
+  <div class="inner">
+    <header class="head">
+      <h2>Energy and thermal: where 121 kJ goes</h2>
+      <p class="sub">The architecture's hardest problem is not the guidance. It is that holding the
+        ring is a kilowatt-class load that must leave the kit in 90 seconds.</p>
+    </header>
+    <div class="body cols c-side">
+      <div>
+        <h3>The load</h3>
+        <p>Holding the ring against T<sub>aero</sub> at full body spin absorbs
+        <strong>P = T<sub>aero</sub> × ω<sub>body</sub></strong> — <strong>2.92 kW peak,
+        ≈ 121 kJ integrated</strong> over the flight <span class="k">C42</span>. It is not
+        avoidable: 18.1 N of guidance force sets cant ≥ 10°, cant sets T<sub>aero</sub>, and
+        T<sub>aero</sub> × ω is the power. The reference bench rig scaled body spin 21.6× down,
+        which is why it never saw this <span class="k">C43</span>.</p>
+        <h3>Three exclusions, then the answer</h3>
+        <table class="data tight">
+          <tr><th>Route</th><th>Why it fails</th></tr>
+          <tr><td>Store it</td><td>1.5 F at 400 V (7.5 F at the 180 V bus): will not fit, will not
+            survive 15 000 g</td></tr>
+          <tr><td>Absorb it in the kit's metal</td><td>134–179 K rise in the kit's own 1.5–2.0 kg;
+            holding 100 K would need ≈ 2.7 kg against a 1.4 kg budget</td></tr>
+          <tr><td>Blow it into the airstream</td><td>≈ 350 W realisable: 26 % of the integral and
+            12 % of the peak</td></tr>
+          <tr class="tot"><td><strong>Conduct it into the shell</strong></td>
+            <td>121 kJ raises <strong>45 kg of steel by 5.8 K</strong> (asymptote; 25–35 K on the
+            flight-time participating mass of kit + nose). The shell is effectively an infinite
+            sink — so the requirement becomes an <em>interface</em>, not a radiator
+            <span class="k">W7</span></td></tr>
+        </table>
+      </div>
+      <div>
+        <h3>The interface is specified, not inherited</h3>
+        <ul class="small">
+          <li>Requirement: <strong>≥ 58 W/K at the peak</strong>, ≥ 20–27 W/K on the flight
+          average <span class="k">W7</span>.</li>
+          <li>A bare 2″-12 UNS thread plus seat delivers <strong>≈ 3–16 W/K</strong> (central ≈ 8).
+          Short by ≈ 7× at the peak. So the joint is <em>designed</em> <span class="k">P6</span>:
+            <ul>
+              <li>the <strong>well bore as a contacting radial path</strong> (≈ 17× the flank area
+              → 19–94 W/K; a clearance fit does not count — an air film is ≈ 5 W/K),</li>
+              <li><strong>engagement length</strong> cut to full cavity depth (≈ 90 mm, the
+              predecessor CAD's choice) takes the bare joint to ≈ 12–57 W/K at no mass cost,</li>
+              <li>a <strong>conductive interlayer</strong> — measured bolted-joint data shows a thin
+              TIM moving conductance 24–38× where extra clamping moves it little,</li>
+              <li>and the <strong>torque spec becomes a thermal requirement</strong>, since contact
+              conductance rises with preload (h<sub>c</sub> ∝ P^0.95).</li>
+            </ul></li>
+          <li>Verified as a measurement in W/K on the rig, not argued <span class="k">R7</span>.</li>
+        </ul>
+        <h3>Everything else in the thermal ledger</h3>
+        <ul class="small">
+          <li><strong>Bearing friction is heat too:</strong> T<sub>f</sub>·ω ≈ 140–190 W continuous
+          (12–17 kJ per flight) dissipated <em>in the bearings</em>, which is why the preload trade
+          is three-way and why thermal-preload runaway is a named risk
+          <span class="k">C13</span> <span class="k">C23</span>.</li>
+          <li><strong>Peak is buffered by the kit's own metal</strong> (≈ 400–450 J/K, ≈ +40 K
+          transient); the interface is sized on the 90 s average <span class="k">P6</span>.</li>
+          <li>The dump's first protection action <strong>derates guidance authority</strong> rather
+          than trips — trading accuracy for thermal margin visibly, through the same limit law
+          <span class="k">H9</span>.</li>
+          <li><span class="flagtxt">One reconciliation owed (finding T3): the reserved train bore
+          costs ≈ 7 % of slot depth, which scales C19's torque and C42's 2.92 kW by ≈ 0.93 — and
+          with them P6's interface requirement.</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot"><span>Energy and thermal</span><span class="num">30</span></div>
+  </div>
+</section>
+
+</body>
+</html>
