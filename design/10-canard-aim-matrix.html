@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>DRISHTI-PGK — canard angular positions for LEFT / RIGHT / UP / DOWN</title>
+<style>
+  :root{
+    --ink:#12171d; --ink2:#3f4a56; --ink3:#6d7987;
+    --rule:#d9dee4; --band:#f2f5f8; --paper:#ffffff;
+    --accent:#0b5cad; --flag:#a4551a;
+    --tint:#e1ebf6; --flagt:#f4e7dc;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; padding:32px 28px 56px;
+    background:var(--paper); color:var(--ink);
+    font-family:"Liberation Sans","Helvetica Neue",Arial,sans-serif;
+    font-size:15px; line-height:1.5;
+  }
+  .wrap{max-width:1180px; margin:0 auto}
+  h1{font-size:26px; line-height:1.25; margin:0 0 10px; letter-spacing:-.01em}
+  h2{font-size:16px; text-transform:uppercase; letter-spacing:.08em;
+     color:var(--ink3); margin:34px 0 12px; font-weight:600}
+  .sub{color:var(--ink2); max-width:1000px; margin:0 0 6px}
+  .conv{color:var(--flag); max-width:1000px; margin:10px 0 0; font-size:14px}
+  .grid{display:grid; grid-template-columns:1fr 1fr; gap:22px; margin-top:22px}
+  .card{border:1px solid var(--rule); border-radius:6px; overflow:hidden; background:var(--paper)}
+  .card .head{background:var(--band); border-bottom:1px solid var(--rule); padding:12px 16px 11px}
+  .card .name{font-size:21px; font-weight:700; letter-spacing:.02em}
+  .card .cmd{font-size:15px; color:var(--accent); font-weight:600; margin-top:2px}
+  .card svg{display:block; width:100%; height:auto}
+  .finlab{font-size:14px; font-weight:700}
+  .sl{fill:var(--accent)} .cl{fill:var(--flag)}
+  .netlab{font-size:13px; fill:var(--ink2); font-weight:600}
+  .hub{font-size:11px; fill:var(--ink3)}
+  table{border-collapse:collapse; width:100%; margin-top:8px; font-size:14.5px}
+  th,td{border:1px solid var(--rule); padding:8px 11px; text-align:left}
+  thead th{background:var(--band); font-size:13.5px}
+  tbody th{background:#fbfcfd; font-weight:600}
+  td b{font-weight:700}
+  .notes{max-width:1000px}
+  .notes p{margin:9px 0}
+  .k{font-weight:700}
+  .inflight{background:var(--flagt); border:1px solid #e2c7ae; border-radius:6px;
+            padding:13px 16px; margin-top:14px; max-width:1000px}
+  .inflight .k{color:var(--flag)}
+  .mono{font-family:"DejaVu Sans Mono",Consolas,monospace; font-size:.94em}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>DRISHTI-PGK &mdash; canard angular positions to move LEFT / RIGHT / UP / DOWN</h1>
+  <p class="sub">
+    Cross-section looking down the roll axis X (thesis Fig. 2.4 frame): <b>+Z up, +Y left</b>,
+    azimuth measured from +Z toward +Y. The four canards <b>never move</b> &mdash; 0&deg;/180&deg;
+    steering pair, 90&deg;/270&deg; control pair, each fixed at 10&deg; cant. Only the ring rotates,
+    and its angle <span class="mono">&theta;_gk</span> is the sole command channel (G2).
+  </p>
+  <p class="conv">
+    CONVENTION: cant senses chosen so <span class="mono">&theta;_gk = 0</span> pushes +Y (left).
+    If the manufactured cant sense is the opposite, add 180&deg; to every <span class="mono">&theta;_gk</span> below.
+  </p>
+
+  <div class="grid" id="panels"></div>
+
+  <h2>Where each canard ends up (world azimuth in the frame above)</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Canard &mdash; fixed on the ring</th>
+        <th>MOVE LEFT<br>&theta;_gk = 0&deg;</th>
+        <th>MOVE RIGHT<br>&theta;_gk = 180&deg;</th>
+        <th>MOVE UP<br>&theta;_gk = 270&deg;</th>
+        <th>MOVE DOWN<br>&theta;_gk = 90&deg;</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><th>Steering, ring az. 0&deg;</th> <td>top (0&deg;)</td>   <td>bottom (180&deg;)</td> <td>right (270&deg;)</td> <td>left (90&deg;)</td></tr>
+      <tr><th>Steering, ring az. 180&deg;</th><td>bottom (180&deg;)</td><td>top (0&deg;)</td>    <td>left (90&deg;)</td>   <td>right (270&deg;)</td></tr>
+      <tr><th>Control, ring az. +90&deg;</th> <td>left (90&deg;)</td>  <td>right (270&deg;)</td><td>top (0&deg;)</td>     <td>bottom (180&deg;)</td></tr>
+      <tr><th>Control, ring az. &minus;90&deg;</th><td>right (270&deg;)</td><td>left (90&deg;)</td><td>bottom (180&deg;)</td><td>top (0&deg;)</td></tr>
+      <tr><th>Net guidance force</th>
+        <td><b>+Y (left)</b></td><td><b>&minus;Y (right)</b></td><td><b>+Z (up)</b></td><td><b>&minus;Z (down)</b></td></tr>
+    </tbody>
+  </table>
+
+  <h2>Reading the figure</h2>
+  <div class="notes">
+    <p>
+      <span class="k">Blue = steering pair</span> (fixed at 0&deg;/180&deg; on the ring, equal cant 10&deg;):
+      both fins produce forces in the same direction &rarr; the thin arrows are parallel and add,
+      the roll torques cancel. Net force <span class="mono">2&middot;F&middot;sin&delta;</span> &ge; 18.1 N at the design point (C8).
+    </p>
+    <p>
+      <span class="k">Amber = control pair</span> (fixed at 90&deg;/270&deg;, opposite cant 10&deg;):
+      forces oppose &rarr; zero net force, a pure roll couple
+      <span class="mono">T_aero = 2&middot;F&middot;sin&delta;&middot;r</span> about &minus;X.
+      The couple is <span class="k">identical in all four panels</span> &mdash; steering never disturbs the torque balance.
+    </p>
+    <p>
+      The <span class="k">bold arrow</span> is the net guidance force and always acts
+      <span class="k">perpendicular to the steering pair&rsquo;s 0&ndash;180 line</span>, i.e. along the control pair&rsquo;s line:
+      push direction = steering-line &plusmn; 90&deg;. The four ring angles are 90&deg; apart; opposite
+      directions are 180&deg; apart. The dashed arc is <span class="mono">&theta;_gk</span> drawn the
+      shortest way round, which is how the controller rotates the ring (G11/G12).
+    </p>
+
+    <div class="inflight">
+      <p style="margin-top:2px">
+        <span class="k">IN FLIGHT &mdash; the shell does not swerve where the force points (G16).</span>
+        A control force ahead of the CG swerves a spinning round at a phase off the force direction:
+        <span class="mono">&phi;_d &asymp; 172&deg;</span> at launch &rarr; <span class="mono">146&ndash;149&deg;</span> near apogee
+        &rarr; <span class="mono">163&deg;</span> at 85 s <b>[C11]</b>. The command is
+        <span class="mono">&theta;_gk = &psi;_swerve &minus; &phi;_d &minus; 90&deg;</span>:
+        to move LEFT with <span class="mono">&phi;_d = 158&deg;</span> the ring sits at
+        <span class="mono">&theta;_gk &asymp; 202&deg;</span> &mdash; the force is aimed about 158&deg; away from left.
+        <span class="mono">&phi;_d</span> for this airframe is <b>OPEN</b> (G16, a P3 item).
+      </p>
+      <p style="margin-bottom:2px">
+        <span class="k">Magnitude is never commanded (G2).</span> The force is on from launch to impact;
+        a partial correction is a dwell-fraction phasor &mdash; hold the aim azimuth for
+        <span class="mono">d = a_cmd / a_auth(t)</span> and park at aim &plusmn;90&deg; (zero mean) for the rest of the cycle.
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var R = function(d){ return d * Math.PI / 180; };
+  var ux = function(p){ return -Math.sin(R(p)); };
+  var uy = function(p){ return -Math.cos(R(p)); };
+  var norm = function(a){ return ((a % 360) + 360) % 360; };
+
+  var FINS = [
+    {ring:0,   pair:'S', lab:'S 0°'},
+    {ring:180, pair:'S', lab:'S 180°'},
+    {ring:90,  pair:'C', lab:'C +90°'},
+    {ring:270, pair:'C', lab:'C \u221290°'}
+  ];
+
+  var PANELS = [
+    {name:'MOVE LEFT',  theta:0,   dir:'+Y (left)'},
+    {name:'MOVE RIGHT', theta:180, dir:'\u2212Y (right)'},
+    {name:'MOVE UP',    theta:270, dir:'+Z (up)'},
+    {name:'MOVE DOWN',  theta:90,  dir:'\u2212Z (down)'}
+  ];
+
+  function panelSVG(p){
+    var cx = 290, cy = 240;
+    var psiF = norm(p.theta + 90);
+    var dF = [ux(psiF), uy(psiF)];
+    var tF = [-Math.cos(R(psiF)), Math.sin(R(psiF))];
+    var s = '';
+
+    s += '<circle cx="'+cx+'" cy="'+cy+'" r="120" fill="#f2f5f8" stroke="#3f4a56" stroke-width="2"/>';
+    s += '<circle cx="'+cx+'" cy="'+cy+'" r="55" fill="#ffffff" stroke="#6d7987" stroke-width="2"/>';
+    s += '<text x="'+cx+'" y="'+(cy+4)+'" class="hub" text-anchor="middle">shell body</text>';
+
+    // ring-angle arc (shortest way), inside the canard roots
+    if (p.theta !== 0){
+      var dlt = (p.theta > 180) ? p.theta - 360 : p.theta;
+      var ex = cx + 78 * ux(dlt), ey = cy + 78 * uy(dlt);
+      var sweep = (dlt > 0) ? 0 : 1;
+      s += '<path d="M '+cx+' '+(cy-78)+' A 78 78 0 0 '+sweep+' '+ex+' '+ey+'" '+
+           'fill="none" stroke="#0b5cad" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#aAcc)"/>';
+    }
+
+    // net guidance force (bold)
+    s += '<line x1="'+(cx+25*dF[0])+'" y1="'+(cy+25*dF[1])+'" x2="'+(cx+208*dF[0])+'" y2="'+(cy+208*dF[1])+
+         '" stroke="#12171d" stroke-width="4.5" marker-end="url(#aBold)"/>';
+    s += '<text x="'+(cx+228*dF[0]-42*tF[0])+'" y="'+(cy+228*dF[1]-42*tF[1]+4)+
+         '" class="netlab" text-anchor="middle">net force 2F\u00b7sin\u03b4</text>';
+
+    // canards + their individual forces + labels
+    for (var i = 0; i < FINS.length; i++){
+      var f = FINS[i];
+      var w = norm(f.ring + p.theta);
+      var isS = (f.pair === 'S');
+      s += '<rect x="'+(cx-11)+'" y="'+(cy-165)+'" width="22" height="60" rx="3" '+
+           'fill="'+(isS ? '#e1ebf6' : '#f4e7dc')+'" stroke="'+(isS ? '#0b5cad' : '#a4551a')+
+           '" stroke-width="2" transform="rotate('+(-w)+' '+cx+' '+cy+')"/>';
+
+      var psi = isS ? psiF : norm(psiF + (f.ring === 90 ? 90 : -90));
+      var d = [ux(psi), uy(psi)];
+      var ax = cx + 178 * ux(w) - 23 * d[0], ay = cy + 178 * uy(w) - 23 * d[1];
+      s += '<line x1="'+ax+'" y1="'+ay+'" x2="'+(ax + 46*d[0])+'" y2="'+(ay + 46*d[1])+
+           '" stroke="#12171d" stroke-width="2" marker-end="url(#aThin)"/>';
+
+      var tw = [-Math.cos(R(w)), Math.sin(R(w))];
+      s += '<text x="'+(cx + 196*ux(w) + 26*tw[0])+'" y="'+(cy + 196*uy(w) + 26*tw[1] + 5)+
+           '" class="finlab '+(isS ? 'sl' : 'cl')+'" text-anchor="middle">'+f.lab+'</text>';
+    }
+
+    return '<svg viewBox="0 0 580 480" xmlns="http://www.w3.org/2000/svg">'+
+      '<defs>'+
+        '<marker id="aThin" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M1,1 L11,6 L1,11 Z" fill="#12171d"/></marker>'+
+        '<marker id="aBold" viewBox="0 0 18 18" refX="15" refY="9" markerWidth="18" markerHeight="18" markerUnits="userSpaceOnUse" orient="auto"><path d="M1,1 L16,9 L1,17 Z" fill="#12171d"/></marker>'+
+        '<marker id="aAcc" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M1,1 L11,6 L1,11 Z" fill="#0b5cad"/></marker>'+
+      '</defs>'+ s + '</svg>';
+  }
+
+  var html = '';
+  for (var i = 0; i < PANELS.length; i++){
+    var p = PANELS[i];
+    html += '<div class="card"><div class="head"><div class="name">'+p.name+'</div>'+
+            '<div class="cmd">\u03b8_gk = '+p.theta+'\u00b0 &nbsp;\u2192&nbsp; net force '+p.dir+
+            ' &nbsp;\u00b7&nbsp; fixed cants 10\u00b0</div></div>'+ panelSVG(p) + '</div>';
+  }
+  document.getElementById('panels').innerHTML = html;
+})();
+</script>
+</body>
+</html>
