@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>DRISHTI-PGK — system architecture, detailed</title>
+
+<!--
+  ===========================================================================
+  DRISHTI-PGK  ·  SIH26098  ·  SYSTEM ARCHITECTURE — the detailed sheet
+  ===========================================================================
+
+  WHAT THIS FILE IS
+  A self-contained, detailed version of the three-tier system block diagram:
+  the flight chain, the power supply system, and the multi-mode fuze and
+  safety system, drawn with the project's own content rather than the
+  envelope wording. No external assets: the whole figure is inline SVG.
+
+  WHERE EVERY PART COMES FROM
+    structure   the three tiers, and every block in them, are the source
+                block diagram's (Pre-Launch Set-up, Navigation And Sensing,
+                Guidance And Control, Canard ring (Actuation) / Alternator,
+                Power Conditioning, Supercapacitor (Energy Storage), System
+                Loads, Actuator Drive / Sensor Suite, Central Controller,
+                Output Module, Detonator).
+    values      design/00-design-criteria-register.md — the authority. Every
+                number on the sheet carries its criterion ID.
+    wiring      design/atlas/atlas_scene.py `FLOW_NODES` / `flow_edges()` —
+                the 17 nodes and the interfaces the flow sheet already draws.
+                Its 388 / 780 / 1172 px connector corridors are reused here,
+                and no connector crosses a block.
+    colour      submission/deck/figures/figlib.py — every colour is a
+                var(--f-*, fallback) reference, so this page restyles with
+                the deck and the figures. The --f-* names are aliased to the
+                page tokens exactly as deck.html does it.
+
+  HOW TO READ THE SHEET  (stated on the page as well as here)
+    solid line   an interface in our design
+    dashed line  gated, one-way, or not yet ruled
+    amber        an open or unruled value — nothing amber is a claim
+    [ref]        carried from the reference literature, not our own result
+
+  THE DRAWN TREATMENT  (the look of this sheet — added 2026-09-28)
+  The sheet is set as a page from the engineer's own notebook rather than as
+  a CAD screen dump: graphite on warm paper, hand lettering for the titles
+  and labels, and linework that is drawn rather than plotted. Every frame is
+  four strokes that overshoot their corners the way a draughtsman's do, and
+  every rule and connector bows by a fraction of a millimetre. The drawing is
+  authored geometry — no filter, no grain, no wobble effect — so it stays
+  crisp at any scale. Only the drawing changed: the wording, every value and
+  every criterion ID is carried over from the plotted sheet untouched.
+  The hand face (Architects Daughter, SIL OFL) is embedded as a data URI, so
+  the file still carries no external assets.
+
+  THE RULE THIS SHEET OBEYS
+  The atlas rule, unchanged: **the sheet evidences; it never decides.** Where
+  this page and the register disagree, the register wins and the page is
+  wrong. Nothing here promotes a value: OPEN stays OPEN, provisional stays
+  provisional, and the four rows H10, F16 and the F1 re-synchronisation are
+  drawn as the register states them.
+
+  2026-09-28.
+  ===========================================================================
+-->
+
+<style>
+/* ============================================================== tokens === */
+@font-face{
+  font-family:"Architects Daughter"; font-style:normal; font-weight:400;
+  font-display:block;
+  src:url("data:font/woff2;base64,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") format("woff2");
+}
+:root{
+  --ink:#2f2b25; --ink2:#57524a; --ink3:#6f6a61;
+  --rule:#ddd6c7; --band:#f2eee4; --paper:#fbf9f5;
+  --accent:#2c5a86; --flag:#a2551d;
+  --tint:#e8e1d2; --flagt:#f6ead9;
+  --pencil:#a8a08d;
+  --hand:"Architects Daughter","Bradley Hand","Segoe Print","Chalkboard SE","Comic Sans MS",cursive;
+  --read:"Gill Sans","Gill Sans MT","Optima","Trebuchet MS","Segoe UI",sans-serif;
+  /* figure aliases — the same block deck.html carries, so a figure inlined
+     into this page or into the deck resolves the same names */
+  --f-ink:var(--ink); --f-ink2:var(--ink2); --f-ink3:var(--ink3);
+  --f-rule:var(--rule); --f-band:var(--band); --f-paper:var(--paper);
+  --f-accent:var(--accent); --f-tint:var(--tint); --f-flag:var(--flag);
+  --f-flagt:var(--flagt);
+}
+*{box-sizing:border-box}
+body{
+  margin:0; padding:36px 30px 60px;
+  background:var(--paper); color:var(--ink);
+  font-family:var(--read);
+  font-size:15.5px; line-height:1.6;
+}
+::selection{background:var(--tint); color:var(--ink)}
+:focus-visible{outline:2px solid var(--accent); outline-offset:3px; border-radius:2px}
+.wrap{max-width:1560px; margin:0 auto}
+h1{font-family:var(--hand); font-size:33px; line-height:1.2; margin:0 0 14px;
+   font-weight:400; color:var(--ink)}
+h2{font-family:var(--hand); font-size:21px; line-height:1.3; color:var(--ink);
+   margin:46px 0 14px; font-weight:400; padding-bottom:12px;
+   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='132' height='7'%3E%3Cpath d='M2 4.4 C 24 1.6 46 5.4 68 3.1 S 108 1.7 130 3.9' fill='none' stroke='%23a8a08d' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat left bottom}
+.sub{color:var(--ink2); max-width:72ch; margin:0 0 8px}
+.conv{color:var(--ink3); max-width:72ch; margin:14px 0 0; font-size:14.5px}
+.notes{max-width:72ch}
+.notes p{margin:12px 0}
+.k{font-weight:700; color:var(--ink)}
+.mono{font-family:"DejaVu Sans Mono",Consolas,"Liberation Mono",monospace; font-size:.94em}
+code{font-family:"DejaVu Sans Mono",Consolas,"Liberation Mono",monospace; font-size:.92em;
+     background:var(--band); padding:1px 5px; border-radius:4px}
+
+/* ============================================================== figure === */
+.sheet{margin:16px 0 0; border:1px solid var(--rule); border-radius:12px;
+       background:var(--paper); overflow-x:auto;
+       scrollbar-width:thin; scrollbar-color:var(--pencil) var(--band)}
+.sheet::-webkit-scrollbar{height:10px}
+.sheet::-webkit-scrollbar-track{background:var(--band)}
+.sheet::-webkit-scrollbar-thumb{background:var(--pencil); border-radius:8px;
+       border:2px solid var(--band)}
+.sheet svg{display:block; width:100%; min-width:1180px; max-width:1560px;
+           height:auto}
+.sheet svg text{font-family:var(--read)}
+.sheet svg text.hand{font-family:var(--hand)}
+.legend{display:flex; flex-wrap:wrap; gap:8px 26px; margin:14px 0 0;
+        max-width:72ch; font-size:13.5px; color:var(--ink2)}
+.legend span{display:flex; align-items:center; gap:8px}
+.legend i{display:inline-block; width:34px; height:0; border-top-width:2px;
+          border-top-style:solid; border-color:var(--ink2)}
+.legend i.gate{border-top-style:dashed}
+.legend i.open{border-color:var(--flag); border-top-style:dashed}
+.legend i.sq{width:12px; height:12px; border:1px solid var(--flag);
+             border-radius:3px; background:var(--flagt)}
+.cap{color:var(--ink3); font-size:13.5px; max-width:72ch; margin:12px 0 0}
+.cap b{color:var(--ink2)}
+
+/* =============================================================== table === */
+table{border-collapse:collapse; width:100%; max-width:1560px;
+      margin-top:10px; font-size:14px; font-variant-numeric:tabular-nums}
+th,td{border:1px solid var(--rule); padding:8px 11px; text-align:left;
+      vertical-align:top}
+thead th{background:var(--band); font-family:var(--hand); font-size:15.5px;
+         font-weight:400; white-space:nowrap; color:var(--ink)}
+tbody th{background:#f7f4ec; font-weight:600; white-space:nowrap}
+tbody tr:hover{background:#f7f3e9}
+td.st{white-space:nowrap}
+td.st .op{color:var(--flag); font-weight:700}
+td.st .df{color:var(--ink3)}
+@media (max-width:1000px){
+  thead th, tbody th, td.st{white-space:normal}
+  table{display:block; overflow-x:auto; white-space:normal;
+        scrollbar-width:thin; scrollbar-color:var(--pencil) var(--band)}
+}
+
+/* ================================================================ open === */
+.openbox{background:var(--flagt); border:1px solid #e3cdb0; border-radius:12px;
+         padding:16px 20px; margin-top:16px; max-width:72ch}
+.openbox .k{color:var(--flag)}
+.openbox ul{margin:8px 0 0; padding-left:20px}
+.openbox li{margin:6px 0}
+.foot{color:var(--ink3); font-size:13px; margin-top:32px; max-width:72ch;
+      border-top:1px solid var(--rule); padding-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>DRISHTI-PGK &mdash; the system architecture, detailed</h1>
+
+  <p class="sub">
+    Four subsystems inside a fuze-sized volume &mdash; <b>canard actuation</b>,
+    <b>guidance, navigation and control</b>, the <b>multi-mode fuze</b>, and
+    <b>power and the pre-fire interface</b> &mdash; drawn as the three chains that
+    carry the round's behaviour: what <b>flies and commands</b>, what
+    <b>generates and sheds</b>, and what <b>arms and functions</b>. Every value
+    on the sheet carries the criterion that owns it; the register is the
+    authority for all of them.
+  </p>
+
+  <p class="conv">
+    READ IT THIS WAY &nbsp;<b>Solid line</b> = an interface in our design.
+    <b>Dashed line</b> = gated, one-way, or not yet ruled.
+    <b>Amber</b> = an open or unruled value; nothing amber is a claim.
+    <b>[ref]</b> = carried from the reference literature, not our own result.
+    <span class="mono">F_steer</span>, <span class="mono">&theta;_gk</span> and
+    <span class="mono">Tf</span> are the register's own symbols.
+  </p>
+
+  <h2>The architecture &mdash; three chains and the shell they serve</h2>
+
+  <div class="sheet">
+  <svg viewBox="0 0 1560 880" role="img"
+       aria-label="DRISHTI-PGK system architecture: the flight chain, the power supply system, the multi-mode fuze and safety system, and the shell"
+       style="font-family:'Gill Sans','Gill Sans MT','Optima','Trebuchet MS',sans-serif">
+    <title>DRISHTI-PGK system architecture</title>
+    <desc>Three tiers. Flight chain: pre-launch set-up, navigation and
+      sensing, guidance and control, canard ring actuation. Power supply
+      system: alternator, power conditioning, bus with dump and buffer,
+      system loads and actuator drive. Multi-mode fuze and safety system:
+      sensor suite, central controller, safe and arm with the output module,
+      detonator. Cross-tier interfaces: the machine supplies ring torque,
+      the bus charges the fireset reservoir, the kit's computer supplies one
+      bounded one-way arming-gated link and the predicted-miss veto, and the
+      dump rejects the flight's 121 kJ into the shell body.</desc>
+
+    <defs>
+      <marker id="ar-ink" viewBox="0 0 12 12" refX="10" refY="6"
+              markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse"
+              orient="auto-start-reverse">
+        <path d="M 1.8 1.5 L 10.3 6 L 2.2 10.5" fill="none"
+              style="stroke:var(--f-ink2,#57524a);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"/>
+      </marker>
+      <marker id="ar-flag" viewBox="0 0 12 12" refX="10" refY="6"
+              markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse"
+              orient="auto-start-reverse">
+        <path d="M 1.8 1.5 L 10.3 6 L 2.2 10.5" fill="none"
+              style="stroke:var(--f-flag,#a2551d);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"/>
+      </marker>
+    </defs>
+
+    <!-- ============================ zones · fill ========================= -->
+    <rect x="13" y="41" width="1534" height="214" rx="7"
+          style="fill:var(--f-band,#f2eee4)"/>
+    <rect x="13" y="281" width="1534" height="214" rx="7"
+          style="fill:var(--f-band,#f2eee4)"/>
+    <rect x="13" y="521" width="1534" height="214" rx="7"
+          style="fill:var(--f-band,#f2eee4)"/>
+    <rect x="13" y="761" width="1534" height="86" rx="7"
+          style="fill:var(--f-paper,#fbf9f5)"/>
+
+    <!-- ============================ zones · drawn frames ================= -->
+    <path fill="none" style="stroke:var(--pencil,#a8a08d);stroke-width:1.5;stroke-linecap:round" d="M 8.4 41.6 C 420 38.4 980 42.4 1551.6 39.2  M 1546.2 36.4 C 1549.4 108 1545.6 186 1548.6 259.4  M 1551.4 254.6 C 980 257.8 420 253.4 8.6 256.6  M 13.6 259.6 C 10.4 186 14.2 108 11.4 36.2"/>
+    <path fill="none" style="stroke:var(--pencil,#a8a08d);stroke-width:1.5;stroke-linecap:round" d="M 8.6 281.2 C 420 278.6 980 282.4 1551.4 279.4  M 1546.4 276.6 C 1549.2 348 1545.8 428 1548.4 499.6  M 1551.6 494.4 C 980 497.6 420 493.6 8.4 496.8  M 13.4 499.4 C 10.6 428 14.4 348 11.6 276.4"/>
+    <path fill="none" style="stroke:var(--pencil,#a8a08d);stroke-width:1.5;stroke-linecap:round" d="M 8.5 521.4 C 420 518.8 980 522.6 1551.5 519.4  M 1546.5 516.5 C 1549.3 588 1545.7 668 1548.5 739.5  M 1551.4 734.6 C 980 737.4 420 733.6 8.6 736.8  M 13.5 739.6 C 10.5 668 14.3 588 11.5 516.4"/>
+    <path fill="none" style="stroke:var(--pencil,#a8a08d);stroke-width:1.5;stroke-linecap:round" d="M 8.6 761.3 C 420 758.8 980 762.4 1551.4 759.4  M 1546.4 756.6 C 1549.2 788 1545.8 820 1548.4 851.4  M 1551.5 846.6 C 980 849.4 420 845.8 8.5 848.6  M 13.4 851.5 C 10.6 820 14.2 788 11.6 756.5"/>
+
+    <text x="28" y="68" class="hand" style="font-size:13.5px;fill:var(--f-ink3,#6f6a61)">FLIGHT CHAIN</text>
+    <text x="28" y="308" class="hand" style="font-size:13.5px;fill:var(--f-ink3,#6f6a61)">POWER SUPPLY SYSTEM</text>
+    <text x="28" y="548" class="hand" style="font-size:13.5px;fill:var(--f-ink3,#6f6a61)">MULTI-MODE FUZE AND SAFETY SYSTEM</text>
+
+    <!-- ======================= tier A · blocks ======================== -->
+    <g>
+      <rect x="25.5" y="81.5" width="333" height="161" rx="6"
+            style="fill:var(--f-paper,#fbf9f5)"/>
+      <path fill="none" style="stroke:var(--pencil,#a8a08d);stroke-width:1.5;stroke-linecap:round" d="M 20.8 81.0 C 130 79.4 250 81.2 363.2 79.6  M 359.2 77.2 C 360.8 130 359.4 195 360.9 246.8  M 363.4 243.4 C 250 245.0 130 243.2 20.6 244.9  M 24.8 247.2 C 23.2 195 24.6 130 23.1 76.8"/>
+      <text x="38" y="108" class="hand" style="font-size:15.5px;fill:var(--f-ink,#2f2b25)">Pre-launch set-up</text>
+      <path fill="none" style="stroke:var(--f-rule,#ddd6c7);stroke-width:1;stroke-linecap:round" d="M 38 116.3 C 140 115.5 244 116.7 346 115.8"/>
+      <text x="38" y="138" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Fuze mode, burst height and time set on the gun line</text>
+      <text x="38" y="154" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Target, met, charge and muzzle velocity in the package</text>
+      <text x="38" y="170" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Setter reads back; crew go/no-go before loading</text>
+      <text x="38" y="186" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Both domains are programmed with the kit unpowered</text>
+      <path fill="none" style="stroke:var(--f-rule,#ddd6c7);stroke-width:1;stroke-linecap:round" d="M 38 200.4 C 140 201.2 244 199.7 346 200.6"/>
+      <text x="38" y="218" style="font-size:11px;fill:var(--f-accent,#2c5a86)">AOP-22 inductive: 100 kHz · 275 ms window · 1 000 bit/s</text>
+      <text x="38" y="234" style="font-size:11px;fill:var(--f-accent,#2c5a86)">F12 package; the read-back is the standard's own check</text>
+    </g>
+    <g>
+      <rect x="417.5" y="81.5" width="333" height="161" rx="6"
+            style="fill:var(--f-paper,#fbf9f5)"/>
+      <path fill="none" style="stroke:var(--pencil,#a8a08d);stroke-width:1.5;stroke-linecap:round" d="M 413.1 79.4 C 520 81.0 640 79.2 755.2 80.8  M 751.0 76.9 C 752.6 130 751.2 195 752.7 247.0  M 755.4 244.6 C 640 243.0 520 244.8 412.8 243.1  M 416.9 246.7 C 415.4 195 416.8 130 415.3 77.1"/>
+      <text x="430" y="108" class="hand" style="font-size:15.5px;fill:var(--f-ink,#2f2b25)">Navigation &amp; sensing</text>
+      <path fill="none" style="stroke:var(--f-rule,#ddd6c7);stroke-width:1;stroke-linecap:round" d="M 430 116.5 C 530 115.6 638 116.8 738 115.9"/>
+      <text x="430" y="138" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Spin-axis GNSS aperture: no modulation by symmetry</text>
+      <text x="430" y="154" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">IMU on the de-spun ring: ±2 000 °/s, ≥100 Hz</text>
+      <text x="430" y="170" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Magnetometer ≤50 Hz · ring pickoff ≤0.8° body-relative</text>
+      <text x="430" y="186" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">NAV filter: GNSS 3.0 + IMU 2.0 + time 1.0 → RSS 3.7 m</text>
+      <path fill="none" style="stroke:var(--f-rule,#ddd6c7);stroke-width:1;stroke-linecap:round" d="M 430 200.2 C 530 201.1 638 199.6 738 200.5"/>
+      <text x="430" y="218" style="font-size:11px;fill:var(--f-accent,#2c5a86)">the 5 m allocation closes from below, ≈26 % margin [N1]</text>
+      <text x="430" y="234" style="font-size:11px;fill:var(--f-accent,#2c5a86)">conditional on GNSS: unaided, 0.1° of attitude ≈ 110 m</text>
+    </g>
+    <g>
+      <rect x="809.5" y="81.5" width="333" height="161" rx="6"
+            style="fill:var(--f-paper,#fbf9f5)"/>
+      <path fill="none" style="stroke:var(--pencil,#a8a08d);stroke-width:1.5;stroke-linecap:round" d="M 805.0 80.8 C 910 79.2 1030 81.0 1147.1 79.4  M 1143.0 77.0 C 1144.6 130 1143.2 195 1144.8 246.6  M 1147.3 243.2 C 1030 244.8 910 243.0 804.8 244.6  M 808.8 247.0 C 807.2 195 808.6 130 807.1 76.9"/>
+      <text x="822" y="108" class="hand" style="font-size:15.5px;fill:var(--f-ink,#2f2b25)">Guidance &amp; control</text>
+      <path fill="none" style="stroke:var(--f-rule,#ddd6c7);stroke-width:1;stroke-linecap:round" d="M 822 116.2 C 920 115.4 1032 116.6 1130 115.7"/>
+      <text x="822" y="138" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">IPP law: propagate to impact, null the predicted miss</text>
+      <text x="822" y="154" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Authority gate: a computed gate, not a schedule</text>
+      <text x="822" y="170" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Command is θ_gk only; magnitude is not commandable</text>
+      <text x="822" y="186" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Cascade P→PI at 1 kHz · DOB Q = 1/(0.5s+1)</text>
+      <path fill="none" style="stroke:var(--f-rule,#ddd6c7);stroke-width:1;stroke-linecap:round" d="M 822 200.5 C 920 201.3 1032 199.8 1130 200.7"/>
+      <text x="822" y="218" style="font-size:11px;fill:var(--f-accent,#2c5a86)">6.2 / 33.6 Hz · settle 0.103 s · ≈300 propagations</text>
+      <text x="822" y="234" style="font-size:11px;fill:var(--f-flag,#a2551d)">gate edges 15 s / 35–55 s are [ref], provisional</text>
+    </g>
+    <g>
+      <rect x="1201.5" y="81.5" width="333" height="161" rx="6"
+            style="fill:var(--f-paper,#fbf9f5)"/>
+      <path fill="none" style="stroke:var(--pencil,#a8a08d);stroke-width:1.5;stroke-linecap:round" d="M 1196.9 79.6 C 1300 81.2 1420 79.4 1539.0 80.9  M 1535.1 77.1 C 1536.6 130 1535.3 195 1536.8 246.9  M 1539.2 244.7 C 1420 243.1 1300 244.9 1196.7 243.2  M 1200.9 246.8 C 1199.3 195 1200.7 130 1199.2 77.0"/>
+      <text x="1214" y="108" class="hand" style="font-size:15.5px;fill:var(--f-ink,#2f2b25)">Canard ring · actuation</text>
+      <path fill="none" style="stroke:var(--f-rule,#ddd6c7);stroke-width:1;stroke-linecap:round" d="M 1214 116.4 C 1310 115.5 1426 116.7 1522 115.8"/>
+      <text x="1214" y="138" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">De-spun ring, two bearings · four fixed canards at 10°</text>
+      <text x="1214" y="154" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Steering pair 0°/180°: net force, roll torques cancel</text>
+      <text x="1214" y="170" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Control pair 90°/270°: zero net force, pure roll couple</text>
+      <text x="1214" y="186" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Torque is electromagnetic: no actuator, one moving part</text>
+      <path fill="none" style="stroke:var(--f-rule,#ddd6c7);stroke-width:1;stroke-linecap:round" d="M 1214 200.3 C 1310 201.2 1426 199.7 1522 200.6"/>
+      <text x="1214" y="218" style="font-size:11px;fill:var(--f-accent,#2c5a86)">F_steer ≥ 18.1 N · ring rate ±31.42 rad/s</text>
+      <text x="1214" y="234" style="font-size:11px;fill:var(--f-flag,#a2551d)">friction ≤ 0.10 N·m flat — open at flight speed</text>
+    </g>
+
+    <!-- ======================= tier B · blocks ======================== -->
+    <g>
+      <rect x="25.5" y="321.5" width="333" height="161" rx="6"
+            style="fill:var(--f-paper,#fbf9f5)"/>
+      <path fill="none" style="stroke:var(--pencil,#a8a08d);stroke-width:1.5;stroke-linecap:round" d="M 21.0 321.1 C 130 319.5 250 321.3 363.0 319.7  M 359.1 317.3 C 360.7 370 359.3 435 360.8 486.7  M 363.2 483.5 C 250 485.1 130 483.3 20.8 485.0  M 24.9 487.1 C 23.3 435 24.7 370 23.2 316.9"/>
+      <text x="38" y="348" class="hand" style="font-size:15.5px;fill:var(--f-ink,#2f2b25)">Alternator — the machine</text>
+      <path fill="none" style="stroke:var(--f-rule,#ddd6c7);stroke-width:1;stroke-linecap:round" d="M 38 356.4 C 140 355.6 244 356.8 346 355.9"/>
+      <text x="38" y="378" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Radial-flux frameless outrunner: 12 slots, 14 poles</text>
+      <text x="38" y="394" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Coils on the body, magnets on the ring — it is the rotor</text>
+      <text x="38" y="410" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">The actuator and the generator are one machine</text>
+      <text x="38" y="426" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">No flight battery: generation starts at launch</text>
+      <path fill="none" style="stroke:var(--f-rule,#ddd6c7);stroke-width:1;stroke-linecap:round" d="M 38 440.3 C 140 441.2 244 439.8 346 440.7"/>
+      <text x="38" y="458" style="font-size:11px;fill:var(--f-accent,#2c5a86)">Kt 0.362 N·m/A · Kv 0.209 V/(rad/s) · Talt 5.76 N·m</text>
+      <text x="38" y="474" style="font-size:11px;fill:var(--f-accent,#2c5a86)">1.018 kg measured — the kit's dominant mass item</text>
+    </g>
+    <g>
+      <rect x="417.5" y="321.5" width="333" height="161" rx="6"
+            style="fill:var(--f-paper,#fbf9f5)"/>
+      <path fill="none" style="stroke:var(--pencil,#a8a08d);stroke-width:1.5;stroke-linecap:round" d="M 412.8 319.6 C 520 321.2 640 319.4 755.0 321.0  M 751.2 317.1 C 752.8 370 751.4 435 752.9 486.9  M 755.2 484.7 C 640 483.1 520 484.9 412.9 483.2  M 416.8 486.8 C 415.2 435 416.6 370 415.1 317.2"/>
+      <text x="430" y="348" class="hand" style="font-size:15.5px;fill:var(--f-ink,#2f2b25)">Power conditioning</text>
+      <path fill="none" style="stroke:var(--f-rule,#ddd6c7);stroke-width:1;stroke-linecap:round" d="M 430 356.2 C 530 355.4 638 356.6 738 355.7"/>
+      <text x="430" y="378" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Four-quadrant stage: buck generating, boost motoring</text>
+      <text x="430" y="394" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Bus below the flight-minimum EMF: no mode crossing</text>
+      <text x="430" y="410" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Current loop closed here; the limit law sets a current</text>
+      <text x="430" y="426" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Synchronous rectification; gate-drive trips in hardware</text>
+      <path fill="none" style="stroke:var(--f-rule,#ddd6c7);stroke-width:1;stroke-linecap:round" d="M 430 440.5 C 530 441.3 638 439.8 738 440.6"/>
+      <text x="430" y="458" style="font-size:11px;fill:var(--f-accent,#2c5a86)">bus 180 V nominal · E_min ≈ 231 V · D ≤ 0.78 at peak</text>
+      <text x="430" y="474" style="font-size:11px;fill:var(--f-accent,#2c5a86)">switching ≥100 kHz · controlled edge rate [F15]</text>
+    </g>
+    <g>
+      <rect x="809.5" y="321.5" width="333" height="161" rx="6"
+            style="fill:var(--f-paper,#fbf9f5)"/>
+      <path fill="none" style="stroke:var(--pencil,#a8a08d);stroke-width:1.5;stroke-linecap:round" d="M 805.1 320.9 C 910 319.3 1030 321.1 1147.0 319.5  M 1143.1 317.0 C 1144.7 370 1143.3 435 1144.9 486.8  M 1147.2 483.4 C 1030 485.0 910 483.2 804.9 484.8  M 808.9 487.0 C 807.3 435 808.7 370 807.2 316.8"/>
+      <text x="822" y="348" class="hand" style="font-size:15.5px;fill:var(--f-ink,#2f2b25)">Bus · dump · buffer</text>
+      <path fill="none" style="stroke:var(--f-rule,#ddd6c7);stroke-width:1;stroke-linecap:round" d="M 822 356.3 C 920 355.5 1032 356.7 1130 355.8"/>
+      <text x="822" y="378" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Dump sheds the load: 2.92 kW peak, 121 kJ per flight</text>
+      <text x="822" y="394" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Element 0.15–0.30 kg, bonded to the stator mount</text>
+      <text x="822" y="410" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Buffer 150–200 J: fireset, hold-up, motoring bursts</text>
+      <text x="822" y="426" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">A power buffer, not storage: 121 kJ cannot be stored</text>
+      <path fill="none" style="stroke:var(--f-rule,#ddd6c7);stroke-width:1;stroke-linecap:round" d="M 822 440.4 C 920 441.2 1032 439.7 1130 440.5"/>
+      <text x="822" y="458" style="font-size:11px;fill:var(--f-accent,#2c5a86)">demand ≈12 W peak against 2.92 kW — ≈20:1 at apogee</text>
+      <text x="822" y="474" style="font-size:11px;fill:var(--f-flag,#a2551d)">the way out is the open item: ≥58 W/K needed [P6]</text>
+    </g>
+    <g>
+      <rect x="1201.5" y="321.5" width="333" height="161" rx="6"
+            style="fill:var(--f-paper,#fbf9f5)"/>
+      <path fill="none" style="stroke:var(--pencil,#a8a08d);stroke-width:1.5;stroke-linecap:round" d="M 1197.0 319.8 C 1300 321.4 1420 319.6 1539.1 321.1  M 1535.0 317.4 C 1536.5 370 1535.2 435 1536.7 486.6  M 1539.0 483.6 C 1420 485.2 1300 483.4 1196.8 484.9  M 1200.8 486.9 C 1199.2 435 1200.6 370 1199.1 317.3"/>
+      <text x="1214" y="348" class="hand" style="font-size:15.5px;fill:var(--f-ink,#2f2b25)">System loads &amp; actuator drive</text>
+      <path fill="none" style="stroke:var(--f-rule,#ddd6c7);stroke-width:1;stroke-linecap:round" d="M 1214 356.5 C 1310 355.7 1426 356.8 1522 355.9"/>
+      <text x="1214" y="378" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">GNC + sensors + fuze + electronics ≈12 W / 10 W av.</text>
+      <text x="1214" y="394" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Actuator drive: controlled current, and the ring turns</text>
+      <text x="1214" y="410" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Ring side ≈0.5–1.5 W across the rotary transformer</text>
+      <text x="1214" y="426" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">IMU data over an optical link — no ring-side clock</text>
+      <path fill="none" style="stroke:var(--f-rule,#ddd6c7);stroke-width:1;stroke-linecap:round" d="M 1214 440.2 C 1310 441.1 1426 439.6 1522 440.4"/>
+      <text x="1214" y="458" style="font-size:11px;fill:var(--f-accent,#2c5a86)">the avionics are ≈0.8 % of the flight's energy (≈0.9 kJ)</text>
+      <text x="1214" y="474" style="font-size:11px;fill:var(--f-accent,#2c5a86)">the design question is routing, never adequacy [W4]</text>
+    </g>
+
+    <!-- ======================= tier C · blocks ======================== -->
+    <g>
+      <rect x="25.5" y="561.5" width="333" height="161" rx="6"
+            style="fill:var(--f-paper,#fbf9f5)"/>
+      <path fill="none" style="stroke:var(--pencil,#a8a08d);stroke-width:1.5;stroke-linecap:round" d="M 20.9 561.2 C 130 559.6 250 561.4 363.1 559.8  M 359.3 557.4 C 360.9 610 359.5 675 361.0 726.9  M 363.0 723.6 C 250 725.2 130 723.4 20.7 725.1  M 24.7 726.8 C 23.1 675 24.5 610 23.0 557.2"/>
+      <text x="38" y="588" class="hand" style="font-size:15.5px;fill:var(--f-ink,#2f2b25)">Sensor suite</text>
+      <path fill="none" style="stroke:var(--f-rule,#ddd6c7);stroke-width:1;stroke-linecap:round" d="M 38 596.2 C 140 595.4 244 596.6 346 595.7"/>
+      <text x="38" y="618" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Timer 0.1–199.9 s at 0.1 s resolution</text>
+      <text x="38" y="634" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Impact: superquick, short delay (≈0.05 s), graze</text>
+      <text x="38" y="650" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Proximity: 24 GHz RF Doppler, burst height 2–15 m</text>
+      <text x="38" y="666" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Detector rejects the 176.3–304.4 Hz spin modulation</text>
+      <path fill="none" style="stroke:var(--f-rule,#ddd6c7);stroke-width:1;stroke-linecap:round" d="M 38 680.5 C 140 681.3 244 679.8 346 680.8"/>
+      <text x="38" y="698" style="font-size:11px;fill:var(--f-accent,#2c5a86)">the mode set exceeds the fielded kit's PD + proximity</text>
+      <text x="38" y="714" style="font-size:11px;fill:var(--f-accent,#2c5a86)">the airburst time re-syncs from our own nav solution</text>
+    </g>
+    <g>
+      <rect x="417.5" y="561.5" width="333" height="161" rx="6"
+            style="fill:var(--f-paper,#fbf9f5)"/>
+      <path fill="none" style="stroke:var(--pencil,#a8a08d);stroke-width:1.5;stroke-linecap:round" d="M 413.0 559.5 C 520 561.1 640 559.3 755.1 560.9  M 751.1 557.2 C 752.7 610 751.3 675 752.8 726.7  M 755.0 724.5 C 640 722.9 520 724.7 412.7 723.1  M 416.7 726.9 C 415.1 675 416.5 610 415.0 557.3"/>
+      <text x="430" y="588" class="hand" style="font-size:15.5px;fill:var(--f-ink,#2f2b25)">Central controller</text>
+      <path fill="none" style="stroke:var(--f-rule,#ddd6c7);stroke-width:1;stroke-linecap:round" d="M 430 596.4 C 530 595.5 638 596.7 738 595.8"/>
+      <text x="430" y="618" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Mode management and event decision logic</text>
+      <text x="430" y="634" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Safety-state monitoring and the arming interlock</text>
+      <text x="430" y="650" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Two-tier BIT: pre-launch go/no-go, then classification</text>
+      <text x="430" y="666" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Own MCU and rail: the fuze functions on its own</text>
+      <path fill="none" style="stroke:var(--f-rule,#ddd6c7);stroke-width:1;stroke-linecap:round" d="M 430 680.3 C 530 681.1 638 679.6 738 680.4"/>
+      <text x="430" y="698" style="font-size:11px;fill:var(--f-accent,#2c5a86)">one bounded, one-way, arming-gated link to the kit</text>
+      <text x="430" y="714" style="font-size:11px;fill:var(--f-accent,#2c5a86)">fault response: hold, derate or fuze-autonomous [H13]</text>
+    </g>
+    <g>
+      <rect x="809.5" y="561.5" width="333" height="161" rx="6"
+            style="fill:var(--f-paper,#fbf9f5)"/>
+      <path fill="none" style="stroke:var(--pencil,#a8a08d);stroke-width:1.5;stroke-linecap:round" d="M 804.8 560.7 C 910 559.1 1030 560.9 1147.2 559.3  M 1143.2 557.5 C 1144.8 610 1143.4 675 1145.0 726.8  M 1147.1 723.3 C 1030 724.9 910 723.1 805.0 724.7  M 809.1 727.0 C 807.5 675 808.9 610 807.4 557.1"/>
+      <text x="822" y="588" class="hand" style="font-size:15.5px;fill:var(--f-ink,#2f2b25)">Safe &amp; arm · output module</text>
+      <path fill="none" style="stroke:var(--f-rule,#ddd6c7);stroke-width:1;stroke-linecap:round" d="M 822 596.3 C 920 595.5 1032 596.6 1130 595.7"/>
+      <text x="822" y="618" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Out-of-line rotor: setback 15 000 g + spin 176–304 Hz</text>
+      <text x="822" y="634" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">The arm command is a third, independent condition</text>
+      <text x="822" y="650" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">It cannot go in line in the bore: by construction</text>
+      <text x="822" y="666" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Output: trigger generation and a high-current pulse</text>
+      <path fill="none" style="stroke:var(--f-rule,#ddd6c7);stroke-width:1;stroke-linecap:round" d="M 822 680.5 C 920 681.2 1032 679.8 1130 680.6"/>
+      <text x="822" y="698" style="font-size:11px;fill:var(--f-flag,#a2551d)">F7 thresholds and F8 arming distance are still OPEN</text>
+      <text x="822" y="714" style="font-size:11px;fill:var(--f-accent,#2c5a86)">the veto withholds it: the failure direction is a dud</text>
+    </g>
+    <g>
+      <rect x="1201.5" y="561.5" width="333" height="161" rx="6"
+            style="fill:var(--f-paper,#fbf9f5)"/>
+      <path fill="none" style="stroke:var(--pencil,#a8a08d);stroke-width:1.5;stroke-linecap:round" d="M 1196.8 559.9 C 1300 561.5 1420 559.7 1538.9 561.2  M 1535.2 557.3 C 1536.7 610 1535.4 675 1536.9 726.6  M 1539.3 724.4 C 1420 722.8 1300 724.6 1196.9 723.2  M 1201.0 726.7 C 1199.4 675 1200.8 610 1199.3 557.4"/>
+      <text x="1214" y="588" class="hand" style="font-size:15.5px;fill:var(--f-ink,#2f2b25)">Detonator → the booster</text>
+      <path fill="none" style="stroke:var(--f-rule,#ddd6c7);stroke-width:1;stroke-linecap:round" d="M 1214 596.5 C 1310 595.6 1426 596.8 1522 595.9"/>
+      <text x="1214" y="618" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Initiation on the centreline, to the shell's booster</text>
+      <text x="1214" y="634" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">Everything else is annular about the Ø30 mm train bore</text>
+      <text x="1214" y="650" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">The train is YIL's; the reservation is ours [F9]</text>
+      <text x="1214" y="666" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">MIL-STD-1316 · AOP-39 safety chain</text>
+      <path fill="none" style="stroke:var(--f-rule,#ddd6c7);stroke-width:1;stroke-linecap:round" d="M 1214 680.4 C 1310 681.3 1426 679.8 1522 680.7"/>
+      <text x="1214" y="698" style="font-size:11px;fill:var(--f-accent,#2c5a86)">every fault direction is a dud, never a burst</text>
+      <text x="1214" y="714" style="font-size:11px;fill:var(--f-accent,#2c5a86)">a misfire, with no setback, needs no abort logic</text>
+    </g>
+
+    <!-- ======================== the shell strip ======================= -->
+    <text x="28" y="788" class="hand" style="font-size:13.5px;fill:var(--f-ink3,#6f6a61)">THE SHELL BODY — THE SINK THE KIT DOES NOT OWN</text>
+    <text x="28" y="810" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">121 kJ in ≤90 s raises the 45 kg shell by 5.8 K; the flight-time participating mass is the nose</text>
+    <text x="28" y="826" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">the interface, not a radiator, is the design problem: ≥58 W/K peak, ≥20–27 W/K average</text>
+    <text x="960" y="788" class="hand" style="font-size:13.5px;fill:var(--f-ink3,#6f6a61)">WHAT THE KIT MAY NOT CHANGE</text>
+    <text x="960" y="810" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">155 mm HE · 45.0 kg design point · MIL-STD-333B fuze well · 2″-12 UNS-2A</text>
+    <text x="960" y="826" style="font-size:11.5px;fill:var(--f-ink2,#57524a)">≤124.7 mm intrusion + ≈106 mm visible · driving band and bore-riding surface untouched</text>
+
+    <!-- ===================== tier A · links =========================== -->
+    <path d="M 360 162.4 C 376 160.6 396 163.2 411.5 161.5" fill="none" style="stroke:var(--f-ink2,#57524a);stroke-width:1.5;stroke-linecap:round" marker-end="url(#ar-ink)"/>
+    <path d="M 752 161.6 C 768 163.2 788 160.6 803.5 162.3" fill="none" style="stroke:var(--f-ink2,#57524a);stroke-width:1.5;stroke-linecap:round" marker-end="url(#ar-ink)"/>
+    <path d="M 1144 162.3 C 1160 160.7 1180 163.1 1195.5 161.6" fill="none" style="stroke:var(--f-ink2,#57524a);stroke-width:1.5;stroke-linecap:round" marker-end="url(#ar-ink)"/>
+    <text x="388" y="150" text-anchor="middle" class="hand" style="font-size:10.5px;fill:var(--f-ink3,#6f6a61)">package</text>
+    <text x="780" y="150" text-anchor="middle" class="hand" style="font-size:10.5px;fill:var(--f-ink3,#6f6a61)">nav state</text>
+    <text x="1171" y="150" text-anchor="middle" class="hand" style="font-size:10.5px;fill:var(--f-ink3,#6f6a61)">θ_gk</text>
+
+    <!-- ===================== tier B · links =========================== -->
+    <path d="M 360 402.3 C 376 400.7 396 403.1 411.5 401.6" fill="none" style="stroke:var(--f-ink2,#57524a);stroke-width:1.5;stroke-linecap:round" marker-end="url(#ar-ink)"/>
+    <path d="M 752 401.7 C 768 403.3 788 400.8 803.5 402.2" fill="none" style="stroke:var(--f-ink2,#57524a);stroke-width:1.5;stroke-linecap:round" marker-end="url(#ar-ink)"/>
+    <path d="M 1144 402.2 C 1160 400.6 1180 403.2 1195.5 401.7" fill="none" style="stroke:var(--f-ink2,#57524a);stroke-width:1.5;stroke-linecap:round" marker-end="url(#ar-ink)"/>
+    <text x="388" y="390" text-anchor="middle" class="hand" style="font-size:10.5px;fill:var(--f-ink3,#6f6a61);paint-order:stroke fill;stroke:var(--f-band,#f2eee4);stroke-width:3.2px;stroke-linejoin:round">3-phase</text>
+    <text x="780" y="390" text-anchor="middle" class="hand" style="font-size:10.5px;fill:var(--f-ink3,#6f6a61)">180 V bus</text>
+    <text x="1171" y="390" text-anchor="middle" class="hand" style="font-size:10.5px;fill:var(--f-ink3,#6f6a61);paint-order:stroke fill;stroke:var(--f-band,#f2eee4);stroke-width:3.2px;stroke-linejoin:round">loads</text>
+
+    <!-- ===================== tier C · links =========================== -->
+    <path d="M 360 642.3 C 376 640.7 396 643.1 411.5 641.6" fill="none" style="stroke:var(--f-ink2,#57524a);stroke-width:1.5;stroke-linecap:round" marker-end="url(#ar-ink)"/>
+    <path d="M 752 642 L 772 642 A 8 8 0 0 1 788 642 L 804 642" fill="none" style="stroke:var(--f-ink2,#57524a);stroke-width:1.5;stroke-linecap:round" marker-end="url(#ar-ink)"/>
+    <path d="M 1144 642.2 C 1160 640.6 1180 643.2 1195.5 641.7" fill="none" style="stroke:var(--f-ink2,#57524a);stroke-width:1.5;stroke-linecap:round" marker-end="url(#ar-ink)"/>
+    <text x="388" y="628" text-anchor="middle" class="hand" style="font-size:10.5px;fill:var(--f-ink3,#6f6a61)">mode</text>
+    <text x="780" y="628" text-anchor="middle" class="hand" style="font-size:10.5px;fill:var(--f-ink3,#6f6a61);paint-order:stroke fill;stroke:var(--f-band,#f2eee4);stroke-width:3.2px;stroke-linejoin:round">decide</text>
+    <text x="1171" y="628" text-anchor="middle" class="hand" style="font-size:10.5px;fill:var(--f-ink3,#6f6a61)">pulse</text>
+
+    <!-- ===================== cross-tier links ========================= -->
+    <!-- the machine drives the ring -->
+    <path d="M 1368.4 318 C 1369.8 296 1366.8 272 1368.2 250.5" fill="none" style="stroke:var(--f-ink2,#57524a);stroke-width:1.5;stroke-linecap:round" marker-end="url(#ar-ink)"/>
+    <text x="1376" y="292" class="hand" style="font-size:10.5px;fill:var(--f-ink3,#6f6a61)">controlled current → ring torque</text>
+
+    <!-- the buffer charges the fireset reservoir -->
+    <path d="M 976.3 486 C 974.8 508 977.2 532 975.8 553.5" fill="none" style="stroke:var(--f-ink2,#57524a);stroke-width:1.5;stroke-linecap:round" marker-end="url(#ar-ink)"/>
+    <text x="986" y="512" class="hand" style="font-size:10.5px;fill:var(--f-ink3,#6f6a61)">fireset reservoir ≥1 J</text>
+
+    <!-- the one-way, arming-gated link to the fuze -->
+    <path d="M 899.4 246.5 L 900.4 262.4 L 388.5 261.5 L 387.6 550.4 L 490.4 549.6"
+          fill="none" style="stroke:var(--f-ink2,#57524a);stroke-width:1.5;stroke-linecap:round;stroke-dasharray:7 5"/>
+    <path d="M 490.4 549.6 L 498.4 549.5 L 498.8 555.5"
+          fill="none" style="stroke:var(--f-ink2,#57524a);stroke-width:1.5;stroke-linecap:round" marker-end="url(#ar-ink)"/>
+    <text x="610" y="251" class="hand" style="font-size:10.5px;fill:var(--f-ink3,#6f6a61)">one-way · bounded · arming-gated</text>
+
+    <!-- the predicted-miss veto withholds the arm command -->
+    <path d="M 1143.5 190.4 L 1172.4 189.5 L 1171.5 550.5 L 1008.4 549.5"
+          fill="none" style="stroke:var(--f-ink2,#57524a);stroke-width:1.5;stroke-linecap:round;stroke-dasharray:7 5"/>
+    <path d="M 1008.4 549.5 L 1000.4 549.4 L 999.6 555.5"
+          fill="none" style="stroke:var(--f-ink2,#57524a);stroke-width:1.5;stroke-linecap:round" marker-end="url(#ar-ink)"/>
+    <text x="1178" y="512" class="hand" style="font-size:10.5px;fill:var(--f-ink3,#6f6a61)">veto: predicted miss >150 m → latch</text>
+
+    <!-- the dump's heat leaves through the well -->
+    <path d="M 807.5 430.4 L 780.4 429.5 L 779.6 739.5"
+          fill="none" style="stroke:var(--f-flag,#a2551d);stroke-width:1.5;stroke-linecap:round;stroke-dasharray:7 5"/>
+    <path d="M 779.6 739.5 L 779.5 753.5"
+          fill="none" style="stroke:var(--f-flag,#a2551d);stroke-width:1.5;stroke-linecap:round" marker-end="url(#ar-flag)"/>
+    <text x="786" y="512" class="hand" style="font-size:10.5px;fill:var(--f-flag,#a2551d)">≥58 W/K peak · open</text>
+  </svg>
+  </div>
+
+  <div class="legend">
+    <span><i></i> an interface in our design</span>
+    <span><i class="gate"></i> gated, one-way, or not yet ruled</span>
+    <span><i class="open"></i> an open or unruled value</span>
+    <span><i class="sq"></i> amber text: a value nothing may claim yet</span>
+    <span>one hop, at the single crossing: every other line routes in a corridor</span>
+  </div>
+
+  <p class="cap">
+    Chain order &mdash; <b>flight</b>: pre-launch set-up &#8594; navigation &amp; sensing
+    &#8594; guidance &amp; control &#8594; canard ring &middot; <b>power</b>:
+    alternator &#8594; power conditioning &#8594; bus, dump and buffer &#8594; loads and
+    actuator drive &middot; <b>fuze</b>: sensor suite &#8594; central controller &#8594;
+    safe &amp; arm and output &#8594; detonator. The amber path is the flight's heat
+    leaving through the fuze well, and it is the architecture's price.
+  </p>
+
+  <h2>How the three chains meet</h2>
+  <div class="notes">
+    <p>
+      <span class="k">One machine is both the actuator and the generator.</span>
+      The magnets ride the ring and the coils sit on the body, so drawing current
+      puts a torque on the ring and not drawing it puts power on the bus. That is
+      why the sheet has no servo, no gearbox and no flight battery: the actuator
+      <i>is</i> the alternator, and the same winding that steers the round is the
+      one that supplies it <span class="mono">[C34, C14, C19]</span>. It is also
+      the architecture's cost, and the sheet states it rather than hiding it:
+      <b>2.92 kW peak and 121 kJ per flight</b> must be shed, against a servo kit
+      that carries no such load at all <span class="mono">[C42]</span>.
+    </p>
+    <p>
+      <span class="k">The ring angle is the only command channel.</span>
+      The magnitude of the guidance force is set by cant angle and dynamic
+      pressure and cannot be switched off, so the law may only <i>aim</i> it
+      <span class="mono">[G2]</span>. A partial correction is therefore a
+      <b>dwell-fraction phasor</b>: hold the aim azimuth for the fraction of the
+      cycle the authority allows, and park at aim &plusmn;90&deg; for the rest.
+      The authority gate is a computed condition rather than a schedule, which is
+      why its <i>edges</i> are drawn dashed: the mechanism is ours, the 15 s and
+      35&#8211;55 s edges come from the reference force profile and stay
+      provisional until the aero set exists <span class="mono">[G3, risk 8]</span>.
+    </p>
+    <p>
+      <span class="k">The fuze is separately powered, separately armed, and dead
+      by default.</span> It keeps its own MCU on its own rail, in the reserve
+      battery domain, so it arms and functions with the kit's computer silent
+      <span class="mono">[H10, W5, H12]</span>. The kit crosses that boundary
+      twice, both times one-way and bounded: the in-flight time re-synchronisation
+      the airburst needs, and the predicted-miss veto, which is nothing more than
+      the withholding of the third arming condition
+      <span class="mono">[F1, F16, F6]</span>. A guidance-side fault degrades the
+      navigation; it cannot reach the firing train.
+    </p>
+    <p>
+      <span class="k">Everything the kit generates ends in the shell.</span>
+      121 kJ cannot be stored (a 1.5 F bank at the bus would neither fit nor
+      survive launch) and only about a quarter can be rejected to the airstream,
+      so the design closes by conduction through the fuze well into 45 kg of
+      steel: a <b>5.8 K rise</b> and a requirement of <b>&ge;58 W/K</b> at the
+      peak <span class="mono">[W7, W12, P6]</span>. The bare 2&#8243;-12 UNS
+      thread delivers 3&#8211;16 W/K, so the closing route is the well bore as a
+      contacting radial path plus a conductance-specified joint, and it is
+      verified on the rig rather than assumed <span class="mono">[P6, R7]</span>.
+      That requirement, and not the electronics, is what shapes the joint, the
+      dump's location and the load path.
+    </p>
+  </div>
+
+  <h2>Interfaces, block by block</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>#</th><th>Interface</th><th>What crosses</th>
+        <th>The numbers</th><th>Owning criteria</th><th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th>1</th><td>Gun line &#8594; kit, inductive</td>
+        <td>Mission package in, verified read-back out</td>
+        <td>AOP-22: 100 &plusmn; 0.01 kHz carrier, 1 000 &plusmn; 10 bit/s,
+            275 &plusmn; 5 ms window; both domains programmable with the kit
+            computer unpowered</td>
+        <td class="st">F11, F12, H10, H11</td>
+        <td class="st"><span class="df">PARAMETRIC</span> (interface), DEFINED (package)</td>
+      </tr>
+      <tr>
+        <th>2</th><td>Spin axis &#8594; GNSS</td>
+        <td>RF aperture and the 24 GHz radar share the axis</td>
+        <td>Symmetric aperture: no spin modulation by symmetry; radome passes
+            L1 and 24 GHz; 3.0 m at impact</td>
+        <td class="st">N3, F2, N1</td>
+        <td class="st">DEFINED</td>
+      </tr>
+      <tr>
+        <th>3</th><td>Ring &#8594; body, sensing</td>
+        <td>Ring angle, and the body-side spin channel</td>
+        <td>Pickoff &le;0.8&deg; body-relative; spin 1 107&#8211;1 912 rad/s feeds
+            the limit laws and the F15 notch</td>
+        <td class="st">G5, N9, N10, F15</td>
+        <td class="st">DERIVED</td>
+      </tr>
+      <tr>
+        <th>4</th><td>Ring &#8594; body, contactless</td>
+        <td>Power up, data down, across the joint</td>
+        <td>Rotary transformer 0.5&#8211;1.5 W; optical data path with a bounded
+            measured delay &#8212; no ring-side clock</td>
+        <td class="st">H7, H6, N15</td>
+        <td class="st">DEFINED</td>
+      </tr>
+      <tr>
+        <th>5</th><td>Machine &#8596; converter</td>
+        <td>3-phase EMF out, controlled current in</td>
+        <td>Kt 0.362 N&#183;m/A rms, Kv 0.209 V/(rad/s) LL; bus 180 V nominal
+            held below the flight-minimum EMF &asymp; 231 V</td>
+        <td class="st">C14, C15, C41, H8, H12</td>
+        <td class="st">DEFINED</td>
+      </tr>
+      <tr>
+        <th>6</th><td>Bus &#8594; dump and buffer</td>
+        <td>The surplus, and the buffer's three duties</td>
+        <td>2.92 kW peak, 121 kJ per flight, &asymp;16.7 A bus-side;
+            150&#8211;200 J buffer: fireset reservoir, &ge;2 s hold-up,
+            motoring bursts</td>
+        <td class="st">C42, W7, W12, W4, H9</td>
+        <td class="st">DERIVED</td>
+      </tr>
+      <tr>
+        <th>7</th><td>Bus &#8594; avionics</td>
+        <td>Regulated rails to the kit's own loads</td>
+        <td>&asymp;12 W peak, &asymp;10 W average, &asymp;0.9 kJ per flight
+            &#8212; &asymp;0.8 % of the energy generated</td>
+        <td class="st">W1&#8211;W4, H12</td>
+        <td class="st">DERIVED</td>
+      </tr>
+      <tr>
+        <th>8</th><td>Buffer &#8594; fireset</td>
+        <td>The firing energy, isolated</td>
+        <td>&ge;1 J dedicated, charged only under the arming interlock; the rotor
+            itself is mechanically driven</td>
+        <td class="st">W4, F6, F7</td>
+        <td class="st">DERIVED (value), OPEN (F7 thresholds)</td>
+      </tr>
+      <tr>
+        <th>9</th><td>Kit &#8596; shell, thermal</td>
+        <td>The whole flight's dissipation</td>
+        <td>&ge;58 W/K peak, &ge;20&#8211;27 W/K average; the bare thread gives
+            3&#8211;16 W/K, so the well bore is the contacting path</td>
+        <td class="st">P6, W7, W12</td>
+        <td class="st"><span class="op">OPEN</span> &#8212; verified on R7</td>
+      </tr>
+      <tr>
+        <th>10</th><td>Kit &#8596; shell, mechanical</td>
+        <td>Setback and the launch load path</td>
+        <td>382 kN axial / 127 kN radial on the measured 2.595 kg ring side;
+            the load bypasses the flight bearings</td>
+        <td class="st">C26, C32, C35, E1, E2</td>
+        <td class="st">DERIVED (re-baselined 2026-09-23); C32 design OPEN</td>
+      </tr>
+      <tr>
+        <th>11</th><td>Guidance &#8594; fuze</td>
+        <td>The bounded, one-way, arming-gated correction</td>
+        <td>Airburst time re-sync and status only; optical isolation at the
+            domain boundary</td>
+        <td class="st">F1, H10, H12</td>
+        <td class="st">DEFINED</td>
+      </tr>
+      <tr>
+        <th>12</th><td>Guidance &#8594; arming</td>
+        <td>The predicted-miss veto</td>
+        <td>&gt;150 m at the point the authority can no longer change the
+            outcome: latch, irrevocable, withhold the arm command</td>
+        <td class="st">F16, F6, G4</td>
+        <td class="st">DEFINED</td>
+      </tr>
+      <tr>
+        <th>13</th><td>Fuze &#8594; booster</td>
+        <td>Initiation</td>
+        <td>Centreline train on the axis; the stack, the machine, the dump and
+            the boards are all annular about a reserved &Oslash;30 mm bore</td>
+        <td class="st">F9, H5, C34, W12</td>
+        <td class="st"><span class="op">OPEN</span> &#8212; the train is YIL's</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>The envelope block diagram, block by block</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Envelope block</th><th>Its bullets, as drawn</th>
+        <th>Lands on this sheet as</th><th>What the detailed sheet does with it</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th>Pre-launch set up</th>
+        <td>Fuze settings &middot; ring coordinates &middot; system initialization</td>
+        <td>the <b>Pre-launch set-up</b> block; interface 1</td>
+        <td><b>Expanded</b>: the setting event becomes the AOP-22 inductive window and
+            the F12 package (coordinates, met, charge state, time, ephemeris and keys,
+            mode, round ID, read-back) <span class="mono">[F11, F12, risk 44]</span>.
+            &ldquo;Ring coordinates&rdquo; is read as the package&rsquo;s target
+            coordinates. <b>Kept</b>: both domains programmed with the kit unpowered.</td>
+      </tr>
+      <tr>
+        <th>Navigation and sensing</th>
+        <td>GNSS + IMU + altitude sensing (de-spun) &middot; ring-angle sensing (de-spun)
+            &middot; state estimation &amp; filtering</td>
+        <td>the <b>Navigation &amp; sensing</b> block; interfaces 2&ndash;4</td>
+        <td><b>Expanded</b>: the sensors are named and budgeted (spin-axis GNSS aperture;
+            IMU &plusmn;2 000 &deg;/s at &ge;100 Hz on the de-spun ring; magnetometer
+            &le;50 Hz; pickoff &le;0.8&deg;), and the filter becomes the NAV error
+            budget: 3.0 + 2.0 + 1.0 &rarr; RSS 3.7 m against the 5 m allocation
+            <span class="mono">[N1]</span>. <b>Kept</b>: the de-spun mounting, as drawn.</td>
+      </tr>
+      <tr>
+        <th>Guidance and control</th>
+        <td>Impact-point prediction &middot; guidance law and control loop &middot; canard
+            ring command &middot; authority and constraint management</td>
+        <td>the <b>Guidance &amp; control</b> block; interfaces 11&ndash;12</td>
+        <td><b>Expanded</b>: IPP is propagate to impact and null the predicted miss; the
+            loop is cascade P&rarr;PI at 1 kHz with a DOB; the command channel is
+            <span class="mono">&theta;_gk</span> only <span class="mono">[G2]</span>;
+            authority is a computed gate, not a schedule, and its edges stay dashed
+            <span class="mono">[G3]</span>.</td>
+      </tr>
+      <tr>
+        <th>Canard ring (actuation)</th>
+        <td>De-spun canard assembly &middot; fixed canards &middot; ring control via
+            electromagnetic torque</td>
+        <td>the <b>Canard ring &middot; actuation</b> block; interfaces 3&ndash;4 and the
+            machine link</td>
+        <td><b>Expanded</b>: two bearings, four fixed canards at 10&deg; in two pairs
+            (steering 0&deg;/180&deg;, control 90&deg;/270&deg;); &ldquo;electromagnetic
+            torque&rdquo; becomes the shared machine: no actuator, no gearbox, one moving
+            part <span class="mono">[C34, C14, C19]</span>.</td>
+      </tr>
+      <tr>
+        <th>Alternator</th>
+        <td>Generates power during flight</td>
+        <td>the <b>Alternator &mdash; the machine</b> block; interface 5</td>
+        <td><b>Expanded</b>: radial-flux frameless outrunner, 12 slots / 14 poles,
+            Kt 0.362 N&middot;m/A, Kv 0.209 V/(rad/s), 1.018 kg measured. <b>Kept</b>:
+            no flight battery; generation starts at launch.</td>
+      </tr>
+      <tr>
+        <th>Power conditioning</th>
+        <td>Rectification &middot; voltage regulation</td>
+        <td>the <b>Power conditioning</b> block; interface 5</td>
+        <td><b>Expanded</b>: synchronous rectification in a four-quadrant stage (buck
+            generating, boost motoring), the 180 V bus held below the flight-minimum
+            EMF &asymp; 231 V so the stage never crosses modes
+            <span class="mono">[C41, H8, F15]</span>.</td>
+      </tr>
+      <tr>
+        <th>Supercapacitor (energy storage)</th>
+        <td>High capacity storage &middot; stores &amp; supplies energy &middot; during
+            apogee, powers actuator for canard control</td>
+        <td>the <b>Bus &middot; dump &middot; buffer</b> block; interface 6</td>
+        <td><b>Corrected twice</b>: it is a 150&ndash;200 J power buffer, not storage
+            (121 kJ cannot be stored), and the apogee arithmetic runs the other way:
+            &asymp;20:1 surplus the whole flight. See corrections 1 and 2 below.</td>
+      </tr>
+      <tr>
+        <th>System loads</th>
+        <td>GNC + sensors + fuze + electronics</td>
+        <td>the <b>System loads &amp; actuator drive</b> block; interfaces 7&ndash;8</td>
+        <td><b>Corrected</b>: one rail domain too few: the fuze keeps its own MCU and its
+            own always-alive rail in the reserve-battery domain
+            <span class="mono">[H10, H12, W5]</span>. See correction 3 below.</td>
+      </tr>
+      <tr>
+        <th>Actuator drive</th>
+        <td>Supplies controlled current &middot; rotates canard ring</td>
+        <td>the same <b>System loads &amp; actuator drive</b> block, and the machine link
+            up to the flight chain</td>
+        <td><b>Corrected</b>: the drive and the alternator are one machine seen twice: the
+            controlled current <i>is</i> the ring torque
+            <span class="mono">[C34, C9, C19]</span>. See correction 4 below.</td>
+      </tr>
+      <tr>
+        <th>Sensor suite</th>
+        <td>Timer &middot; impact sensor &middot; proximity sensor</td>
+        <td>the <b>Sensor suite</b> block</td>
+        <td><b>Expanded</b>: each channel is ranged: timer 0.1&ndash;199.9 s at 0.1 s;
+            impact superquick / short delay &asymp;0.05 s / graze; proximity 24 GHz RF
+            Doppler, burst height 2&ndash;15 m, the detector rejecting the
+            176.3&ndash;304.4 Hz spin modulation.</td>
+      </tr>
+      <tr>
+        <th>Central controller</th>
+        <td>Mode management &middot; safety state monitoring &middot; event decision
+            logic &middot; self check and health monitoring</td>
+        <td>the <b>Central controller</b> block; interfaces 11&ndash;12</td>
+        <td><b>Expanded</b>: self check becomes the two-tier BIT (pre-launch go/no-go,
+            then classification); safety monitoring becomes the arming interlock, and the
+            controller keeps its own MCU and rail
+            <span class="mono">[H10, H13]</span>.</td>
+      </tr>
+      <tr>
+        <th>Output module</th>
+        <td>Trigger output generation &middot; high current pulse</td>
+        <td>the <b>Safe &amp; arm &middot; output module</b> block; interface 8</td>
+        <td><b>Expanded</b>: drawn with the safe &amp; arm device that gates it (out-of-line
+            rotor on setback 15 000 g + spin 176&ndash;304 Hz, the arm command a third,
+            independent condition). <b>Kept</b>: trigger and pulse, as drawn.</td>
+      </tr>
+      <tr>
+        <th>Detonator</th>
+        <td>Ignite the detonation substance</td>
+        <td>the <b>Detonator &rarr; the booster</b> block; interface 13</td>
+        <td><b>Expanded</b>: centreline initiation into the shell&rsquo;s booster, the rest
+            annular about a reserved &Oslash;30 mm bore, MIL-STD-1316 and the AOP-39 chain
+            <span class="mono">[F9]</span>; every fault direction is a dud.</td>
+      </tr>
+      <tr>
+        <th>The connectors</th>
+        <td>the flight chain left to right &middot; one descent into the power supply
+            system &middot; the long right-hand descent into the fuze and safety system</td>
+        <td>interfaces 1&ndash;13 on the sheet above</td>
+        <td><b>Kept and numbered</b>: the same descents, each now named with what crosses
+            it. <b>Added</b>: the two the envelope leaves undrawn: bus to the loads
+            (7&ndash;8) and buffer to the fireset (8).</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="cap">
+    Every block and every bullet of the envelope diagram is above, in the
+    envelope&rsquo;s own words, with the row on this sheet that carries it. Nothing
+    is dropped: where a row says <b>corrected</b>, the correction is argued below and
+    owned by the register.
+  </p>
+
+  <h2>What the detailed sheet changes from the envelope block diagram</h2>
+  <div class="notes">
+    <p>
+      <span class="k">The architecture is the same; four statements are corrected,
+      because the register does not support the envelope wording.</span>
+    </p>
+    <p>
+      <span class="k">1. &ldquo;Supercapacitor: high-capacity storage&rdquo; is a
+      power buffer, not storage.</span> 121 kJ at the bus needs &asymp;1.5 F,
+      which neither fits the envelope nor survives 15 000 g, so the design does
+      not store the flight's energy at all &#8212; it conducts it into the shell.
+      The 150&#8211;200 J bank exists for the fireset reservoir, hold-up and
+      motoring bursts <span class="mono">[W4, W7]</span>.
+    </p>
+    <p>
+      <span class="k">2. &ldquo;During apogee, powers actuator for canard
+      control&rdquo; inverts the arithmetic.</span> Generation floors at
+      0.24 kW at apogee against &asymp;12 W of demand: <b>&asymp;20:1</b>, the
+      whole flight. The design question is where the surplus goes, never whether
+      there is enough <span class="mono">[W4, C42]</span>.
+    </p>
+    <p>
+      <span class="k">3. &ldquo;System loads: GNC + sensors + fuze +
+      electronics&rdquo; is one rail domain too few.</span> The fuze keeps its
+      own MCU and its own always-alive rail, in the reserve-battery domain, so
+      that a fault in the guidance domain cannot reach the arming path; the two
+      domains hand over through a passive diode-OR
+      <span class="mono">[H10, H12, W5]</span>.
+    </p>
+    <p>
+      <span class="k">4. &ldquo;Alternator&rdquo; and &ldquo;actuator drive&rdquo;
+      are the same machine seen twice.</span> The block diagram puts the two in
+      different tiers; physically the magnets are on the ring and the coils on
+      the body, so the drive current <i>is</i> the torque and the un-drawn
+      current <i>is</i> the supply <span class="mono">[C34, C9, C19]</span>.
+    </p>
+    <p>
+      Two things the envelope diagram carries that this sheet keeps deliberately:
+      the <b>three-descent</b> shape (pre-launch set-up &#8594; flight &#8594;
+      the terminal chain) and the <b>fuze at the end of its own chain</b>. What
+      it adds is the wiring: the reference sheet shows no connector between the
+      power system and the loads, and none into the fuze. Those interfaces are
+      the interesting part of this design.
+    </p>
+  </div>
+
+  <h2>Declared open &mdash; and what closes each item</h2>
+  <div class="openbox">
+    <p style="margin-top:2px">
+      <span class="k">Nothing amber on this sheet is a claim.</span> These are
+      the items drawn open, in the order the design meets them, with the thing
+      that closes each one. All of the rig-verified items are gated on
+      shortlisting and are presented in the submission as a plan, never as an
+      asset <span class="mono">[R7, P7]</span>.
+    </p>
+    <ul>
+      <li>
+        <b>Ring friction at flight speed</b> <span class="mono">[C13, C25]</span>
+        &#8212; the inherited 0.10 N&#183;m was measured at 83.8 rad/s on a rig,
+        19.4&times; below the flight's relative speed. Closed by a
+        load-dominated bearing selection and by the rig at
+        &asymp;2 000 rad/s.
+      </li>
+      <li>
+        <b>The fuze-well thermal joint</b> <span class="mono">[P6]</span> &#8212;
+        3&#8211;16 W/K today against a &ge;58 W/K peak. Closed by the well bore
+        as a contacting radial path, a conductance-specified joint (which makes
+        the torque spec a thermal requirement), and a rig measurement in W/K.
+      </li>
+      <li>
+        <b>Arming thresholds and distance</b> <span class="mono">[F7, F8]</span>
+        &#8212; the stimuli are named (15 000 g, 176&#8211;304 Hz); the
+        thresholds and the arming distance are not yet set, and G3's opening
+        edge rides on them.
+      </li>
+      <li>
+        <b>The authority gate's edges</b> <span class="mono">[G3, risk 8]</span>
+        &#8212; the mechanism is ours, the 15 s and 35&#8211;55 s edges are the
+        reference force profile. Closed when the aerodynamic coefficient set
+        exists.
+      </li>
+      <li>
+        <b>The swerve-response phase</b> <span class="mono">[G16, risk 51]</span>
+        &#8212; a control force ahead of the CG swerves the round at a phase off
+        the force direction (published: &asymp;172&deg; at launch to
+        146&#8211;149&deg; near apogee, on another airframe). Method transfers,
+        the number does not; G4 allocates 9 m to &asymp;1.3&deg; of direction
+        error, so this line is the ring-angle budget's largest open item.
+      </li>
+      <li>
+        <b>Canard geometry and the Q floor</b> <span class="mono">[C4, C5, C31]</span>
+        &#8212; 80 mm chord, 26.5 mm exposed span at the &Oslash;151 mm tip cap;
+        the values are stated, the rows are still OPEN.
+      </li>
+      <li>
+        <b>Ring-side mass, and with it the clock on three rows</b>
+        <span class="mono">[P9, C26, C32, T4&#8211;T6]</span> &#8212; the CAD
+        weighs the kit at 2.713 kg against a &le;1.4 kg limit; the ring carrier
+        is the lever that pays mass, setback load and the junction step at once.
+      </li>
+    </ul>
+  </div>
+
+  <p class="foot">
+    Sources: <code>design/00-design-criteria-register.md</code> (every value),
+    <code>design/atlas/atlas_scene.py</code> (the node set and the interface
+    wiring the flow sheet already draws),
+    <code>submission/deck/figures/figlib.py</code> (the colour convention),
+    <code>design/07-cad-evidence.md</code> (the measured masses and the
+    T-findings). Structure after the source block diagram, kept at the repo root as
+    <code>WhatsApp Image 2026-09-28 at 02.00.19.jpeg</code> and mapped block by
+    block above. The atlas rule holds
+    here: <b>the sheet evidences; it never decides</b> &#8212; where this page and
+    the register disagree, the register wins.
+  </p>
+
+</div>
+</body>
+</html>
